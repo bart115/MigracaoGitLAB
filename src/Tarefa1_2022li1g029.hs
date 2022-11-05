@@ -11,4 +11,12 @@ module Tarefa1_2022li1g029 where
 import LI12223
 
 mapaValido :: Mapa -> Bool
-mapaValido = undefined
+mapaValido (Mapa lr ((tr,lo):t)) 
+                        |tr == Relva = not (elem Carro lo || elem Tronco lo)  
+                        |otherwise = True 
+
+mapaValido (Mapa lr ((Rio v),lo):t)
+                        |(elem Carro lo || elem Tronco lo) = False
+                        |otherwise = True 
+
+
