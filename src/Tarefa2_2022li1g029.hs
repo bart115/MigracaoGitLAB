@@ -14,7 +14,9 @@ estendeMapa :: Mapa -> Int -> Mapa
 estendeMapa = undefined
 
 proximosTerrenosValidos :: Mapa -> [Terreno]
-proximosTerrenosValidos = undefined
+proximosTerrenosValidos (Mapa _ []) = [Rio 0, Estrada 0, Relva]
+proximosTerrenosValidos (Mapa _ [(Rio _, _),(Rio _, _),(Rio _, _),(Rio _, _),_]) = [Estrada 0, Relva]
 
 proximosObstaculosValidos :: Int -> (Terreno, [Obstaculo]) -> [Obstaculo]
-proximosObstaculosValidos = undefined
+proximosObstaculosValidos 10 (Rio _, []) = [Nenhum, Tronco]
+proximosObstaculosValidos 10 (Estrada _, []) = [Nenhum, Carro]
