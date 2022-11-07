@@ -44,16 +44,17 @@ mapaValido3 :: Mapa -> Bool
 mapaValido3 (Mapa lr []) = True 
 mapaValido3 (Mapa lr (((Estrada ve),(o1:ot)): t)) = mapaValido3 (Mapa lr t)
 mapaValido3 (Mapa lr ((Relva,(o1:ot)): t)) = mapaValido3 (Mapa lr t)
-mapaValido3 (Mapa lr (((Rio vr),(o1:ot)): t)) 
-             |(aux (Mapa lr (((Rio vr),(o1:ot)):t)) 0) > 5 = False 
+
+mapaValido3 (Mapa lr (((Rio vr),(o1:o2:ot)): t)) 
+             |(aux (Mapa lr (((Rio vr),(o1:o2:ot)):t)) 0) > 5 = False 
              |otherwise = mapaValido3 (Mapa lr t) 
 
 
 aux :: Mapa -> Int -> Int 
 aux (Mapa lr (((Rio vr),[]):t)) n = n
-aux (Mapa lr (((Rio vr),(o1:ot)):t)) n 
-                      | o1 == Tronco = aux (Mapa lr (((Rio vr),ot):t)) (n+1)
-                      |otherwise = aux (Mapa lr (((Rio vr),ot):t)) n
+aux (Mapa lr (((Rio vr),(o1:o2:ot)):t)) n 
+                      |(o1 == Tronco && o2 == o1) = aux (Mapa lr (((Rio vr),(o2:ot)):t)) (n+1)
+                      |otherwise = aux (Mapa lr (((Rio vr),(o2:ot)):t)) n
 
 --4--
 mapaValido4 :: Mapa -> Bool 
