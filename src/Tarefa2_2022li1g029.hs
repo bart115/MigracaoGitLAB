@@ -9,12 +9,13 @@ Módulo para a realização da Tarefa 2 do projeto de LI1 em 2022/23.
 module Tarefa2_2022li1g029 where
 
 import LI12223
---estendeMapa :: Mapa -> Int -> Mapa
---estendeMapa (Mapa x [h:t]) n = (Mapa  )
---            where 
---                element = (opçoes)!! mod n (length opçoes)
---                opçoes = proximosTerrenosValidos l
-
+estendeMapa :: Mapa -> Int -> Mapa
+estendeMapa (Mapa x (h:t)) n = Mapa x [(element1,element2)] 
+            where 
+                element1 = (opçoes1) !! mod n (length opçoes1)
+                opçoes1 = proximosTerrenosValidos (Mapa x (h:t))
+                element2 = (opçoes2) !! mod n (length opçoes2)
+                opçoes2 = proximosObstaculosValidos x 
 
 
 
