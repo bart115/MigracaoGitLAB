@@ -11,19 +11,19 @@ module Tarefa2_2022li1g029 where
 import LI12223
 
 
-{- terrenoaleatorio::[Terreno]->Terreno
-terrenoaleatorio = opçoes1 !! mod n (length opçoes1) 
-                        where opçoes1 = proximosTerrenosValidos (Mapa x l)
+terrenoaleatorio::[Terreno]->Int->Terreno
+terrenoaleatorio l n= (proximosTerrenosValidos (Mapa x l) ) !! mod n (length (proximosTerrenosValidos (Mapa x l)))
 
+                      --  where opçoes1 = proximosTerrenosValidos (Mapa x l)
 
+obstaculoalatorio::[Obstaculo]->Int->Obstaculo
+obstaculoaleatorio l n= (proximosObstaculosValidos x) !! mod n (length (proximosObstaculosValidos x ))
 
-obstaculoalatorio::[Obstaculo]->Obstaculo
-obstaculoaleatorio = opçoes2 !! mod n (length opçoes2)
-                        where opçoes2 = proximosObstaculosValidos x 
+                      --  where opçoes2 = proximosObstaculosValidos x
 
 estendeMapa :: Mapa -> Int -> Mapa
-estendeMapa (Mapa x l) n = Mapa x (l:(element1,[element2]))
-  -}          
+estendeMapa (Mapa x l) n | x==1 = Mapa x (l++ [(terrenoaleatorio (proximosTerrenosValidos (Mapa x l) n ),[obstaculoaleatorio (proximoObstaculosValidos x (terrenoaleatorio (proximosTerrenosValidos (Mapa x l) n )) n])])
+                         | otherwise = estendeMapa Mapa (x-1) (l:(terrenoaleatorio,[obstaculoaleatorio]++[obstaculoaleatorio]))
 
 
 
