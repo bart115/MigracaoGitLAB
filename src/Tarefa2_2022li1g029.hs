@@ -9,17 +9,26 @@ Módulo para a realização da Tarefa 2 do projeto de LI1 em 2022/23.
 module Tarefa2_2022li1g029 where
 
 import LI12223
+
+
+{- terrenoaleatorio::[Terreno]->Terreno
+terrenoaleatorio = opçoes1 !! mod n (length opçoes1) 
+                        where opçoes1 = proximosTerrenosValidos (Mapa x l)
+
+
+
+obstaculoalatorio::[Obstaculo]->Obstaculo
+obstaculoaleatorio = opçoes2 !! mod n (length opçoes2)
+                        where opçoes2 = proximosObstaculosValidos x 
+
 estendeMapa :: Mapa -> Int -> Mapa
-estendeMapa (Mapa x (h:t)) n = Mapa x [(element1,element2)] 
-            where 
-                element1 = (opçoes1) !! mod n (length opçoes1)
-                opçoes1 = proximosTerrenosValidos (Mapa x (h:t))
-                element2 = (opçoes2) !! mod n (length opçoes2)
-                opçoes2 = proximosObstaculosValidos x 
+estendeMapa (Mapa x l) n = Mapa x (l:(element1,[element2]))
+  -}          
 
 
 
---função auxiliar
+
+--função auxiliar que dá os terrenos válidos
 proximosTerrenosValidos :: Mapa -> [Terreno]
 proximosTerrenosValidos (Mapa _ []) = [Rio 0, Estrada 0, Relva]                                                              --quando não tem nenhum terreno
 proximosTerrenosValidos (Mapa _ [(Rio _, _),(Rio _, _),(Rio _, _),(Rio _, _),_]) = [Estrada 0, Relva]                        --quando tem 4 rios seguidos 
@@ -31,12 +40,12 @@ proximosTerrenosValidos (Mapa _ [(Relva,_),_]) = [Rio 0,Estrada 0,Relva]        
 
 
 
---função auxiliar
+--função auxiliar que dá os obstaculos válidos 
 proximosObstaculosValidos :: Int -> (Terreno, [Obstaculo]) -> [Obstaculo]
 proximosObstaculosValidos x (te,obs) |x==length obs = []
-                                     |(x-1)==length obs && elem Nenhum obs =[Nenhum]
+                                     |length obs == (x-1) && elem Nenhum obs == False =[Nenhum]
                                      |otherwise =proximosObstaculosValidosaux x (te,obs)
-                where 
+              where 
                     proximosObstaculosValidosaux x (Rio v,[])=[Nenhum,Tronco]
                     proximosObstaculosValidosaux x (Estrada v,[]) = [Nenhum,Tronco]
                     proximosObstaculosValidosaux x (Relva,[])=[Nenhum,Arvore]
