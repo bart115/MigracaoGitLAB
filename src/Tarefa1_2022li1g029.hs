@@ -42,20 +42,34 @@ mapaValido2 (Mapa lr (((Rio vr),lo) : ((Rio vr1),lo1) : t))
 --3--
 mapaValido3 :: Mapa -> Bool 
 mapaValido3 (Mapa lr []) = True 
+
 mapaValido3 (Mapa lr (((Estrada ve),(o1:ot)): t)) = mapaValido3 (Mapa lr t)
 mapaValido3 (Mapa lr ((Relva,(o1:ot)): t)) = mapaValido3 (Mapa lr t)
 
 mapaValido3 (Mapa lr (((Rio vr),(o1:o2:ot)): t)) 
-             |(aux (Mapa lr (((Rio vr),(o1:o2:ot)):t)) 0) > 5 = False 
+             |(aux (Mapa lr (((Rio vr),(o1:o2:ot)):t))) 0 == True = aux (Mapa lr t) 0
              |otherwise = mapaValido3 (Mapa lr t) 
 
+--Estrdemidades forem ambas tronco entao tenho que comparar a quantidade de troncos de ambas as estremidades 
 
-aux :: Mapa -> Int -> Int 
-aux (Mapa lr (((Rio vr),[]):t)) n = n
-aux (Mapa lr (((Rio vr),(o1:o2:ot)):t)) n 
-                      |(o1 == Tronco && o2 == o1) = aux (Mapa lr (((Rio vr),(o2:ot)):t)) (n+1)
-                      |otherwise = aux (Mapa lr (((Rio vr),(o2:ot)):t)) n
 
+aux :: Mapa -> Int -> Bool 
+aux (Mapa lr (((Rio vr),[]):t)) n = True 
+aux (Mapa lr (((Rio vr),(o1:o2:ot)):t)) n
+                      |n > 5 = False
+                      |((o1 == Tronco) && (o1 /= last ot)) = aux (Mapa lr (((Rio vr),o2:ot):t)) (n+1)
+                      |((o1 == Tronco) && (o1 == last ot)) = aux5 (Mapa lr (((Rio vr),(o1:o2:ot)):t)) n
+                      |otherwise = aux (Mapa lr (((Rio vr),(o2:ot)):t)) 0
+
+
+aux5 :: Mapa -> Int -> Bool 
+aux5 (Mapa lr (((Rio vr),[]):t)) n = True 
+aux5 (Mapa lr (((Rio vr),(o1:o2:ot)):t)) n 
+                     |n > 5 = False
+                     |
+
+--reverse ot -- comparar o primeiro do reverse com o primeiro da lista, 
+--criar um uma função que dá reverse de 
 --4--
 mapaValido4 :: Mapa -> Bool 
 mapaValido4 (Mapa lr []) = True 
