@@ -10,6 +10,9 @@ module Tarefa2_2022li1g029 where
 
 import LI12223
 
+
+
+
 --função auxiliar que dá os terrenos válidos para a proxima linha
 
 proximosTerrenosValidos :: Mapa -> [Terreno]
@@ -22,7 +25,9 @@ proximosTerrenosValidos (Mapa _ [(Relva ,_),(Relva ,_),(Relva ,_),(Relva ,_),(Re
 proximosTerrenosValidos (Mapa _ [(Relva,_),_]) = [Rio 0,Estrada 0,Relva]                                                     --quando tem uma relva
 
 
+
 --função auxiliar que dá o terreno aleatório da proxima linha 
+
 terrenoaleatorio::Mapa->Int->Terreno
 terrenoaleatorio (Mapa x l) seed = proximosTerrenosValidos (Mapa x l) !! mod seed (length (proximosTerrenosValidos (Mapa x l)))   
 
@@ -49,6 +54,8 @@ proximosObstaculosValidos lar seed (te,obs) |lar==length obs = obs
 
 
 --função principal que através das funções auxiliares estende o mapa
+
 estendeMapa::Mapa ->Int->Mapa
 estendeMapa (Mapa lar filas) seed = Mapa lar (filas ++ [(ta ,proximosObstaculosValidos lar seed ((ta,[])))])
                                                                      where ta=terrenoaleatorio (Mapa lar filas)  seed 
+
