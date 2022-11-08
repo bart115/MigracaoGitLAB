@@ -10,25 +10,8 @@ module Tarefa2_2022li1g029 where
 
 import LI12223
 
+--função auxiliar que dá os terrenos válidos para a proxima linha
 
-terrenoaleatorio::[Terreno]->Int->Terreno
-terrenoaleatorio l n= (proximosTerrenosValidos (Mapa x l) ) !! mod n (length (proximosTerrenosValidos (Mapa x l)))
-
-                      --  where opçoes1 = proximosTerrenosValidos (Mapa x l)
-
-obstaculoalatorio::[Obstaculo]->Int->Obstaculo
-obstaculoaleatorio l n= (proximosObstaculosValidos x) !! mod n (length (proximosObstaculosValidos x ))
-
-                      --  where opçoes2 = proximosObstaculosValidos x
-
-estendeMapa :: Mapa -> Int -> Mapa
-estendeMapa (Mapa x l) n | x==1 = Mapa x (l++ [(terrenoaleatorio (proximosTerrenosValidos (Mapa x l) n ),[obstaculoaleatorio (proximoObstaculosValidos x (terrenoaleatorio (proximosTerrenosValidos (Mapa x l) n )) n])])
-                         | otherwise = estendeMapa Mapa (x-1) (l:(terrenoaleatorio,[obstaculoaleatorio]++[obstaculoaleatorio]))
-
-
-
-
---função auxiliar que dá os terrenos válidos
 proximosTerrenosValidos :: Mapa -> [Terreno]
 proximosTerrenosValidos (Mapa _ []) = [Rio 0, Estrada 0, Relva]                                                              --quando não tem nenhum terreno
 proximosTerrenosValidos (Mapa _ [(Rio _, _),(Rio _, _),(Rio _, _),(Rio _, _),_]) = [Estrada 0, Relva]                        --quando tem 4 rios seguidos 
@@ -39,12 +22,20 @@ proximosTerrenosValidos (Mapa _ [(Relva ,_),(Relva ,_),(Relva ,_),(Relva ,_),(Re
 proximosTerrenosValidos (Mapa _ [(Relva,_),_]) = [Rio 0,Estrada 0,Relva]                                                     --quando tem uma relva
 
 
+--função auxiliar que dá o terreno aleatório da proxima linha 
+terrenoaleatorio::Mapa->Int->Terreno
+terrenoaleatorio (Mapa x l) seed = proximosTerrenosValidos (Mapa x l) !! mod seed (length (proximosTerrenosValidos (Mapa x l)))   
 
---função auxiliar que dá os obstaculos válidos 
-proximosObstaculosValidos :: Int -> (Terreno, [Obstaculo]) -> [Obstaculo]
-proximosObstaculosValidos x (te,obs) |x==length obs = []
-                                     |length obs == (x-1) && elem Nenhum obs == False =[Nenhum]
-                                     |otherwise =proximosObstaculosValidosaux x (te,obs)
+
+
+
+--função auxiliar que dá os obstaculos válidos para uma linha com um terreno prédefinida 
+--obs:alterei a função para que não desse apenas os obstaculos válidos mas para que desse logo uma lista de obstaculos aleatórios 
+
+proximosObstaculosValidos :: Int ->Int-> (Terreno, [Obstaculo]) -> [Obstaculo]
+proximosObstaculosValidos lar seed (te,obs) |lar==length obs = obs 
+                                            |length obs == (lar-1) && elem Nenhum obs == False =obs ++ [Nenhum]
+                                            |otherwise =proximosObstaculosValidos lar seed (te,obs ++ [((proximosObstaculosValidosaux lar (te,obs)) !! mod seed (length (proximosObstaculosValidosaux lar (te,obs)) ))])
               where 
                     proximosObstaculosValidosaux x (Rio v,[])=[Nenhum,Tronco]
                     proximosObstaculosValidosaux x (Estrada v,[]) = [Nenhum,Tronco]
@@ -55,3 +46,9 @@ proximosObstaculosValidos x (te,obs) |x==length obs = []
                     proximosObstaculosValidosaux x (Estrada v,obs)=[Nenhum,Carro]
                     proximosObstaculosValidosaux x (Relva,obs) =[Nenhum,Arvore] 
 
+
+
+--função principal que através das funções auxiliares estende o mapa
+estendeMapa::Mapa ->Int->Mapa
+estendeMapa (Mapa lar filas) seed = Mapa lar (filas ++ [(ta ,proximosObstaculosValidos lar seed ((ta,[])))])
+                                                                     where ta=terrenoaleatorio (Mapa lar filas)  seed 
