@@ -16,7 +16,8 @@ animaJogo (Jogo (Jogador (x,y)) (Mapa l ((t,ob1:obs):tf))) m = Jogo (Jogador (po
                                                   pos (x,y) Parado (Rio v ) |checktronco x (checkline (Jogo (Jogador (x,y)) (Mapa l ((t,ob1:obs):tf))))==True = (x+v,y)
                                                                             |otherwise = (x,y)
                                                                    
-                                                  pos (x,y) (Move Cima) t = (x,y+1)
+                                                  pos (x,y) (Move Cima) t |numfilas (Mapa l ((t,ob1:obs):tf)) > y = (x,y+1)
+                                                                          |otherwise = (x,y)
                                                   pos (x,y) (Move Baixo) t = (x,y-1)
                                                   pos (x,y) (Move Esquerda) t =(x-1,y)
                                                   pos (x,y) (Move Direita) t =(x+1,y)
@@ -44,10 +45,14 @@ obsmove (Relva,obs) = obs
 obsmove (Rio v,obs)  |v==0 = obs
                      |v>0 = obsmove (Rio (v-1),(last obs : init obs ))
                      |otherwise= obsmove (Rio (v+1),tail obs ++ [head obs] )
-
 obsmove (Estrada v,obs) |v==0 = obs
                         |v>0 = obsmove (Estrada (v-1),last obs: init obs )
                         |otherwise = obsmove (Estrada (v+1),tail obs ++ [head obs])
+
+
+numfilas::Mapa->Int
+numfilas (Mapa l [])=0
+numfilas (Mapa l (x:xs))=1+numfilas (Mapa l xs)
 
 
 
