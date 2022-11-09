@@ -9,6 +9,7 @@ Módulo para a realização da Tarefa 2 do projeto de LI1 em 2022/23.
 module Tarefa2_2022li1g029 where
 
 import LI12223
+import Data.List.NonEmpty (groupAllWith1)
 
 
 
@@ -30,21 +31,33 @@ terrenoaleatorio (Mapa x l) seed = proximosTerrenosValidos (Mapa x l) !! mod see
 
 
 --função auxiliar que dá os obstaculos válidos para uma linha com um terreno prédefinida 
---obs:alterei a função para que não desse apenas os obstaculos válidos mas para que desse logo uma lista de obstaculos aleatórios 
 
-proximosObstaculosValidos :: Int ->Int-> (Terreno, [Obstaculo]) -> [Obstaculo]
-proximosObstaculosValidos lar seed (te,obs) |lar==length obs = obs 
+
+group'::Eq a => [a] -> [[a]]
+group'[]=[]
+group'[x]=[[x]]
+group' (h:t) |elem h (head r) = (h: (head r)):tail r 
+             |otherwise = [h]: r 
+                  where r=group' t
+
+
+obslistrandom :: Int ->Int-> (Terreno, [Obstaculo]) -> [Obstaculo]
+obslistrandom lar seed (Rio v ,obs)|lar==length obs =obs
+                                   |length obs == (lar-1) && length (head (group' (obslistrandom lar seed (Rio v ,obs)))) + length (last (group' (obslistrandom lar seed (Rio v ,obs)))) >=5= [Nenhum] 
+                                   |length obs == (lar-1) && elem Tronco obs ==False = obs ++[Tronco]
+                                   |otherwise =obslistrandom lar (seed-1) (Rio v,[((proximosObstaculosValidos lar (Rio v,obs)) !! mod seed (length (proximosObstaculosValidos lar (Rio v,obs)) ))]++obs)
+obslistrandom lar seed (te,obs) |lar==length obs = obs 
                                             |length obs == (lar-1) && elem Nenhum obs == False = obs ++ [Nenhum] 
-                                            |otherwise =proximosObstaculosValidos lar seed (te,[((proximosObstaculosValidosaux lar (te,obs)) !! mod seed (length (proximosObstaculosValidosaux lar (te,obs)) ))]++obs)
-              where 
-                    proximosObstaculosValidosaux x (Rio v,[])=[Nenhum,Tronco]
-                    proximosObstaculosValidosaux x (Estrada v,[]) = [Nenhum,Tronco]
-                    proximosObstaculosValidosaux x (Relva,[])=[Nenhum,Arvore]
-                    proximosObstaculosValidosaux x (Rio v ,(Tronco:Tronco:Tronco:Tronco:Tronco:t))=[Nenhum]
-                    proximosObstaculosValidosaux x (Rio v,obs)=[Nenhum,Tronco]
-                    proximosObstaculosValidosaux x (Estrada v,(Carro:Carro:Carro:t))=[Nenhum]
-                    proximosObstaculosValidosaux x (Estrada v,obs)=[Nenhum,Carro]
-                    proximosObstaculosValidosaux x (Relva,obs) =[Nenhum,Arvore] 
+                                            |otherwise =obslistrandom lar (seed-1) (te,[((proximosObstaculosValidos lar (te,obs)) !! mod seed (length (proximosObstaculosValidos lar (te,obs)) ))]++obs)
+
+proximosObstaculosValidos x (Rio v,[])=[Nenhum,Tronco]
+proximosObstaculosValidos x (Estrada v,[]) = [Nenhum,Tronco]
+proximosObstaculosValidos x (Relva,[])=[Nenhum,Arvore]
+proximosObstaculosValidos x (Rio v ,(Tronco:Tronco:Tronco:Tronco:Tronco:t))=[Nenhum]
+proximosObstaculosValidos x (Rio v,obs)=[Nenhum,Tronco]
+proximosObstaculosValidos x (Estrada v,(Carro:Carro:Carro:t))=[Nenhum]
+proximosObstaculosValidos x (Estrada v,obs)=[Nenhum,Carro]
+proximosObstaculosValidos x (Relva,obs) =[Nenhum,Arvore] 
 
 
 
@@ -52,6 +65,6 @@ proximosObstaculosValidos lar seed (te,obs) |lar==length obs = obs
 --função principal que através das funções auxiliares estende o mapa
 
 estendeMapa::Mapa ->Int->Mapa
-estendeMapa (Mapa lar filas) seed = Mapa lar (filas ++ [(ta ,proximosObstaculosValidos lar seed ((ta,[])))])
+estendeMapa (Mapa lar filas) seed = Mapa lar (filas ++ [(ta ,obslistrandom lar seed ((ta,[])))])
                                                                      where ta=terrenoaleatorio (Mapa lar filas)  seed 
 
