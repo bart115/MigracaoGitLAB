@@ -11,24 +11,27 @@ module Tarefa3_2022li1g029 where
 import LI12223
 
 animaJogo :: Jogo -> Jogada -> Jogo
-animaJogo (Jogo (Jogador (x,y)) (Mapa l ((t,ob1:obs):tf))) m = Jogo (Jogador (pos (x,y) m t)) (Mapa l (mapamove ((t,ob1:obs):tf)))
-                                               where
-                                                  pos (x,y) Parado (Rio v ) |checktronco x (checkline (Jogo (Jogador (x,y)) (Mapa l ((t,ob1:obs):tf))))==True = (x+v,y)
-                                                                            |otherwise = (x,y)
-                                                                   
-                                                  pos (x,y) (Move Cima) t |numfilas (Mapa l ((t,ob1:obs):tf)) > y = (x,y+1)
-                                                                          |otherwise = (x,y)
-                                                  pos (x,y) (Move Baixo) t = (x,y-1)
-                                                  pos (x,y) (Move Esquerda) t =(x-1,y)
-                                                  pos (x,y) (Move Direita) t =(x+1,y)
+animaJogo (Jogo (Jogador (x,y)) (Mapa l ((Relva,ob1:obs):tf))) m = Jogo (Jogador (pos (x,y) m (Mapa l ((Relva,ob1:obs):tf)))) (Mapa l (mapamove ((Relva,ob1:obs):tf)))
+animaJogo (Jogo (Jogador (x,y)) (Mapa l ((Estrada v,ob1:obs):tf))) m = Jogo (Jogador (pos (x,y) m (Mapa l ((Estrada v,ob1:obs):tf)))) (Mapa l (mapamove ((Estrada v,ob1:obs):tf)))
+animaJogo (Jogo (Jogador (x,y)) (Mapa l ((Rio v,ob1:obs):tf))) m = Jogo (Jogador (pos (x,y) m  (Mapa l ((Rio v,ob1:obs):tf)))) (Mapa l (mapamove ((Rio v,ob1:obs):tf)))
+                                    
+pos::(Int,Int)->Jogada->Mapa->(Int,Int)
+pos (x,y) Parado (Mapa l ((Rio v,ob1:obs):tf)) |checktronco x (checkline (Jogo (Jogador (x,y)) (Mapa l ((Rio v,ob1:obs):tf))))==True = (x+v,y)
+                                               |otherwise = (x,y)
+pos (x,y) (Move Cima) (Mapa l ((ob1:obs)))|numfilas (Mapa l (ob1:obs)) > y = (x,y+1)
+                                          |otherwise = (x,y)
+pos (x,y) (Move Baixo) t =(x,y-1)
+pos (x,y) (Move Esquerda) t =(x-1,y)
+pos (x,y) (Move Direita) t = (x+1,y)
 
 checkline::Jogo->[Obstaculo]
-checkline (Jogo (Jogador (x,y)) (Mapa l ((t,obs):tf))) |y==0 =obs
-                                                       |otherwise = checkline (Jogo (Jogador (x,y-1))(Mapa l (tf)))
+checkline (Jogo (Jogador (x,0)) (Mapa l []))=[]
+checkline (Jogo (Jogador (x,0)) (Mapa l ((t,obs):tf)))=obs
+checkline (Jogo (Jogador (x,y)) (Mapa l ((t,obs):tf))) = checkline (Jogo (Jogador (x,y-1))(Mapa l tf))
                                                      
 checktronco::Int->[Obstaculo]->Bool
-checktronco x (ob1:obs) |x==0 && ob1 == Tronco = True 
-                        |x==0 && ob1 /= Tronco = False 
+checktronco x []=False 
+checktronco x (ob1:obs) |x==0 && ob1 == Tronco = True  
                         |otherwise = checktronco (x-1) obs 
                                                      
 
@@ -52,7 +55,7 @@ obsmove (Estrada v,obs) |v==0 = obs
 
 numfilas::Mapa->Int
 numfilas (Mapa l [])=0
-numfilas (Mapa l (x:xs))=1+numfilas (Mapa l xs)
+numfilas (Mapa l (ob1:obs))=1+numfilas (Mapa l obs)
 
 
 
