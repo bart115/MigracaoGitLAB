@@ -30,12 +30,14 @@ Jogo (Jogador (2,1)) (Mapa 3 [(Relva,[Arvore,Nenhum,Nenhum]),(Rio 1,[Tronco,Nenh
 Jogo (Jogador (1,2)) (Mapa 4[(Rio (-1),[Nenhum,Nenhum,Nenhum,Tronco]),(Relva,[Nenhum,Nenhum,Nenhum,Nenhum]),(Relva,[Arvore,Nenhum,Nenhum,Arvore])])
 
 -}
+
+
+{-}
 animaJogo :: Jogo -> Jogada -> Jogo
 animaJogo (Jogo (Jogador (x,y)) (Mapa l ((Relva,ob1:obs):tf))) m = Jogo (Jogador (pos (x,y) m (Mapa l ((Relva,ob1:obs):tf)))) (Mapa l (mapamove ((Relva,ob1:obs):tf)))
 animaJogo (Jogo (Jogador (x,y)) (Mapa l ((Estrada v,ob1:obs):tf))) m = Jogo (Jogador (pos (x,y) m (Mapa l ((Estrada v,ob1:obs):tf)))) (Mapa l (mapamove ((Estrada v,ob1:obs):tf)))
-animaJogo (Jogo (Jogador (x,y)) (Mapa l ((Rio v,ob1:obs):tf))) m = Jogo (Jogador (pos (x,y) m  (Mapa l ((Rio v,ob1:obs):tf)))) (Mapa l (mapamove ((Rio v,ob1:obs):tf)))
-                                    
-
+animaJogo (Jogo (Jogador (x,y)) (Mapa l ((Rio v,ob1:obs):tf))) m = Jogo (Jogador (pos (x,y) m  (Mapa l ((Rio v,ob1:obs):tf)))) (Mapa l (mapamove ((Rio v,ob1:obs):tf))) -}                                  
+{-}
 
 pos::(Int,Int)->Jogada->Mapa->(Int,Int)
 pos (x,y) Parado (Mapa l []) = (x,y)
@@ -51,24 +53,53 @@ pos (x,y) (Move Cima) (Mapa l ((ob1:obs)))|numfilas (Mapa l (ob1:obs)) > y = (x,
 pos (x,y) (Move Baixo) t =(x,y-1)
 pos (x,y) (Move Esquerda) t =(x-1,y)
 pos (x,y) (Move Direita) t = (x+1,y)
-
+-}
 
 --pos::(Int,Int)->Jogada->Mapa->(Int,Int)
 --pos (x,y) Parado (Mapa l (Rio v,obs):tf) |checktronco x checkline 
+{-animaJogo :: Jogo -> Jogada -> Jogo
+animaJogo (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m       = Jogo (Jogador (pos (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) Parado)) (Mapa lar (mapamove ((te,obs):tf)))
+                                         where 
+                                            pos::Jogo->Jogada->(Int,Int)
+                                            pos (Jogo (Jogador (x,y)) (Mapa lar [])) Parado = (x,y)
+                                            pos (Jogo (Jogador (x,y)) (Mapa lar ((Rio v,obs):tf))) Parado |y==0 && hatronco x obs == True = (x+v,y)
+                                                                                                          |otherwise = pos (Jogo (Jogador (x,y-1)) (Mapa lar tf)) Parado
+                                            pos (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) Parado = pos (Jogo (Jogador (x,y-1)) (Mapa lar tf)) Parado
+                                            pos (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Cima) |numfilas (Mapa lar ((te,obs):tf)) > y = (x,y+1)
+                                                                                                            |otherwise = (x,y)
+                                            pos (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Baixo)  =(x,y-1)
+                                            pos (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Esquerda) =(x-1,y)
+                                            pos (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Direita)= (x+1,y)
+-}
+animaJogo :: Jogo -> Jogada -> Jogo
+animaJogo (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m       = Jogo (Jogador ((posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m),(posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m ))) (Mapa lar (mapamove ((te,obs):tf)))
+                                         where 
+                                            posx::Jogo->Jogada->Int
+                                            posx (Jogo (Jogador (x,y)) (Mapa lar [])) Parado = x
+                                            posx (Jogo (Jogador (x,y)) (Mapa lar ((Rio v,obs):tf))) Parado |y==0 && hatronco x obs == True = x+v
+                                                                                                           |otherwise = posx (Jogo (Jogador (x,y-1)) (Mapa lar tf)) Parado
+                                            posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) Parado = x
+                                            posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Esquerda) =x-1
+                                            posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Direita)= x+1
+                                            posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m  =x
+                                            
+posy::Jogo->Jogada->Int 
+posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Baixo)  =(y-1)
+posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Cima) |numfilas (Mapa lar ((te,obs):tf)) > y =(y+1)
+                                                                 |otherwise = y
+posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m = y
 
 
 
-posline::Int->Mapa ->(Terreno,[Obstaculo])
-posline y (Mapa l (t1:tf))|y==0=t1 
-                        |otherwise= posline (y-1) (Mapa l tf)
+--posline::Int->Mapa ->[Obstaculo]
+--posline y (Mapa l ((t1,obs):tf))|y==0=obs
+--                                |otherwise= posline (y-1) (Mapa l tf)
 
 
-hatronco::Int->(Terreno,[Obstaculo])->Bool
-hatronco 0 (Rio v ,[]) =False
-hatronco x (Rio v ,ob1:obs) |x==0 && ob1==Tronco=True
-                            |otherwise = hatronco (x-1) (Rio v,obs)
-hatronco x (Estrada v,f)=False
-hatronco x (Relva,f)=False
+hatronco::Int->[Obstaculo]->Bool
+hatronco 0 [] =False
+hatronco x (ob1:obs) |x==0 && ob1==Tronco=True
+                     |otherwise = hatronco (x-1) obs
 
 
 
@@ -92,8 +123,8 @@ checktronco x (t,(ob1:obs)) |x==0 && ob1 == Tronco = True
 
 
 mapamove::[(Terreno,[Obstaculo])]->[(Terreno,[Obstaculo])]
-mapamove [(t,obs)] = [(t,obsmove (t,obs))]
-mapamove ((t,obs):fs) = (t,obsmove (t,obs)):mapamove fs
+mapamove [(te,obs)] = [(te,obsmove (te,obs))]
+mapamove ((te,obs):fs) = (te,obsmove (te,obs)):mapamove fs
                
 
 
