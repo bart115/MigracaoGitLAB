@@ -11,6 +11,7 @@ module Tarefa3_2022li1g029 where
 import LI12223
 
 {- |Na realização desta tarefa criei uma série de funções auxiliares com o objetivo de respeitar as regras estabelecidas no enunciado
+
 A função posx calcula a posição em x após a jogada e está definida por: 
 
 @
@@ -41,7 +42,7 @@ posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m =x
 @
 posy::Jogo->Jogada->Int 
 posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Baixo)  =(y-1)
-posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Cima) |numfilas (Mapa lar ((te,obs):tf)) > y =(y+1)
+posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Cima) |numfilas (Mapa lar ((te,obs):tf)) > (y+1) =(y+1)
                                                                  |otherwise = y
 posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m = y
 @  
@@ -49,7 +50,7 @@ posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m = y
 
 posy::Jogo->Jogada->Int 
 posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Baixo)  =(y-1)
-posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Cima) |numfilas (Mapa lar ((te,obs):tf)) > y =(y+1)
+posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Cima) |numfilas (Mapa lar ((te,obs):tf)) > (y+1) =(y+1)
                                                                  |otherwise = y
 posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m = y
 
@@ -130,6 +131,7 @@ numfilas (Mapa l (ob1:obs))=1+numfilas (Mapa l obs)
 
 
 {- |Finalmente,a função 'animaJogo' dá movimento tanto ao jogador como aos obstaculos do jogo.
+
 A função está definida por:
 
 @
