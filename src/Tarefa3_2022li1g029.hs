@@ -12,14 +12,14 @@ import LI12223
 
 {- |Na realização desta tarefa criei uma série de funções auxiliares com o objetivo de respeitar as regras estabelecidas no enunciado
 
-A função posx calcula a posição em x após a jogada e está definida por: 
+A função 'posx' calcula a posição em x após a jogada e está definida por: 
 
 @
 posx::Jogo->Jogada->Int
 posx (Jogo (Jogador (x,y)) (Mapa lar [])) Parado = x
-posx (Jogo (Jogador (x,y)) (Mapa lar ((Rio v,obs):tf))) Parado |y==0 && hatronco x obs = x+v
-                                                               |otherwise = posx (Jogo (Jogador (x,y-1)) (Mapa lar tf)) Parado
-posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) Parado = posx (Jogo (Jogador (x,y-1)) (Mapa lar tf)) Parado
+posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) Parado = if y == 0 && hatronco x obs then  posaux te else posx (Jogo (Jogador (x,y-1)) (Mapa lar tf)) Parado
+                                                                 where posaux (Rio v) = x+v 
+                                                                       posaux te = x
 posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Esquerda) =x-1
 posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Direita)= x+1
 posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m =x
@@ -28,16 +28,16 @@ posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m =x
 
 posx::Jogo->Jogada->Int
 posx (Jogo (Jogador (x,y)) (Mapa lar [])) Parado = x
-posx (Jogo (Jogador (x,y)) (Mapa lar ((Rio v,obs):tf))) Parado |y==0 && hatronco x obs = x+v
-                                                               |otherwise = posx (Jogo (Jogador (x,y-1)) (Mapa lar tf)) Parado
-posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) Parado = posx (Jogo (Jogador (x,y-1)) (Mapa lar tf)) Parado
+posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) Parado = if y == 0 && hatronco x obs then  posaux te else posx (Jogo (Jogador (x,y-1)) (Mapa lar tf)) Parado
+                                                                 where posaux (Rio v) = x+v 
+                                                                       posaux te = x
 posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Esquerda) =x-1
 posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Direita)= x+1
 posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m =x
 
 
 
-{-|A função posy calcula a posição em y após a jogada e está definida por:
+{-|A função 'posy' calcula a posição em y após a jogada e está definida por:
 
 @
 posy::Jogo->Jogada->Int 
@@ -49,9 +49,9 @@ posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m = y
 -}
 
 posy::Jogo->Jogada->Int 
-posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Baixo)  =(y-1)
-posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Cima) |numfilas (Mapa lar ((te,obs):tf)) > (y+1) =(y+1)
-                                                                 |otherwise = y
+posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Baixo) =y+1
+posy (Jogo (Jogador (x,0)) (Mapa lar ((te,obs):tf))) (Move Cima) = 0
+posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Cima) =y-1
 posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m = y
 
 
@@ -59,7 +59,7 @@ posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m = y
 
 {- |A proxima função auxiliar tem como função verificar se na posição do jogador se encontra um tronco
 
-A função hatronco está definida por:
+A função 'hatronco' está definida por:
 
 @
 hatronco::Int->[Obstaculo]->Bool
@@ -77,7 +77,7 @@ hatronco x (ob1:obs) |x==0 && ob1==Tronco=True
 
 {- | Para dar movimento aos obstaculos fez-se as duas funções auxiliares 
 
-A função obsmove move os obstaculo de uma "linha" do jogo e está definida por:
+A função 'obsmove' move os obstaculo de uma "linha" do jogo e está definida por:
 
 @
 obsmove::(Terreno,[Obstaculo])->[Obstaculo]
@@ -99,7 +99,7 @@ obsmove (Estrada v,obs) |v==0 = obs
                         |v>0 = obsmove (Estrada (v-1),last obs: init obs )
                         |otherwise = obsmove (Estrada (v+1),tail obs ++ [head obs])
 
-{- |A função mapamove usa a função obsmove para mover todos os obstaculos do mapa da seguinte forma: 
+{- |A função 'mapamove' usa a função obsmove para mover todos os obstaculos e está definida por: 
 
 @
 mapamove::[(Terreno,[Obstaculo])]->[(Terreno,[Obstaculo])]
@@ -107,28 +107,11 @@ mapamove [(te,obs)] = [(te,obsmove (te,obs))]
 mapamove ((te,obs):fs) = (te,obsmove (te,obs)):mapamove fs
 @
 -}
+
 mapamove::[(Terreno,[Obstaculo])]->[(Terreno,[Obstaculo])]
 mapamove [(te,obs)] = [(te,obsmove (te,obs))]
 mapamove ((te,obs):fs) = (te,obsmove (te,obs)):mapamove fs
                
-
-
-
-{-|Por fim , a função numfilas conta o numero de filas do mapa para impedir o jogador de avançar se este estiver no limite superior do mapa
-
-A função numfilas está definida por:
-
-@
-numfilas::Mapa->Int
-numfilas (Mapa l [])=0
-numfilas (Mapa l (ob1:obs))=1+numfilas (Mapa l obs)
-@
--}
-numfilas::Mapa->Int
-numfilas (Mapa l [])=0
-numfilas (Mapa l (ob1:obs))=1+numfilas (Mapa l obs)
-
-
 
 {- |Finalmente,a função 'animaJogo' dá movimento tanto ao jogador como aos obstaculos do jogo.
 
@@ -166,9 +149,9 @@ Jogo (Jogador (1,2)) (Mapa 4[(Rio (-1),[Nenhum,Nenhum,Tronco,Tronco]),(Relva,[Ne
 Jogo (Jogador (2,2)) (Mapa 3 [(Relva,[Arvore,Nenhum,Nenhum]),(Rio 1,[Tronco,Nenhum,Tronco]),(Relva,[Nenhum,Arvore,Nenhum])])
 
 >>>animaJogo (Jogo (Jogador (2,1)) (Mapa 3 [(Relva,[Arvore,Nenhum,Nenhum]),(Rio 1,[Nenhum,Tronco,Tronco]),(Relva,[Nenhum,Arvore,Nenhum])])) (Move Cima)
-Jogo (Jogador (2,2)) (Mapa 3 [(Relva,[Arvore,Nenhum,Nenhum]),(Rio 1,[Tronco,Nenhum,Tronco]),(Relva,[Nenhum,Arvore,Nenhum])])
+Jogo (Jogador (2,0)) (Mapa 3 [(Relva,[Arvore,Nenhum,Nenhum]),(Rio 1,[Tronco,Nenhum,Tronco]),(Relva,[Nenhum,Arvore,Nenhum])])
 
->>>animaJogo (Jogo (Jogador (2,2)) (Mapa 3 [(Relva,[Arvore,Nenhum,Nenhum]),(Rio 1,[Nenhum,Tronco,Tronco]),(Relva,[Nenhum,Arvore,Nenhum])])) (Move Baixo)
+>>>animaJogo (Jogo (Jogador (2,0)) (Mapa 3 [(Relva,[Arvore,Nenhum,Nenhum]),(Rio 1,[Nenhum,Tronco,Tronco]),(Relva,[Nenhum,Arvore,Nenhum])])) (Move Baixo)
 Jogo (Jogador (2,1)) (Mapa 3 [(Relva,[Arvore,Nenhum,Nenhum]),(Rio 1,[Tronco,Nenhum,Tronco]),(Relva,[Nenhum,Arvore,Nenhum])])
 
 >>>animaJogo (Jogo (Jogador (2,2)) (Mapa 3 [(Relva,[Arvore,Nenhum,Nenhum]),(Rio 1,[Nenhum,Tronco,Tronco]),(Relva,[Nenhum,Arvore,Nenhum])])) (Move esquerda)
