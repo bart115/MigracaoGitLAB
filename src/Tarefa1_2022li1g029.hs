@@ -12,7 +12,7 @@ import LI12223
 
 --1--
 mapaValido :: Mapa -> Bool
-mapaValido (Mapa lr l) = (mapaValido1 (Mapa lr l) && mapaValido2 (Mapa lr l)) && (mapaValido3 (Mapa lr l) && mapaValido4 (Mapa lr l)) && (mapaValido5 (Mapa lr l) && mapaValido6 (Mapa lr l))
+mapaValido (Mapa lr l) = (mapaValido1 (Mapa lr l) && mapaValido2 (Mapa lr l)) && (mapaValido5 (Mapa lr l) && mapaValido6 (Mapa lr l))
 
 mapaValido1 :: Mapa -> Bool
 mapaValido1 (Mapa lr []) = True
@@ -40,53 +40,31 @@ mapaValido2 (Mapa lr (((Rio vr),lo) : ((Rio vr1),lo1) : t))
                 |(vr > 0 && vr1 > 0) || (vr < 0 && vr1 < 0) = False
                 |otherwise = mapaValido2 (Mapa lr (((Rio vr1),lo1):t))
 --3--
-mapaValido3 :: Mapa -> Bool 
-mapaValido3 (Mapa lr []) = True 
-
-mapaValido3 (Mapa lr (((Estrada ve),(o1:ot)): t)) = mapaValido3 (Mapa lr t)
-mapaValido3 (Mapa lr ((Relva,(o1:ot)): t)) = mapaValido3 (Mapa lr t)
-
-mapaValido3 (Mapa lr (((Rio vr),(o1:o2:ot)): t)) 
-             |(aux (Mapa lr (((Rio vr),(o1:o2:ot)):t))) 0 == True = aux (Mapa lr t) 0
-             |otherwise = mapaValido3 (Mapa lr t) 
-
---Estrdemidades forem ambas tronco entao tenho que comparar a quantidade de troncos de ambas as estremidades 
-
-
-aux :: Mapa -> Int -> Bool 
-aux (Mapa lr (((Rio vr),[]):t)) n = True 
-aux (Mapa lr (((Rio vr),(o1:o2:ot)):t)) n
-                      |n > 5 = False
-                      |((o1 == Tronco) && (o1 /= last ot)) = aux (Mapa lr (((Rio vr),o2:ot):t)) (n+1)
-                      |((o1 == Tronco) && (o1 == last ot)) = aux5 (Mapa lr (((Rio vr),(o1:o2:ot)):t)) n
-                      |otherwise = aux (Mapa lr (((Rio vr),(o2:ot)):t)) 0
+mapaValido3 :: Mapa -> Bool
+mapaValido3 (Mapa lr (((Estrada ve),lo):t)) = mapaValido3 (Mapa lr t)
+mapaValido3 (Mapa lr ((Relva,lo):t)) = mapaValido3 (Mapa lr t)
+mapaValido3 (Mapa lr []) = True
+mapaValido3 (Mapa lr (((Rio vr),[]):t)) = mapaValido3 (Mapa lr t)
+mapaValido3 (Mapa lr (((Rio vr),(o1:ot)):t)) 
+                               |(o1 == Tronco) && ((last ot) == Tronco) && (((length (head (group (o1:ot)))) + (length (last (group (o1:ot))))) > 5) = False  
+                               |(o1 == Tronco) && ((length (head (group (o1:ot)))) > 5) = False
+                               |(o1 == Nenhum) = mapaValido3 (Mapa lr (((Rio vr),ot):t))
+                               |otherwise = mapaValido3 (Mapa lr t)
 
 
-aux5 :: Mapa -> Int -> Bool 
-aux5 (Mapa lr (((Rio vr),[]):t)) n = True 
-aux5 (Mapa lr (((Rio vr),(o1:o2:ot)):t)) n 
-                     |n > 5 = False
-                     |
 
---reverse ot -- comparar o primeiro do reverse com o primeiro da lista, 
---criar um uma função que dá reverse de 
+group :: Eq a => [a] -> [[a]]
+group [] = []
+group (h:t) = (h:takeWhile (== h) t) : group (dropWhile (== h) t)
+
+
+
+--mapaValido3 (Mapa 4 [(Rio 3 ,[Nenhum,Nenhum,Tronco])]) usar para testar, pois nao funciona
+--usar também lista com mais de um elemento 
+
+ 
 --4--
-mapaValido4 :: Mapa -> Bool 
-mapaValido4 (Mapa lr []) = True 
-mapaValido4 (Mapa lr (((Rio vr),(o1:ot)): t)) = mapaValido4 (Mapa lr t)
 
-mapaValido4 (Mapa lr ((Relva,(o1:ot)): t)) = mapaValido4 (Mapa lr t)
-
-mapaValido4 (Mapa lr (((Estrada ve),(o1:ot)): t)) 
-             |(aux1 (Mapa lr (((Estrada ve),(o1:ot)):t)) 0) > 3 = False 
-             |otherwise = mapaValido4 (Mapa lr t) 
-
-
-aux1 :: Mapa -> Int -> Int 
-aux1 (Mapa lr (((Estrada ve),[]):t)) n = n
-aux1 (Mapa lr (((Estrada ve),(o1:ot)):t)) n 
-                      | o1 == Carro = aux1 (Mapa lr (((Estrada ve),ot):t)) (n+1)
-                      |otherwise = aux1 (Mapa lr (((Estrada ve),ot):t)) n
 
 
 --5--
@@ -137,3 +115,4 @@ aux2 (Mapa lr (((Rio vr),lo): ((Rio vr1),lo1): t)) n
                |(Rio vr) == (Rio vr1) = aux2 (Mapa lr (((Rio vr1),lo1):t)) (n+1)
                |otherwise = aux2 (Mapa lr (((Rio vr1),lo1):t)) n
                                         --aqui não pode pedir RIO tem de pedir as outras 
+                                     
