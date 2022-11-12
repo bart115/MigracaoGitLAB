@@ -12,7 +12,7 @@ import LI12223
 
 --1--
 mapaValido :: Mapa -> Bool
-mapaValido (Mapa lr l) = (mapaValido1 (Mapa lr l) && mapaValido2 (Mapa lr l)) && (mapaValido3 (Mapa lr l) && mapaValido4 (Mapa lr l)) && (mapaValido5 (Mapa lr l) && mapaValido6 (Mapa lr l))
+mapaValido (Mapa lr l) = (mapaValido1 (Mapa lr l) && mapaValido2 (Mapa lr l)) && (mapaValido3 (Mapa lr l) && mapaValido4 (Mapa lr l)) && (mapaValido5 (Mapa lr l) && mapaValido6 (Mapa lr l)) && mapaValido7 (Mapa lr l)
 
 mapaValido1 :: Mapa -> Bool
 mapaValido1 (Mapa lr []) = True
@@ -109,19 +109,10 @@ mapaValido6 (Mapa lr (((Estrada ve),lo):t))
 
 --7--
 mapaValido7 :: Mapa -> Bool
---mapaValido7 (Mapa lr (((tr),lo):t)) 
-
-
-mapaValido7 (Mapa lr (((Rio vr),lo):t))
-            |(aux2 (Mapa lr (((Rio vr),lo):t)) 0) > 4 = False
-            |otherwise = True 
-
-
-
-aux2 :: Mapa -> Int -> Int
-aux2 (Mapa lr [(a,b)]) n = n
-aux2 (Mapa lr (((Rio vr),lo): ((Rio vr1),lo1): t)) n
-               |(Rio vr) == (Rio vr1) = aux2 (Mapa lr (((Rio vr1),lo1):t)) (n+1)
-               |otherwise = aux2 (Mapa lr (((Rio vr1),lo1):t)) n
-                                        --aqui não pode pedir RIO tem de pedir as outras 
+mapaValido7 (Mapa lr []) = True 
+mapaValido7 (Mapa lr ((Relva,lo1):(Relva,lo2):(Relva,lo3):(Relva,lo4):(Relva,lo5):(Relva,lo6):t)) = False
+mapaValido7 (Mapa lr (((Rio vr),lo):((Rio vr1),lo1):((Rio vr2),lo2):((Rio vr3),lo3):((Rio vr4),lo4):t)) = False
+mapaValido7 (Mapa lr (((Estrada ve),lo):((Estrada ve1),lo1):((Estrada ve2),lo2):((Estrada ve3),lo3):((Estrada ve4),lo4):((Estrada ve5),lo5):t)) = False
+mapaValido7 (Mapa lr ((tr,lo):t)) = mapaValido7 (Mapa lr t)
+          
                                      
