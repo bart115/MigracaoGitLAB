@@ -46,16 +46,14 @@ mapaValido3 (Mapa lr ((Relva,lo):t)) = mapaValido3 (Mapa lr t)
 mapaValido3 (Mapa lr []) = True
 mapaValido3 (Mapa lr (((Rio vr),[]):t)) = mapaValido3 (Mapa lr t)
 mapaValido3 (Mapa lr (((Rio vr),(o1:ot)):t)) 
-                               |(o1 == Tronco) && ((last ot) == Tronco) && (((length (head (group (o1:ot)))) + (length (last (group (o1:ot))))) > 5) = False  
-                               |(o1 == Tronco) && ((length (head (group (o1:ot)))) > 5) = False
-                               |(o1 == Nenhum) = mapaValido3 (Mapa lr (((Rio vr),ot):t))
+                               |(o1 == Nenhum) && (length (head (aux3 (dropWhile (== Nenhum) ot))) > 5) = False
+                               |(o1 == Tronco) && ((last ot) == Tronco) && (((length (head (aux3 (o1:ot)))) + (length (last (aux3 (o1:ot))))) > 5) = False  
+                               |(o1 == Tronco) && ((length (head (aux3 (o1:ot)))) > 5) = False
                                |otherwise = mapaValido3 (Mapa lr t)
 
-
-
-group :: Eq a => [a] -> [[a]]
-group [] = []
-group (h:t) = (h:takeWhile (== h) t) : group (dropWhile (== h) t)
+aux3 :: Eq a => [a] -> [[a]]
+aux3 [] = []
+aux3 (h:t) = (h:takeWhile (== h) t) : aux3 (dropWhile (== h) t)
 
 
 
