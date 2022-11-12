@@ -12,7 +12,7 @@ import LI12223
 
 --1--
 mapaValido :: Mapa -> Bool
-mapaValido (Mapa lr l) = (mapaValido1 (Mapa lr l) && mapaValido2 (Mapa lr l)) && (mapaValido5 (Mapa lr l) && mapaValido6 (Mapa lr l))
+mapaValido (Mapa lr l) = (mapaValido1 (Mapa lr l) && mapaValido2 (Mapa lr l)) && (mapaValido3 (Mapa lr l) && mapaValido4 (Mapa lr l)) && (mapaValido5 (Mapa lr l) && mapaValido6 (Mapa lr l))
 
 mapaValido1 :: Mapa -> Bool
 mapaValido1 (Mapa lr []) = True
@@ -29,7 +29,6 @@ mapaValido1 (Mapa lr (((Estrada ve),lo):t))
         |otherwise = mapaValido1 (Mapa lr t)
 
 --2--
---No caso o caso de paragem é quando tem um elemento pois este já nao compara com mais nenhum
 mapaValido2 :: Mapa -> Bool
 mapaValido2 (Mapa lr []) = True
 mapaValido2 (Mapa lr (((Estrada ve),lo):t)) = mapaValido2 (Mapa lr t)
@@ -62,8 +61,20 @@ aux3 (h:t) = (h:takeWhile (== h) t) : aux3 (dropWhile (== h) t)
 
  
 --4--
+mapaValido4 :: Mapa -> Bool
+mapaValido4 (Mapa lr (((Rio vr),lo):t)) = mapaValido4 (Mapa lr t)
+mapaValido4 (Mapa lr ((Relva,lo):t)) = mapaValido4 (Mapa lr t)
+mapaValido4 (Mapa lr []) = True
+mapaValido4 (Mapa lr (((Estrada ve),[]):t)) = mapaValido4 (Mapa lr t)
+mapaValido4 (Mapa lr (((Estrada ve),(o1:ot)):t)) 
+                               |(o1 == Nenhum) && (length (head (aux4 (dropWhile (== Nenhum) ot))) > 3) = False
+                               |(o1 == Carro) && ((last ot) == Carro) && (((length (head (aux4 (o1:ot)))) + (length (last (aux4 (o1:ot))))) > 3) = False  
+                               |(o1 == Carro) && ((length (head (aux4 (o1:ot)))) > 3) = False
+                               |otherwise = mapaValido3 (Mapa lr t)
 
-
+aux4 :: Eq a => [a] -> [[a]]
+aux4 [] = []
+aux4 (h:t) = (h:takeWhile (== h) t) : aux4 (dropWhile (== h) t)
 
 --5--
 mapaValido5 :: Mapa -> Bool
