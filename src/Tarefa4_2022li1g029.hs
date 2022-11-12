@@ -18,7 +18,8 @@ jogoTerminou1 (Jogo (Jogador (x,y)) (Mapa lr l)) = x > lr || x < 0 || y > length
                                 
 jogoTerminou2 :: Jogo -> Bool
 jogoTerminou2 (Jogo (Jogador (x,y)) (Mapa lr [])) = False 
-jogoTerminou2 (Jogo (Jogador (x,y)) (Mapa lr ((tr,lo):t))) 
+jogoTerminou2 (Jogo (Jogador (x,y)) (Mapa lr ((tr,lo):t))) |y==0 && hanenhum x lo = True 
+                                                           |otherwise = jogoTerminou2 (Jogo (Jogador (x,y-1)) (Mapa lr t)))
 
 hanenhum::Int->[Obstaculo]->Bool
 hanenhum x [] =False
