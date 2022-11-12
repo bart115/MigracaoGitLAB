@@ -14,17 +14,16 @@ jogoTerminou :: Jogo -> Bool
 jogoTerminou (Jogo (Jogador (x,y)) (Mapa lr l)) = jogoTerminou1 (Jogo (Jogador (x,y)) (Mapa lr l))
 --MORREU PELA DIREITA
 jogoTerminou1 :: Jogo -> Bool 
-jogoTerminou1 (Jogo (Jogador (x,y)) (Mapa lr l)) = y > lr || y < 0 || x > length l
+jogoTerminou1 (Jogo (Jogador (x,y)) (Mapa lr l)) = x > lr || x < 0 || y > length l
                                 
 jogoTerminou2 :: Jogo -> Bool
-jogoTerminou2 (Jogo (Jogador (x,y)) (Mapa lr [])) = True 
-jogoTerminou2 (Jogo (Jogador (x,y)) (Mapa lr (((Rio vr), []):t))) = jogoTerminou2 (Jogo (Jogador (x,y+1)) (Mapa lr t))
-jogoTerminou2 (Jogo (Jogador (x,y)) (Mapa lr (((Rio vr), (o1:ot)):t))) 
-                                |(o1 == Nenhum) && x == 0 && y == 0 = jogoTerminou2 (Jogo (Jogador (x+1,y)) (Mapa lr (((Rio vr), ot):t)))
-                                |(o1 == Tronco) && x == 0 && y == 0 = False 
-                                |otherwise = True 
+jogoTerminou2 (Jogo (Jogador (x,y)) (Mapa lr [])) = False 
+jogoTerminou2 (Jogo (Jogador (x,y)) (Mapa lr ((tr,lo):t))) 
 
-
+hanenhum::Int->[Obstaculo]->Bool
+hanenhum x [] =False
+hanenhum x (o1:ot) |x==0 && o1==Nenhum=True
+                   |otherwise = hanenhum (x-1) ot
 
 
 
