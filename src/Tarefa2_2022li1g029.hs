@@ -16,25 +16,19 @@ A função 'proximosTerrenosValidos' dá-nos a lista de terrenos válidos para a
 
 @
 proximosTerrenosValidos :: Mapa -> [Terreno]
-proximosTerrenosValidos (Mapa lar [(Estrada v1 ,obs1),(Estrada v2 ,obs2),(Estrada v3 ,obs3),(Estrada v4 ,obs4),(Estrada v5 ,obs5)])=[Rio 0,Relva]
-proximosTerrenosValidos (Mapa lar (h:[(Estrada  v1,obs1),(Estrada  v2, obs2),(Estrada v3, obs3),(Estrada v4, obs4),(Estrada v5, obs5)]))=[Rio 0, Relva]
 proximosTerrenosValidos (Mapa lar [])=[Relva,Rio 0 ,Estrada 0]
-proximosTerrenosValidos (Mapa lar [(Rio v1, obs1),(Rio v2, obs2),(Rio v3, obs3),(Rio v4, obs4)]) = [Estrada 0, Relva]
-proximosTerrenosValidos (Mapa lar (h:[(Rio v1, obs1),(Rio v2, obs2),(Rio v3, obs3),(Rio v4, obs4)])) = [Estrada 0, Relva]
-proximosTerrenosValidos (Mapa lar [(Relva ,obs1),(Relva, obs2),(Relva , obs3),(Relva , obs4),(Relva , obs5)])=[Estrada 0 , Rio 0]
-proximosTerrenosValidos (Mapa lar (h:[(Relva ,obs1),(Relva, obs2),(Relva , obs3),(Relva , obs4),(Relva , obs5)]))=[Estrada 0 , Rio 0]
+proximosTerrenosValidos (Mapa lar ((Estrada  v1,obs1):(Estrada  v2, obs2):(Estrada v3, obs3):(Estrada v4, obs4):(Estrada v5, obs5):tf)) = [Rio 0, Relva]
+proximosTerrenosValidos (Mapa lar ((Rio v1, obs1):(Rio v2, obs2):(Rio v3, obs3):(Rio v4, obs4):tf)) = [Estrada 0, Relva]
+proximosTerrenosValidos (Mapa lar ((Relva ,obs1):(Relva, obs2):(Relva , obs3):(Relva , obs4):(Relva , obs5):tf)) =[Estrada 0 , Rio 0]
 proximosTerrenosValidos (Mapa lar t)=[Relva,Rio 0 ,Estrada 0]
 @
 -}
 
 proximosTerrenosValidos :: Mapa -> [Terreno]
-proximosTerrenosValidos (Mapa lar [(Estrada v1 ,obs1),(Estrada v2 ,obs2),(Estrada v3 ,obs3),(Estrada v4 ,obs4),(Estrada v5 ,obs5)])=[Rio 0,Relva]
-proximosTerrenosValidos (Mapa lar (h:[(Estrada  v1,obs1),(Estrada  v2, obs2),(Estrada v3, obs3),(Estrada v4, obs4),(Estrada v5, obs5)]))=[Rio 0, Relva]
 proximosTerrenosValidos (Mapa lar [])=[Relva,Rio 0 ,Estrada 0]
-proximosTerrenosValidos (Mapa lar [(Rio v1, obs1),(Rio v2, obs2),(Rio v3, obs3),(Rio v4, obs4)]) = [Estrada 0, Relva]
-proximosTerrenosValidos (Mapa lar (h:[(Rio v1, obs1),(Rio v2, obs2),(Rio v3, obs3),(Rio v4, obs4)])) = [Estrada 0, Relva]
-proximosTerrenosValidos (Mapa lar [(Relva ,obs1),(Relva, obs2),(Relva , obs3),(Relva , obs4),(Relva , obs5)])=[Estrada 0 , Rio 0]
-proximosTerrenosValidos (Mapa lar (h:[(Relva ,obs1),(Relva, obs2),(Relva , obs3),(Relva , obs4),(Relva , obs5)]))=[Estrada 0 , Rio 0]
+proximosTerrenosValidos (Mapa lar ((Estrada  v1,obs1):(Estrada  v2, obs2):(Estrada v3, obs3):(Estrada v4, obs4):(Estrada v5, obs5):tf)) = [Rio 0, Relva]
+proximosTerrenosValidos (Mapa lar ((Rio v1, obs1):(Rio v2, obs2):(Rio v3, obs3):(Rio v4, obs4):tf)) = [Estrada 0, Relva]
+proximosTerrenosValidos (Mapa lar ((Relva ,obs1):(Relva, obs2):(Relva , obs3):(Relva , obs4):(Relva , obs5):tf)) =[Estrada 0 , Rio 0]
 proximosTerrenosValidos (Mapa lar t)=[Relva,Rio 0 ,Estrada 0]
 
 
@@ -94,7 +88,7 @@ randommap (Mapa lar l) seed = proximosTerrenosValidos (Mapa lar l) !! mod seed (
 -}
 
 randommap::Mapa->Int->Terreno
-randommap (Mapa lar l) seed = proximosTerrenosValidos (Mapa lar l) !! mod seed (length (proximosTerrenosValidos (Mapa lar l)))
+randommap (Mapa lar t) seed = proximosTerrenosValidos (Mapa lar t) !! mod seed (length (proximosTerrenosValidos (Mapa lar t)))
 
 
 
@@ -142,19 +136,19 @@ randomobs lar seed obs |lar==length obs = obs
 
 
 
-{-|Finalmente,a função estendeMapa adiciona uma "linha" ao mapa com um terreno e obstaculos aleatorios.
+{-|Finalmente,a função ´estendeMapa´ adiciona uma "linha" ao mapa com um terreno e obstaculos aleatorios.
 
 ==Exemplos de utilização 
 
 >>>estendeMapa (Mapa 4 [(Relva,[Arvore,Nenhum,Arvore,Nenhum]),(Relva,[Nenhum,Nenhum,Nenhum,Nenhum]),(Relva,[Arvore,Nenhum,Nenhum,Nenhum]),(Relva,[Arvore,Nenhum,Nenhum,Nenhum]),(Relva,[Arvore,Arvore,Nenhum,Nenhum])]) 16
-Mapa 4 [(Relva,[Arvore,Nenhum,Arvore,Nenhum]),(Relva,[Nenhum,Nenhum,Nenhum,Nenhum]),(Relva,[Arvore,Nenhum,Nenhum,Nenhum]),(Relva,[Arvore,Nenhum,Nenhum,Nenhum]),(Relva,[Arvore,Arvore,Nenhum,Nenhum]),(Estrada 0,[Nenhum,Carro,Carro,Carro])] 
+Mapa 4 [(Estrada 0,[Nenhum,Carro,Carro,Carro]),(Relva,[Arvore,Nenhum,Arvore,Nenhum]),(Relva,[Nenhum,Nenhum,Nenhum,Nenhum]),(Relva,[Arvore,Nenhum,Nenhum,Nenhum]),(Relva,[Arvore,Nenhum,Nenhum,Nenhum]),(Relva,[Arvore,Arvore,Nenhum,Nenhum])] 
 
 >>>estendeMapa (Mapa 7 [(Rio 1,[Tronco,Nenhum,Tronco,Nenhum,Tronco,Nenhum,Nenhum]),(Rio 1,[Tronco,Tronco,Tronco,Tronco,Tronco,Nenhum,Nenhum]),(Rio 1,[Tronco,Nenhum,Tronco,Nenhum,Nenhum,Tronco,Nenhum]),(Rio 1,[Tronco,Nenhum,Tronco,Nenhum,Nenhum,Tronco,Nenhum])]) 25 
-Mapa 7 [(Rio 1,[Tronco,Nenhum,Tronco,Nenhum,Tronco,Nenhum,Nenhum]),(Rio 1,[Tronco,Tronco,Tronco,Tronco,Tronco,Nenhum,Nenhum]),(Rio 1,[Tronco,Nenhum,Tronco,Nenhum,Nenhum,Tronco,Nenhum]),(Rio 1,[Tronco,Nenhum,Tronco,Nenhum,Nenhum,Tronco,Nenhum]),(Relva,[Nenhum,Arvore,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum])]
+Mapa 7 [(Relva,[Nenhum,Arvore,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),(Rio 1,[Tronco,Nenhum,Tronco,Nenhum,Tronco,Nenhum,Nenhum]),(Rio 1,[Tronco,Tronco,Tronco,Tronco,Tronco,Nenhum,Nenhum]),(Rio 1,[Tronco,Nenhum,Tronco,Nenhum,Nenhum,Tronco,Nenhum]),(Rio 1,[Tronco,Nenhum,Tronco,Nenhum,Nenhum,Tronco,Nenhum])]
 
 
 >>>estendeMapa (Mapa 6 [(Estrada 1,[Carro,Carro,Nenhum,Nenhum,Carro,Carro]),(Estrada (-1),[Carro,Nenhum,Carro,Nenhum,Carro,Carro]),(Estrada 1,[Carro,Nenhum,Nenhum,Nenhum,Carro,Carro]),(Estrada (-1),[Carro,Nenhum,Nenhum,Nenhum,Nenhum,Carro]),(Estrada 1,[Nenhum,Nenhum,Nenhum,Nenhum,Carro,Carro])]) 3
-Mapa 6 [(Estrada 1,[Carro,Carro,Nenhum,Nenhum,Carro,Carro]),(Estrada (-1),[Carro,Nenhum,Carro,Nenhum,Carro,Carro]),(Estrada 1,[Carro,Nenhum,Nenhum,Nenhum,Carro,Carro]),(Estrada (-1),[Carro,Nenhum,Nenhum,Nenhum,Nenhum,Carro]),(Estrada 1,[Nenhum,Nenhum,Nenhum,Nenhum,Carro,Carro]),(Relva,[Nenhum,Arvore,Nenhum,Arvore,Nenhum,Arvore])]
+Mapa 6 [(Relva,[Nenhum,Arvore,Nenhum,Arvore,Nenhum,Arvore]),(Estrada 1,[Carro,Carro,Nenhum,Nenhum,Carro,Carro]),(Estrada (-1),[Carro,Nenhum,Carro,Nenhum,Carro,Carro]),(Estrada 1,[Carro,Nenhum,Nenhum,Nenhum,Carro,Carro]),(Estrada (-1),[Carro,Nenhum,Nenhum,Nenhum,Nenhum,Carro]),(Estrada 1,[Nenhum,Nenhum,Nenhum,Nenhum,Carro,Carro])]
 
 
 
@@ -162,9 +156,9 @@ A função estendeMapa está definida por:
 
 @
 estendeMapa :: Mapa -> Int -> Mapa
-estendeMapa (Mapa lar l) seed = Mapa lar (l ++ [(randommap (Mapa lar l) seed ,randomobs lar seed (proximosObstaculosValidos lar (randommap (Mapa lar l) seed , [])))])
+estendeMapa (Mapa lar t) seed = Mapa lar ([(randommap (Mapa lar t) seed ,randomobs lar seed (proximosObstaculosValidos lar (randommap (Mapa lar t) seed , [])))] ++ t)
 @
 -}
 
 estendeMapa :: Mapa -> Int -> Mapa
-estendeMapa (Mapa lar l) seed = Mapa lar (l ++ [(randommap (Mapa lar l) seed ,randomobs lar seed (proximosObstaculosValidos lar (randommap (Mapa lar l) seed , [])))])
+estendeMapa (Mapa lar t) seed = Mapa lar ([(randommap (Mapa lar t) seed ,randomobs lar seed (proximosObstaculosValidos lar (randommap (Mapa lar t) seed , [])))] ++ t)
