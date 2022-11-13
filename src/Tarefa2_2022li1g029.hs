@@ -48,12 +48,14 @@ proximosObstaculosValidosAux a (Relva , l)=[Nenhum,Arvore]
 -}
 
 proximosObstaculosValidosAux::Int-> (Terreno,[Obstaculo])->[Obstaculo]
-proximosObstaculosValidosAux a (Rio b, [])=[Nenhum, Tronco]
-proximosObstaculosValidosAux a (Estrada b,[])=[Nenhum, Carro]
-proximosObstaculosValidosAux a (Relva, [])=[Nenhum, Arvore]
-proximosObstaculosValidosAux a (Rio b,l)=[Nenhum,Tronco]
-proximosObstaculosValidosAux a (Estrada b,l)=[Nenhum,Carro]
-proximosObstaculosValidosAux a (Relva , l)=[Nenhum,Arvore]
+proximosObstaculosValidosAux lar (Rio b, [])=[Nenhum, Tronco]
+proximosObstaculosValidosAux lar (Rio b, (Tronco:Tronco:Tronco:Tronco:Tronco:obs)) =[Nenhum] --
+proximosObstaculosValidosAux lar (Estrada b,[])=[Nenhum, Carro]
+proximosObstaculosValidosAux lar (Estrada b,(Carro:Carro:Carro:obs))=[Nenhum] --
+proximosObstaculosValidosAux lar (Relva, [])=[Nenhum, Arvore]
+proximosObstaculosValidosAux lar (Rio b,l)=[Nenhum,Tronco]
+proximosObstaculosValidosAux lar (Estrada b,l)=[Nenhum,Carro]
+proximosObstaculosValidosAux lar (Relva , l)=[Nenhum,Arvore]
 
 
 {-|A função 'proximosObstaculosValidos' dá a lista de obstaculos disponiveis para serem usados numa posição e está definida por:
@@ -76,7 +78,6 @@ proximosObstaculosValidos lar (Rio v,y)|length y==lar =[]
 proximosObstaculosValidos lar (x,y) |length y== lar = [] 
                                     |length y == (lar-1) && elem Nenhum y == False = [Nenhum]
                                     |otherwise = proximosObstaculosValidosAux lar (x,y)
-
 
 {-|A função randommap dá um terreno aleatório para a próxima "linha" do mapa
 A função randommap está definida por:
@@ -123,8 +124,8 @@ randomobs lar seed [] = []
 randomobs lar seed obs |lar==length obs = obs
                        |last obs ==Tronco && last (init obs) ==Tronco && last (init (init obs)) ==Tronco && last (init (init (init obs))) ==Tronco&&last (init (init (init (init obs)))) ==Tronco = randomobs lar seed (obs++[Nenhum])
                        |last obs ==Carro && last (init obs)==Carro && last (init(init obs)) ==Carro = randomobs lar seed (obs++[Nenhum])
-                       |(lar-1)==length obs && head obs ==Tronco && last obs == Tronco && length (head (group' obs)) + length (last (group' obs))>5=randomobs lar seed (obs++[Nenhum]) 
-                       |(lar-1)==length obs && head obs ==Carro && last obs == Carro && length (head (group' obs)) + length (last (group' obs))>3=randomobs lar seed (obs++[Nenhum]) 
+                       |(lar-1)==length obs && head obs ==Tronco && last obs == Tronco && length (head (group' obs)) + length (last (group' obs))>5=randomobs lar seed ([Nenhum]++obs) 
+                       |(lar-1)==length obs && head obs ==Carro && last obs == Carro && length (head (group' obs)) + length (last (group' obs))>3=randomobs lar seed ([Nenhum]++obs) 
                        |otherwise = randomobs lar (seed+3) (obs++[obs !! mod (seed+1) (length obs)])
                                                     where 
                                                           group'::Eq a => [a] -> [[a]]
