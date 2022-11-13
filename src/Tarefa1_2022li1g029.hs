@@ -92,7 +92,7 @@ de obstaculos em listas, assim é só pedir o comprimento da lista se a cabeça 
 Nesta função existe uma exceção que caso na lista de obstaculos o primeiro elemento for tronco e igual ao ultimo então, ter se á de somar o comprimento do primeiro elemento da lista 
 com o comprimento do ultimo elemento da lista dos auxiliares.
 
-==Exeplos de Utilização:
+==Exemplos de Utilização:
  >>> mapaValido3 (Mapa 3 [(Rio 3,[Nenhum,Nenhum,Tronco]),(Rio (-1),[Nenhum,Nenhum,Tronco]),(Relva,[Nenhum,Nenhum,Arvore]),(Rio 1,[Nenhum,Nenhum,Carro]),(Rio 1,[Tronco,Tronco,Tronco,Nenhum,Nenhum,Tronco,Tronco])])
  >>> True
 
@@ -171,8 +171,15 @@ mapaValido5 (Mapa lr ((Estrada ve,lo):t))
                        |(elem Nenhum lo) == True = mapaValido5 (Mapa lr t) 
                        |otherwise = False
 
---6--
--- dá true com o 6-- mapaValido (Mapa 3 [(Estrada 2, [Carro,Carro,Nenhum]),(Relva,[Arvore,Nenhum,Nenhum]),(Rio 1 ,[Tronco,Tronco,Nenhum]),(Rio (-1),[Tronco,Tronco,Nenhum])])
+{-|A função 'mapaValido6' recebe um @Mapa@ e o que faz é comparar a largura desse mapa com o comprimento da lista de obstaculos.
+Para que um mapa seja válido a largura e o comprimento da lista de obstáculos tem de ser a mesma. 
+
+==Exemplos de Utilização:
+ >>> mapaValido6 (Mapa 3 [(Rio 3,[Nenhum,Nenhum,Tronco]),(Rio (-1),[Nenhum,Nenhum,Tronco])])
+ >>> True 
+
+ >>> mapaValido6 (Mapa 3 [(Rio 3,[Nenhum,Nenhum,Tronco]),(Rio (-1),[Nenhum,Nenhum,Tronco,Tronco])])
+ >>> False-}
 mapaValido6 :: Mapa -> Bool
 mapaValido6 (Mapa lr []) = True 
 mapaValido6 (Mapa lr ((Relva,lo):t)) 
@@ -187,7 +194,15 @@ mapaValido6 (Mapa lr (((Estrada ve),lo):t))
                       |lr /= length lo = False
                       |otherwise = mapaValido6 (Mapa lr t)
 
---7--
+{-|A função 'mapaValido7' recebe um mapa e caso existam mais de 5 relvas ou estradas seguidas ou mais de 4 rios seguidos então
+o mapa não será valido
+
+==Exemplos de Utilização:
+ >>> mapaValido7 (Mapa 3 [(Rio 3,[Nenhum,Nenhum,Tronco]),(Rio (-1),[Nenhum,Nenhum,Tronco]),(Relva,[Nenhum,Nenhum,Arvore]),(Rio 1,[Nenhum,Nenhum,Carro])])
+ >>> True 
+
+ >>> mapaValido7 (Mapa 3 [(Relva,[Nenhum,Nenhum,Tronco]),(Relva,[Nenhum,Nenhum,Tronco]),(Relva,[Nenhum,Nenhum,Arvore]),(Relva,[Nenhum,Nenhum,Carro]),(Relva,[Tronco,Tronco,Nenhum,Tronco,Tronco]),(Relva,[Tronco,Tronco,Nenhum,Tronco,Tronco])])
+ >>> False-}
 mapaValido7 :: Mapa -> Bool
 mapaValido7 (Mapa lr []) = True 
 mapaValido7 (Mapa lr ((Relva,lo1):(Relva,lo2):(Relva,lo3):(Relva,lo4):(Relva,lo5):(Relva,lo6):t)) = False
