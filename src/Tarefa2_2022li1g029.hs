@@ -33,16 +33,11 @@ proximosTerrenosValidos (Mapa lar t)=[Relva,Rio 0 ,Estrada 0]
 
 
 
-{-|A função 'proximosObstaculosValidosAux' dá a lista de obstáculos disponiveis para serem usados numa posição para casos mais gerais e serve de auxiliar á função proximosObstaculosValidos
+{-|A função 'proximosObstaculosValidosAux' dá a lista de obstáculos disponiveis para serem usados naquela "linha" e serve de auxiliar á função proximosObstaculosValidos
 A função 'proximosObstaculosValidosAux está definida por:  
 
 @
 proximosObstaculosValidosAux::Int-> (Terreno,[Obstaculo])->[Obstaculo]
-proximosObstaculosValidosAux lar (Rio b, [])=[Nenhum, Tronco]
-proximosObstaculosValidosAux lar (Rio b, (Tronco:Tronco:Tronco:Tronco:Tronco:obs)) =[Nenhum]
-proximosObstaculosValidosAux lar (Estrada b,[])=[Nenhum, Carro]
-proximosObstaculosValidosAux lar (Estrada b,(Carro:Carro:Carro:obs))=[Nenhum]
-proximosObstaculosValidosAux lar (Relva, [])=[Nenhum, Arvore]
 proximosObstaculosValidosAux lar (Rio b,l)=[Nenhum,Tronco]
 proximosObstaculosValidosAux lar (Estrada b,l)=[Nenhum,Carro]
 proximosObstaculosValidosAux lar (Relva , l)=[Nenhum,Arvore]
@@ -50,11 +45,6 @@ proximosObstaculosValidosAux lar (Relva , l)=[Nenhum,Arvore]
 -}
 
 proximosObstaculosValidosAux::Int-> (Terreno,[Obstaculo])->[Obstaculo]
-proximosObstaculosValidosAux lar (Rio b, [])=[Nenhum, Tronco]
-proximosObstaculosValidosAux lar (Rio b, (Tronco:Tronco:Tronco:Tronco:Tronco:obs)) =[Nenhum] 
-proximosObstaculosValidosAux lar (Estrada b,[])=[Nenhum, Carro]
-proximosObstaculosValidosAux lar (Estrada b,(Carro:Carro:Carro:obs))=[Nenhum] 
-proximosObstaculosValidosAux lar (Relva, [])=[Nenhum, Arvore]
 proximosObstaculosValidosAux lar (Rio b,l)=[Nenhum,Tronco]
 proximosObstaculosValidosAux lar (Estrada b,l)=[Nenhum,Carro]
 proximosObstaculosValidosAux lar (Relva , l)=[Nenhum,Arvore]
@@ -97,7 +87,7 @@ randommap (Mapa lar t) seed = proximosTerrenosValidos (Mapa lar t) !! mod seed (
 
 
 {-|A função 'randomobs' dá a lista de obstáculos aleatórios do proximo nivel tendo em conta o terreno aleatório da proxima "linha".
-A função randomobs apesar de ser aleatório está preparada para
+A função randomobs apesar de ser aleatório está preparada para:
 
 *Não gerar 6 troncos seguidos
 *Nao gerar 3 carros seguidos 
