@@ -4,19 +4,13 @@ se continua vivo ,ou seja, o valor da fun&#231;&#227;o ser&#225; de <code>False<
 </code></strong><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>-&gt; Bool
 </code></strong></pre><h2>Exemplos de Utiliza&#231;&#227;o:</h2><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>jogoTerminou (Jogo (Jogador (2,2)) (Mapa 5 [(Estrada 3 ,[Nenhum,Nenhum,Carro]),(Relva,[Arvore,Nenhum,Nenhum]),(Estrada 3,[Nenhum,Nenhum,Carro])]))
 </code></strong><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>True
-</code></strong></pre></div></div><div class="top"><p class="src"><a id="v:jogoTerminou1" class="def">jogoTerminou1</a> :: <a href="LI12223.html#t:Jogo" title="LI12223">Jogo</a> -&gt; Bool <a href="#v:jogoTerminou1" class="selflink">#</a></p><div class="doc"><p>A fun&#231;&#227;o <code><a href="Tarefa4_2022li1g029.html#v:jogoTerminou1" title="Tarefa4_2022li1g029">jogoTerminou1</a></code> recebe um Jogo e caso o jogador saia do mapa o jogo acaba.</p><h2>Exemplos de Utiliza&#231;&#227;o:</h2><ul><li>Caso o jogador saia pelo lado esquerdo do mapa:
- <code> 
-  &gt;&gt;&gt; jogoTerminou1 (Jogo (Jogador ((-1),1)) (Mapa 5 [(Relva,[Nenhum,Nenhum,Arvore])]))
-  &gt;&gt;&gt; True 
- </code></li><li>Caso o jogador saia pelo lado direito do mapa:
-<code> 
- &gt;&gt;&gt; jogoTerminou1 (Jogo (Jogador (4,4)) (Mapa 4 [(Relva,[Nenhum,Nenhum,Arvore])]))
- &gt;&gt;&gt; True 
-</code></li><li>Caso seja apanhado:
-<code>
- &gt;&gt;&gt; jogoTerminou1 (Jogo (Jogador (5,4)) (Mapa 5 [(Rio 3 ,[Nenhum,Nenhum,Tronco])]))
- &gt;&gt;&gt; True 
-</code> </li></ul></div></div><div class="top"><p class="src"><a id="v:jogoTerminou2" class="def">jogoTerminou2</a> :: <a href="LI12223.html#t:Jogo" title="LI12223">Jogo</a> -&gt; Bool <a href="#v:jogoTerminou2" class="selflink">#</a></p><div class="doc"><p>A Fun&#231;&#227;o <code><a href="Tarefa4_2022li1g029.html#v:jogoTerminou2" title="Tarefa4_2022li1g029">jogoTerminou2</a></code> recebe um Jogo e se o jogador n&#227;o estiver em cima de um tronco
+</code></strong></pre></div></div><div class="top"><p class="src"><a id="v:jogoTerminou1" class="def">jogoTerminou1</a> :: <a href="LI12223.html#t:Jogo" title="LI12223">Jogo</a> -&gt; Bool <a href="#v:jogoTerminou1" class="selflink">#</a></p><div class="doc"><p>A fun&#231;&#227;o <code><a href="Tarefa4_2022li1g029.html#v:jogoTerminou1" title="Tarefa4_2022li1g029">jogoTerminou1</a></code> recebe um Jogo e caso o jogador saia do mapa o jogo acaba.</p><h2>Exemplos de Utiliza&#231;&#227;o:</h2><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>jogoTerminou1 (Jogo (Jogador ((-1),1)) (Mapa 5 [(Relva,[Nenhum,Nenhum,Arvore])]))
+</code></strong><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>True
+</code></strong></pre><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>jogoTerminou1 (Jogo (Jogador (4,4)) (Mapa 4 [(Relva,[Nenhum,Nenhum,Arvore])]))
+</code></strong><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>True
+</code></strong></pre><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>jogoTerminou1 (Jogo (Jogador (5,4)) (Mapa 5 [(Rio 3 ,[Nenhum,Nenhum,Tronco])]))
+</code></strong><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>True
+</code></strong></pre></div></div><div class="top"><p class="src"><a id="v:jogoTerminou2" class="def">jogoTerminou2</a> :: <a href="LI12223.html#t:Jogo" title="LI12223">Jogo</a> -&gt; Bool <a href="#v:jogoTerminou2" class="selflink">#</a></p><div class="doc"><p>A Fun&#231;&#227;o <code><a href="Tarefa4_2022li1g029.html#v:jogoTerminou2" title="Tarefa4_2022li1g029">jogoTerminou2</a></code> recebe um Jogo e se o jogador n&#227;o estiver em cima de um tronco
 no rio ele morre e o jogo termina.</p><h2>Exemplos de Uliliza&#231;&#227;o:</h2><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>jogoTerminou2 (Jogo (Jogador (2,0)) (Mapa 5 [(Rio 3 ,[Tronco,Tronco,Nenhum])]))
 </code></strong><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>True
 </code></strong></pre><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>jogoTerminou2 (Jogo (Jogador (1,0)) (Mapa 5 [(Rio 3 ,[Tronco,Tronco,Nenhum])]))

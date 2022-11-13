@@ -6,19 +6,13 @@ cada uma desta t&#234;m fun&#231;&#245;es especificas que ser&#227;o explicadas 
 </code></strong></pre><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>mapaValido (Mapa 3 [(Rio 3,[Nenhum,Nenhum,Tronco]),(Rio 1,[Nenhum,Nenhum,Tronco]),(Relva,[Nenhum,Nenhum,Arvore]),(Estrada 1,[Carro,Carro,Carro]),(Rio 1,[Tronco,Nenhum,Tronco])])]
 </code></strong><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>False
 </code></strong></pre></div></div><div class="top"><p class="src"><a id="v:mapaValido1" class="def">mapaValido1</a> :: <a href="LI12223.html#t:Mapa" title="LI12223">Mapa</a> -&gt; Bool <a href="#v:mapaValido1" class="selflink">#</a></p><div class="doc"><p>Como referi anteriormentente a fun&#231;&#227;o principal, <code><a href="Tarefa1_2022li1g029.html#v:mapaValido" title="Tarefa1_2022li1g029">mapaValido</a></code> &#233; composta por algumas auxiliares sendo uma delas a fun&#231;&#227;o <code><a href="Tarefa1_2022li1g029.html#v:mapaValido1" title="Tarefa1_2022li1g029">mapaValido1</a></code>,
-esta fun&#231;&#227;o recebe um mapa e confirma se nesse mapa consoante o terreno os obstaculos est&#227;o corretos.</p><h2>Exemplo de Utiliza&#231;&#227;o:</h2><ul><li>Uma arvore num rio:
-<code>
- &gt;&gt;&gt; mapaValido1 (Mapa 3 [(Rio 3,[Nenhum,Nenhum,Arvore])])
- &gt;&gt;&gt; False 
-</code></li><li>Um Tronco no rio:
-<code>
- &gt;&gt;&gt; mapaValido1 (Mapa 3 [(Rio 3,[Nenhum,Nenhum,Tronco])])
- &gt;&gt;&gt; True
-</code></li><li>Carros na Relva:
-<code>
- &gt;&gt;&gt; mapaValido1 (Mapa 3 [(Relva,[Nenhum,Nenhum,Carro]),(Estrada 3,[Nenhum,Nenhum,Carro]),(Estrada 3,[Nenhum,Nenhum,Arvore])])
- &gt;&gt;&gt; False
-</code></li></ul></div></div><div class="top"><p class="src"><a id="v:mapaValido2" class="def">mapaValido2</a> :: <a href="LI12223.html#t:Mapa" title="LI12223">Mapa</a> -&gt; Bool <a href="#v:mapaValido2" class="selflink">#</a></p><div class="doc"><p>A fun&#231;&#227;o <code><a href="Tarefa1_2022li1g029.html#v:mapaValido2" title="Tarefa1_2022li1g029">mapaValido2</a></code> recebe um <code>Mapa</code> e compara os terrenos, se o terrenos forem <code>Estrada</code> , <code>Relva</code> , <code>Rio</code> e depois outra qualquer 
+esta fun&#231;&#227;o recebe um mapa e confirma se nesse mapa consoante o terreno os obstaculos est&#227;o corretos.</p><h2>Exemplo de Utiliza&#231;&#227;o:</h2><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>mapaValido1 (Mapa 3 [(Rio 3,[Nenhum,Nenhum,Arvore])])
+</code></strong><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>False
+</code></strong></pre><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>mapaValido1 (Mapa 3 [(Rio 3,[Nenhum,Nenhum,Tronco])])
+</code></strong><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>True
+</code></strong></pre><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>mapaValido1 (Mapa 3 [(Relva,[Nenhum,Nenhum,Carro]),(Estrada 3,[Nenhum,Nenhum,Carro]),(Estrada 3,[Nenhum,Nenhum,Arvore])])
+</code></strong><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>False
+</code></strong></pre></div></div><div class="top"><p class="src"><a id="v:mapaValido2" class="def">mapaValido2</a> :: <a href="LI12223.html#t:Mapa" title="LI12223">Mapa</a> -&gt; Bool <a href="#v:mapaValido2" class="selflink">#</a></p><div class="doc"><p>A fun&#231;&#227;o <code><a href="Tarefa1_2022li1g029.html#v:mapaValido2" title="Tarefa1_2022li1g029">mapaValido2</a></code> recebe um <code>Mapa</code> e compara os terrenos, se o terrenos forem <code>Estrada</code> , <code>Relva</code> , <code>Rio</code> e depois outra qualquer 
 a fun&#231;&#227;o faz a recursiva se os terrenos forem <code>Rio</code> e depois outro <code>Rio</code> a fun&#231;&#227;o compara as velocidades. Se ambas forem tiverem o mesmo sinal ent&#227;o ambos os rios est&#227;o a dirigir se 
 para a mesma dire&#231;&#227;o. Esta fun&#231;&#227;o pretende que os seguidos nunca estejam a ir pela mesma dire&#231;&#227;o.</p><h2>Exemplos de Utiliza&#231;&#227;o:</h2><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>mapaValido2 (Mapa 3 [(Rio 3,[Nenhum,Nenhum,Tronco]),(Rio (-1),[Nenhum,Nenhum,Tronco]),(Relva,[Nenhum,Nenhum,Arvore]),(Rio (-1),[Nenhum,Nenhum,Carro]),(Rio 1,[Nenhum,Nenhum,Carro])])
 </code></strong><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>True
