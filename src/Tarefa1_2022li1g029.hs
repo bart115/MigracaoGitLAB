@@ -28,23 +28,16 @@ mapaValido (Mapa lr l) = (mapaValido1 (Mapa lr l) && mapaValido2 (Mapa lr l)) &&
 esta função recebe um mapa e confirma se nesse mapa consoante o terreno os obstaculos estão corretos.
 
 ==Exemplo de Utilização:
-*Uma arvore num rio:
-@
+
  >>> mapaValido1 (Mapa 3 [(Rio 3,[Nenhum,Nenhum,Arvore])])
  >>> False 
-@
 
-*Um Tronco no rio:
-@
  >>> mapaValido1 (Mapa 3 [(Rio 3,[Nenhum,Nenhum,Tronco])])
  >>> True
-@
 
-*Carros na Relva:
-@
  >>> mapaValido1 (Mapa 3 [(Relva,[Nenhum,Nenhum,Carro]),(Estrada 3,[Nenhum,Nenhum,Carro]),(Estrada 3,[Nenhum,Nenhum,Arvore])])
  >>> False
-@
+
 -}
 mapaValido1 :: Mapa -> Bool
 mapaValido1 (Mapa lr []) = True
