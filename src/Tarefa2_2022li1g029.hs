@@ -39,7 +39,9 @@ A função 'proximosObstaculosValidosAux está definida por:
 @
 proximosObstaculosValidosAux::Int-> (Terreno,[Obstaculo])->[Obstaculo]
 proximosObstaculosValidosAux a (Rio b, [])=[Nenhum, Tronco]
+proximosObstaculosValidosAux lar (Rio b, (Tronco:Tronco:Tronco:Tronco:Tronco:obs)) =[Nenhum]
 proximosObstaculosValidosAux a (Estrada b,[])=[Nenhum, Carro]
+proximosObstaculosValidosAux lar (Estrada b,(Carro:Carro:Carro:obs))=[Nenhum]
 proximosObstaculosValidosAux a (Relva, [])=[Nenhum, Arvore]
 proximosObstaculosValidosAux a (Rio b,l)=[Nenhum,Tronco]
 proximosObstaculosValidosAux a (Estrada b,l)=[Nenhum,Carro]
@@ -49,9 +51,9 @@ proximosObstaculosValidosAux a (Relva , l)=[Nenhum,Arvore]
 
 proximosObstaculosValidosAux::Int-> (Terreno,[Obstaculo])->[Obstaculo]
 proximosObstaculosValidosAux lar (Rio b, [])=[Nenhum, Tronco]
-proximosObstaculosValidosAux lar (Rio b, (Tronco:Tronco:Tronco:Tronco:Tronco:obs)) =[Nenhum] --
+proximosObstaculosValidosAux lar (Rio b, (Tronco:Tronco:Tronco:Tronco:Tronco:obs)) =[Nenhum] 
 proximosObstaculosValidosAux lar (Estrada b,[])=[Nenhum, Carro]
-proximosObstaculosValidosAux lar (Estrada b,(Carro:Carro:Carro:obs))=[Nenhum] --
+proximosObstaculosValidosAux lar (Estrada b,(Carro:Carro:Carro:obs))=[Nenhum] 
 proximosObstaculosValidosAux lar (Relva, [])=[Nenhum, Arvore]
 proximosObstaculosValidosAux lar (Rio b,l)=[Nenhum,Tronco]
 proximosObstaculosValidosAux lar (Estrada b,l)=[Nenhum,Carro]
