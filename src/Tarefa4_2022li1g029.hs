@@ -32,7 +32,7 @@ jogoTerminou (Jogo (Jogador (x,y)) (Mapa lr l)) = jogoTerminou1 (Jogo (Jogador (
 {-|A função 'jogoTerminou1' recebe um Jogo e caso o jogador saia do mapa o jogo acaba.
 
 ==Exemplos de Utilização:
-Caso o jogador saia pelo lado esquerdo do mapa:
+*Caso o jogador saia pelo lado esquerdo do mapa:
  @ 
   >>> jogoTerminou1 (Jogo (Jogador ((-1),1)) (Mapa 5 [(Relva,[Nenhum,Nenhum,Arvore])]))
   >>> True 
