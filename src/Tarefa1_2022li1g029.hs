@@ -10,7 +10,14 @@ module Tarefa1_2022li1g029 where
 
 import LI12223
 
---1--
+{-|A função mapaValido vai receber um tipo 'Mapa' e vai dar um 'Booliano', esta função vai dizer
+se o mapa recebido é um mapa em que se possa jogar ou se é um mapa que não pode existir.Esta função também esta 
+definida por outras funções auxiliares como 'mapaValido1' , 'mapaValido2', 'mapaValido3, 'mapaValido4 , 'mapaValido5 , 'mapaValido6 , 'mapaValido7'
+cada uma desta têm funções especificas que serão explicadas mais tarde.
+
+==Exemplo de Utilização:
+ >>> mapaValido 
+ >>>-}
 mapaValido :: Mapa -> Bool
 mapaValido (Mapa lr l) = (mapaValido1 (Mapa lr l) && mapaValido2 (Mapa lr l)) && (mapaValido3 (Mapa lr l) && mapaValido4 (Mapa lr l)) && (mapaValido5 (Mapa lr l) && mapaValido6 (Mapa lr l)) && mapaValido7 (Mapa lr l)
 
@@ -33,8 +40,13 @@ mapaValido2 :: Mapa -> Bool
 mapaValido2 (Mapa lr []) = True
 mapaValido2 (Mapa lr (((Estrada ve),lo):t)) = mapaValido2 (Mapa lr t)
 mapaValido2 (Mapa lr ((Relva,lo):t)) = mapaValido2 (Mapa lr t)
+
+--se o proximo valor não for rio
+mapaValido2 (Mapa lr (((Rio vr), lo) : ((Estrada ve),lo1) : t )) = mapaValido2 (Mapa lr t)
+mapaValido2 (Mapa lr (((Rio vr), lo) : (Relva,lo1) :t)) = mapaValido2 (Mapa lr t)
+
 --
-mapaValido2 (Mapa lr [(a,b)]) = True  
+mapaValido2 (Mapa lr [a]) = True  
 mapaValido2 (Mapa lr (((Rio vr),lo) : ((Rio vr1),lo1) : t))
                 |(vr > 0 && vr1 > 0) || (vr < 0 && vr1 < 0) = False
                 |otherwise = mapaValido2 (Mapa lr (((Rio vr1),lo1):t))
