@@ -32,22 +32,16 @@ jogoTerminou (Jogo (Jogador (x,y)) (Mapa lr l)) = jogoTerminou1 (Jogo (Jogador (
 {-|A função 'jogoTerminou1' recebe um Jogo e caso o jogador saia do mapa o jogo acaba.
 
 ==Exemplos de Utilização:
-*Caso o jogador saia pelo lado esquerdo do mapa:
- @ 
-  >>> jogoTerminou1 (Jogo (Jogador ((-1),1)) (Mapa 5 [(Relva,[Nenhum,Nenhum,Arvore])]))
-  >>> True 
- @
 
-*Caso o jogador saia pelo lado direito do mapa:
-@ 
+ >>> jogoTerminou1 (Jogo (Jogador ((-1),1)) (Mapa 5 [(Relva,[Nenhum,Nenhum,Arvore])]))
+ >>> True 
+ 
  >>> jogoTerminou1 (Jogo (Jogador (4,4)) (Mapa 4 [(Relva,[Nenhum,Nenhum,Arvore])]))
  >>> True 
-@
-*Caso seja apanhado:
-@
+
  >>> jogoTerminou1 (Jogo (Jogador (5,4)) (Mapa 5 [(Rio 3 ,[Nenhum,Nenhum,Tronco])]))
  >>> True 
-@ 
+ 
 -} 
 
 jogoTerminou1 :: Jogo -> Bool 
