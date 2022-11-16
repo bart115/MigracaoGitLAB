@@ -18,46 +18,87 @@ A função 'posx' calcula a posição em x após a jogada e está definida por:
 posx::Jogo->Jogada->Int
 posx (Jogo (Jogador (x,y)) (Mapa lar [])) Parado = x
 posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) Parado = if y == 0 && hatronco x obs then  posaux te else posx (Jogo (Jogador (x,y-1)) (Mapa lar tf)) Parado
-                                                                 where posaux (Rio v) = x+v 
-                                                                       posaux te = x
-posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Esquerda) =x-1
-posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Direita)= x+1
-posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m =x
+                                                                                          where posaux (Rio v) = x+v 
+                                                                                                posaux te = x
+posx (Jogo (Jogador (0,y)) (Mapa lar t)) (Move Esquerda) = 0
+posx (Jogo (Jogador (x,y)) (Mapa lar [])) (Move Esquerda) = x-1 
+posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Esquerda) |y==0 && haarvore (x-1) obs = x
+                                                                     |otherwise =  posx (Jogo (Jogador (x,y-1)) (Mapa lar tf)) (Move Esquerda) 
+posx (Jogo (Jogador (x,y)) (Mapa lar [])) (Move Direita) = x+1
+posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Direita) |x==(lar-1)=x
+                                                                    |y==0 && haarvore (x+1) obs = x
+                                                                    |otherwise =  posx (Jogo (Jogador (x,y-1)) (Mapa lar tf)) (Move Direita) 
+posx (Jogo (Jogador (x,y)) (Mapa lar [t])) (Move Cima) = x
+posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):(t2,ob2):tf))) (Move Cima) |y==1 && haarvore x obs && hatronco x ob2 = posaux t2
+                                                                          |otherwise = posx (Jogo (Jogador (x,y-1)) (Mapa lar ((t2,ob2):tf))) (Move Cima)
+                                                                           where posaux (Rio v) = x+v 
+                                                                                 posaux te = x
+posx (Jogo (Jogador (x,y)) (Mapa lar [t])) (Move Baixo)=x
+posx (Jogo (Jogador (x,y)) (Mapa lar ((t1,ob1):(te,obs):tf))) (Move Baixo) |y==0 && haarvore x obs && hatronco x ob1 = posaux t1
+                                                                           |otherwise = posx (Jogo (Jogador (x,y-1)) (Mapa lar ((te,obs):tf))) (Move Baixo) 
+                                                                                 where posaux (Rio v) = x+v 
+                                                                                       posaux te = x
 @
 -}
 
 posx::Jogo->Jogada->Int
 posx (Jogo (Jogador (x,y)) (Mapa lar [])) Parado = x
 posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) Parado = if y == 0 && hatronco x obs then  posaux te else posx (Jogo (Jogador (x,y-1)) (Mapa lar tf)) Parado
-                                                                 where posaux (Rio v) = x+v 
-                                                                       posaux te = x
-posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Esquerda) =x-1
-posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Direita)= x+1
-posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m =x
-
+                                                                                          where posaux (Rio v) = x+v 
+                                                                                                posaux te = x
+posx (Jogo (Jogador (0,y)) (Mapa lar t)) (Move Esquerda) = 0
+posx (Jogo (Jogador (x,y)) (Mapa lar [])) (Move Esquerda) = x-1 
+posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Esquerda) |y==0 && haarvore (x-1) obs = x
+                                                                     |otherwise =  posx (Jogo (Jogador (x,y-1)) (Mapa lar tf)) (Move Esquerda) 
+posx (Jogo (Jogador (x,y)) (Mapa lar [])) (Move Direita) = x+1
+posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Direita) |x==(lar-1)=x
+                                                                    |y==0 && haarvore (x+1) obs = x
+                                                                    |otherwise =  posx (Jogo (Jogador (x,y-1)) (Mapa lar tf)) (Move Direita) 
+posx (Jogo (Jogador (x,y)) (Mapa lar [t])) (Move Cima) = x
+posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):(t2,ob2):tf))) (Move Cima) |y==1 && haarvore x obs && hatronco x ob2 = posaux t2
+                                                                          |otherwise = posx (Jogo (Jogador (x,y-1)) (Mapa lar ((t2,ob2):tf))) (Move Cima)
+                                                                           where posaux (Rio v) = x+v 
+                                                                                 posaux te = x
+posx (Jogo (Jogador (x,y)) (Mapa lar [t])) (Move Baixo)=x
+posx (Jogo (Jogador (x,y)) (Mapa lar ((t1,ob1):(te,obs):tf))) (Move Baixo) |y==0 && haarvore x obs && hatronco x ob1 = posaux t1
+                                                                           |otherwise = posx (Jogo (Jogador (x,y-1)) (Mapa lar ((te,obs):tf))) (Move Baixo) 
+                                                                                 where posaux (Rio v) = x+v 
+                                                                                       posaux te = x
 
 
 {-|A função 'posy' calcula a posição em y após a jogada e está definida por:
 
 @
-posy::Jogo->Jogada->Int 
-posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Baixo)  =(y-1)
-posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Cima) |numfilas (Mapa lar ((te,obs):tf)) > (y+1) =(y+1)
-                                                                 |otherwise = y
-posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m = y
+posy::Int->Jogo->Jogada->Int 
+posy a (Jogo (Jogador (x,y)) (Mapa lar [t])) (Move Baixo) = a+y+1
+posy a (Jogo (Jogador (x,y)) (Mapa lar (t1:(te,obs):tf))) (Move Baixo)|y==0 && haarvore x obs =a+y
+                                                                      |otherwise =  posy (a+1) (Jogo (Jogador (x,y-1)) (Mapa lar ((te,obs):tf))) (Move Baixo) 
+
+
+posy a (Jogo (Jogador (x,0)) (Mapa lar t)) (Move Cima) = 0
+posy a (Jogo (Jogador (x,y)) (Mapa lar [t])) (Move Cima) = a+y-1
+posy a (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):t2:tf))) (Move Cima) |y==1 && haarvore x obs = a+y 
+                                                                      |otherwise = posy (a+1) (Jogo (Jogador (x,y-1)) (Mapa lar ((te,obs):tf))) (Move Cima) 
+posy a (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m = y
 @  
 -}
 
-posy::Jogo->Jogada->Int 
-posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Baixo) =y+1
-posy (Jogo (Jogador (x,0)) (Mapa lar ((te,obs):tf))) (Move Cima) = 0
-posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Cima) =y-1
-posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m = y
+posy::Int->Jogo->Jogada->Int 
+posy a (Jogo (Jogador (x,y)) (Mapa lar [t])) (Move Baixo) = a+y+1
+posy a (Jogo (Jogador (x,y)) (Mapa lar (t1:(te,obs):tf))) (Move Baixo)|y==0 && haarvore x obs =a+y
+                                                                      |otherwise =  posy (a+1) (Jogo (Jogador (x,y-1)) (Mapa lar ((te,obs):tf))) (Move Baixo) 
+
+
+posy a (Jogo (Jogador (x,0)) (Mapa lar t)) (Move Cima) = 0
+posy a (Jogo (Jogador (x,y)) (Mapa lar [t])) (Move Cima) = a+y-1
+posy a (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):t2:tf))) (Move Cima) |y==1 && haarvore x obs = a+y 
+                                                                      |otherwise = posy (a+1) (Jogo (Jogador (x,y-1)) (Mapa lar ((te,obs):tf))) (Move Cima) 
+posy a (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m = y
 
 
 
 
-{- |A proxima função auxiliar tem como função verificar se na posição do jogador se encontra um tronco
+{- |A proxima função auxiliar hatronco tem como função verificar se na posição do jogador se encontra um tronco
 
 A função 'hatronco' está definida por:
 
@@ -74,6 +115,26 @@ hatronco::Int->[Obstaculo]->Bool
 hatronco x [] =False
 hatronco x (ob1:obs) |x==0 && ob1==Tronco=True
                      |otherwise = hatronco (x-1) obs
+                  
+
+
+{-|A função auxiliar haarvore permite-nos identificar a presença de uma árvore numa lista de obstáculos
+
+A função 'haarvore está definida por:
+
+@
+haarvore::Int->[Obstaculo]->Bool
+haarvore x [] =False
+haarvore x (ob1:obs) |x==0 && ob1==Arvore=True
+                     |otherwise = haarvore (x-1) obs
+@
+
+-}
+
+haarvore::Int->[Obstaculo]->Bool
+haarvore x [] =False
+haarvore x (ob1:obs) |x==0 && ob1==Arvore=True
+                     |otherwise = haarvore (x-1) obs
 
 {- | Para dar movimento aos obstaculos fez-se as duas funções auxiliares 
 
@@ -165,7 +226,7 @@ Jogo (Jogador (3,2)) (Mapa 3 [(Relva,[Arvore,Nenhum,Nenhum]),(Rio 1,[Tronco,Nenh
 animaJogo :: Jogo -> Jogada -> Jogo
 animaJogo (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m  = Jogo (Jogador (px,py)) (Mapa lar (mapamove ((te,obs):tf)))
                                                                                      where px=posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m
-                                                                                           py=posy (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m 
+                                                                                           py=posy 0 (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m 
 
 
 
