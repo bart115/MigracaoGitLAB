@@ -49,7 +49,6 @@ posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) Parado |y == 0 && hatronco 
                                                                                                 posaux te = x
 posx (Jogo (Jogador (x,y)) (Mapa lar [])) (Move Esquerda) = (x-1) 
 posx (Jogo (Jogador (x,0)) (Mapa lar ((Rio v,obs):tf))) (Move Esquerda)=if hatronco x obs then x+v-1 else x-1  
-posx (Jogo (Jogador (0,y)) (Mapa lar t)) (Move Esquerda) = 0
 posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Esquerda) |y==0 && haarvore (x-1) obs = x
                                                                      |y==0 && x==0 = posaux te
                                                                      |otherwise =  posx (Jogo (Jogador (x,y-1)) (Mapa lar tf)) (Move Esquerda) 
@@ -162,7 +161,7 @@ obsmove (Estrada v,obs) |v==0 = obs
 haCarro::Int->[Obstaculo]->Bool
 haCarro x [] =False
 haCarro x (ob1:obs) |x==0 && ob1==Carro=True
-                     |otherwise = haCarro (x-1) obs
+                    |otherwise = haCarro (x-1) obs 
 
 obsmove::(Terreno,[Obstaculo])->[Obstaculo]
 obsmove (Relva,obs) = obs
