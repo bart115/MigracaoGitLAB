@@ -9,6 +9,15 @@ Módulo para a realização da Tarefa 3 do projeto de LI1 em 2022/23.
 module Tarefa5_2022li1g029 where
 
 import LI12223
+import Tarefa2_2022li1g029 
 
 
 deslizaJogo :: Int -> Jogo -> Jogo
+deslizaJogo seed (Jogo (Jogador (x,y)) (Mapa l t)) = Jogo (Jogador (x,y-1)) (deslizaux (estendeMapa (Mapa l t) seed )) 
+                                                                            where 
+                                                                                deslizaux (Mapa l t) = Mapa l (init t)
+
+
+
+
+
