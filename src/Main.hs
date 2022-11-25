@@ -37,7 +37,7 @@ fr = 50
 initialState :: Images ->World
 initialState images = (Opcoes Normal,( Jogo (Jogador (3,3)) (Mapa 7 [(Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
     (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
-    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Relva,[Arvore,Arvore,Arvore,Nenhum,Arvore,Arvore,Arvore]), 
     (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
     (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
     (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
@@ -51,14 +51,38 @@ drawState (Pause ,jogo,images,n,p)= return $ Pictures [color red $ Translate (-1
 drawState (Opcoes Normal, jogo, images,n,p) = return $ Pictures [Color blue $ Translate (-110) 0 $ drawOption "Normal", Translate (-110) (-70) $ drawOption "Natal",Translate (-110) (-140) $ drawOption "Sair"]           --desenha o menu das opçoes para jogar normal
 drawState (Opcoes Natal, jogo, images,n,p) =return $  Pictures [Translate (-110) 0 $ drawOption "Normal",Color blue $ Translate (-110) (-70) $ drawOption "Natal",Translate (-110) (-140) $ drawOption "Sair"]             --desenha o menu das opçoes para jogar natal
 drawState (Opcoes Sair, jogo, images,n,p) = return $ Pictures [Translate (-110) 0 $ drawOption "Normal",Translate (-110) (-70) $ drawOption "Natal", Color blue $ Translate (-110) (-140) $ drawOption "Sair"]             --desenha o menu das opçoes para sair
-drawState (ModoJogo,(Jogo (Jogador (x,y)) (Mapa l [tf,t1,t2,t3,t4,t5,t6,t7])), images,t,p) = 
-    return $ Pictures $ [Translate 0 (400-(t/5)) $ lfundo tf ,Translate 0 (300-(t/5)) $ lfundo t1,Translate 0 (200-(t/5))    $ lfundo t2, Translate 0 (100-(t/5))  $ lfundo t3,Translate 0 (0-(t/5)) $ lfundo t4, Translate 0 (-100-(t/5))  $ lfundo t5,Translate 0 (-200-(t/5))    $ lfundo t6, Translate 0 (-300-(t/5))  $ lfundo t7,Translate ((i*100)-300) (300 -(j*100)-(t/5)) $ boneco]                                                                                           --desenha o mapa de jogo
+drawState (ModoJogo,(Jogo (Jogador (x,y)) (Mapa l [(tf,[p1,p2,p3,p4,p5,p6,p7]),(t1,[p8,p9,p10,p11,p12,p13,p14]),(t2,[p15,p16,p17,p18,p19,p20,p21]),(t3,[p22,p23,p24,p25,p26,p27,p28]),(t4,[p29,p30,p31,p32,p33,p34,p35]),(t5,[p36,p37,p38,p39,p40,p41,p42]),(t6,[p43,p44,p45,p46,p47,p48,p49]),(t7,[p50,p51,p52,p53,p54,p55,p56])])), images,t,p) = 
+    return $ Pictures $ [Translate 0 (400-(t/5)) $ lfundo tf ,
+        Translate 0 (300-(t/5))       $ lfundo t1,Translate 0 (200-(t/5))      $ lfundo t2, Translate 0 (100-(t/5))  $ lfundo t3,Translate 0 (0-(t/5)) $ lfundo t4, 
+        Translate 0 (-100-(t/5))      $ lfundo t5,Translate 0 (-200-(t/5))     $ lfundo t6, Translate 0 (-300-(t/5)) $ lfundo t7,
+        Translate (-300+(vel tf)/5) (400-(t/5))  $ obj tf p1 ,Translate (-200+(vel tf)/5) (400-(t/5))  $ obj tf p2 ,Translate (-100+(vel tf)/5) (400-(t/5)) $ obj tf p3,  Translate (0+(vel tf)/5) (400-(t/5))  $ obj tf p4, Translate (100+(vel tf)/5) (400-(t/5))  $ obj tf p5, Translate (200+(vel tf)/5) (400-(t/5))  $ obj tf p6, Translate (300+(vel tf)/5) (400-(t/5))  $ obj tf p7,
+        Translate (-300+(vel t1)/5) (300-(t/5))  $ obj t1 p8 ,Translate (-200+(vel t1)/5) (300-(t/5))  $ obj t1 p9 ,Translate (-100+(vel t1)/5) (300-(t/5)) $ obj t1 p10, Translate (0+(vel t1)/5) (300-(t/5))  $ obj t1 p11,Translate (100+(vel t1)/5)  (300-(t/5)) $ obj t1 p12,Translate (200+(vel t1)/5) (300-(t/5)) $ obj t1 p13,Translate (300+(vel t1)/5) (300-(t/5))  $ obj t1 p14,
+        Translate (-300+(vel t2)/5) (200-(t/5))  $ obj t2 p15,Translate (-200+(vel t2)/5) (200-(t/5))  $ obj t2 p16,Translate (-100+(vel t2)/5) (200-(t/5)) $ obj t2 p17, Translate (0+(vel t2)/5) (200-(t/5))  $ obj t2 p18,Translate (100+(vel t2)/5) (200-(t/5))  $ obj t2 p19,Translate (200+(vel t2)/5) (200-(t/5))  $ obj t2 p20,Translate (300+(vel t2)/5) (200-(t/5))  $ obj t2 p21,
+        Translate (-300+(vel t3)/5) (100-(t/5))  $ obj t3 p22,Translate (-200+(vel t3)/5) (100-(t/5))  $ obj t3 p23,Translate (-100+(vel t3)/5) (100-(t/5)) $ obj t3 p24, Translate (0+(vel t3)/5) (100-(t/5))  $ obj t3 p25,Translate (100+(vel t3)/5) (100-(t/5))  $ obj t3 p26,Translate (200+(vel t3)/5) (100-(t/5))  $ obj t3 p27,Translate (300+(vel t3)/5) (100-(t/5))  $ obj t3 p28,
+        Translate (-300+(vel t4)/5)   (0-(t/5))  $ obj t4 p29 ,Translate (-200+(vel t4)/5)   (0-(t/5)) $ obj t4 p30,Translate (-100+(vel t4)/5)   (0-(t/5)) $ obj t4 p31, Translate (0+(vel t4)/5)   (0-(t/5))  $ obj t4 p32,Translate (100+(vel t4)/5)   (0-(t/5))  $ obj t4 p33,Translate (200+(vel t4)/5) (  0-(t/5))  $ obj t4 p34,Translate (300+(vel t4)/5) ( 0-(t/5))   $ obj t4 p35,
+        Translate (-300+(vel t5)/5) (-100-(t/5)) $ obj t5 p36 ,Translate (-200+(vel t5)/5) (-100-(t/5))$ obj t5 p37,Translate (-100+(vel t5)/5) (-100-(t/5)) $ obj t5 p38,Translate (0+(vel t5)/5) (-100-(t/5)) $ obj t5 p39,Translate (100+(vel t5)/5) (-100-(t/5)) $ obj t5 p40,Translate (200+(vel t5)/5) (-100-(t/5)) $ obj t5 p41,Translate (300+(vel t5)/5) (-100-(t/5)) $ obj t5 p42,
+        Translate (-300+(vel t6)/5) (-200-(t/5)) $ obj t6 p43 ,Translate (-200+(vel t6)/5) (-200-(t/5))$ obj t6 p44,Translate (-100+(vel t6)/5) (-200-(t/5)) $ obj t6 p45,Translate (0+(vel t6)/5) (-200-(t/5)) $ obj t6 p46,Translate (100+(vel t6)/5) (-200-(t/5)) $ obj t6 p47,Translate (200+(vel t6)/5) (-200-(t/5)) $ obj t6 p48,Translate (300+(vel t6)/5) (-200-(t/5)) $ obj t6 p49,
+        Translate (-300+(vel t7)/5) (-300-(t/5)) $ obj t7 p50 ,Translate (-200+(vel t7)/5) (-300-(t/5))$ obj t7 p51,Translate (-100+(vel t7)/5) (-300-(t/5)) $ obj t7 p52,Translate (0+(vel t7)/5) (-300-(t/5)) $ obj t7 p53,Translate (100+(vel t7)/5) (-300-(t/5)) $ obj t7 p54,Translate (200+(vel t7)/5) (-300-(t/5)) $ obj t7 p55,Translate (300+(vel t7)/5) (-300-(t/5)) $ obj t7 p56,
+        Translate ((i*100)-300) (400 -(j*100)-(t/5)) $ boneco]                                                                                           --desenha o mapa de jogo
      where 
         i=fromIntegral x
         j=fromIntegral y
         boneco = if (t <25 )||(t>50 && t <75)||(t>100 && t<125 )||(t>150 && t<175 )||(t>200 &&t<225)  then (head images) else (last images)
+        vel (Rio v) = l where l =fromIntegral v
+        vel (Estrada v) = l where l =fromIntegral v
+        vel Relva = 0
 
 drawOption option = Translate 0 0 $ Scale (0.5) (0.5) $ Text option 
+
+obj::Terreno->Obstaculo->Picture
+obj (Rio v) Nenhum = color blue $ rectangleSolid 100 100 
+obj (Rio v) Tronco = color black $ rectangleSolid 80 80 
+obj (Estrada v) Nenhum = color black $ rectangleSolid 100 100 
+obj (Estrada v) Carro = color white $ rectangleSolid 80 80 
+obj (Relva) Nenhum = color green $ rectangleSolid 100 100
+obj (Relva) Arvore = color blue $ circleSolid 30
+obj t o = color orange $ rectangleSolid 100 100
+
 
 
 river::Picture
@@ -72,10 +96,10 @@ grass = color green $ rectangleSolid 700 100
      
 
 
-lfundo::(Terreno,[Obstaculo])->Picture
-lfundo (Rio v,obs)= river
-lfundo (Estrada v,obs)= road
-lfundo (Relva,obs)= grass
+lfundo::Terreno->Picture
+lfundo (Rio v)= river
+lfundo (Estrada v)= road
+lfundo (Relva)= grass
 
 
 
@@ -118,12 +142,12 @@ event (EventKey (SpecialKey KeyLeft) Down _ _) (ModoJogo, (Jogo (Jogador (x, y))
 event (EventKey (SpecialKey KeyRight) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),i,n,p)= 
     if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) else return $ (ModoJogo, (animaJogo (Jogo (Jogador (x, y))(Mapa l to)) (Move Direita)),i,n,p)
 event _ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) = 
-    return $ (ModoJogo,(animaJogo (Jogo (Jogador (x, y))(Mapa l to)) Parado) ,i,n,p) 
+    if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) else return $ (ModoJogo,(animaJogo (Jogo (Jogador (x, y))(Mapa l to)) Parado) ,i,n,p) 
 event _ w = return w
 
 time :: Float -> World ->IO World
-time f (m, j, i,249,p) = return $ (m, deslizaJogo p j,i, 0,p)
-time f (m, j, i, t,p) = return $ (m, j, i,t+1,p)
+time f (m, j, i,249,p) = return $ (m, deslizaJogo (p+3) (animaJogo j Parado),i, 0,p+1)
+time f (m, j, i,t,p) = return $ (m,animaJogo j Parado, i,t+1,p+1)
 
 
 

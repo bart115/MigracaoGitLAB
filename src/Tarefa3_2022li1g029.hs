@@ -97,7 +97,7 @@ posy a (Jogo (Jogador (x,y)) (Mapa lar (t1:(te,obs):tf))) (Move Baixo)|y==0 && h
 
 
 posy a (Jogo (Jogador (x,y)) (Mapa lar [t])) (Move Cima) = if y+a==0 then 0 else a +y-1
-posy a (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):t2:tf))) (Move Cima) |y==1 && haarvore x obs = a+y 
+posy a (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):t2:tf))) (Move Cima) |y==1 && haarvore x obs = a+y
                                                                       |otherwise = posy (a+1) (Jogo (Jogador (x,y-1)) (Mapa lar ((te,obs):tf))) (Move Cima) 
 posy a (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m = y
 
