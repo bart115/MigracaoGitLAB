@@ -59,8 +59,9 @@ no rio ele morre e o jogo termina.
                                 
 jogoTerminou2 :: Jogo -> Bool
 jogoTerminou2 (Jogo (Jogador (x,y)) (Mapa lr [])) = False 
-jogoTerminou2 (Jogo (Jogador (x,y)) (Mapa lr ((tr,lo):t))) |y==0 && (hanenhum x lo) = True 
-                                                           |otherwise = jogoTerminou2 (Jogo (Jogador (x,y-1)) (Mapa lr t))
+jogoTerminou2 (Jogo (Jogador (x,y)) (Mapa lr ((Rio v,lo):t))) |y==0 && (hanenhum x lo) = True 
+                                                              |otherwise = jogoTerminou2 (Jogo (Jogador (x,y-1)) (Mapa lr t))
+jogoTerminou2 (Jogo (Jogador (x,y)) (Mapa lr ((tr,lo):t))) = jogoTerminou2 (Jogo (Jogador (x,y-1)) (Mapa lr t))
 
 {-|A função 'hanenhum' é uma função auxiliar de 'jogoTerminou2' que recebe a coordenada x do lugar onde o jogador está
 e a lista de obstaculos e devolve um booliano, esta função serve para ver se existe ou não,um tronco no lugar onde o jogador está.
@@ -89,8 +90,9 @@ ele morre e o jogo termina.
 
 jogoTerminou3 :: Jogo -> Bool 
 jogoTerminou3 (Jogo (Jogador (x,y)) (Mapa lr [])) = False 
-jogoTerminou3 (Jogo (Jogador (x,y)) (Mapa lr ((tr,lo):t))) |y==0 && hacarro x lo = True 
-                                                           |otherwise = jogoTerminou3 (Jogo (Jogador (x,y-1)) (Mapa lr t))
+jogoTerminou3 (Jogo (Jogador (x,y)) (Mapa lr ((Estrada v,lo):t)))|y==0 && hacarro x lo = True 
+                                                                 |otherwise = jogoTerminou3 (Jogo (Jogador (x,y-1)) (Mapa lr t))
+jogoTerminou3 (Jogo (Jogador (x,y)) (Mapa lr ((tr,lo):t))) = jogoTerminou3 (Jogo (Jogador (x,y-1)) (Mapa lr t))
 
 {-|A função 'hanenhum' é uma função auxiliar de 'jogoTerminou3' que recebe a coordenada x do lugar onde o jogador está
 e a lista de obstaculos e devolve um booliano, esta função serve para ver se existe ou não, um carro no lugar onde o jogador está. 
