@@ -65,12 +65,52 @@ drawState (Pause ,jogo,images,n)= return $ Pictures [color red $ Translate (-10)
 drawState (Opcoes Normal, jogo, images,n) = return $ Pictures [Color blue $ Translate (-110) 0 $ drawOption "Normal", Translate (-110) (-70) $ drawOption "Natal",Translate (-110) (-140) $ drawOption "Sair"]           --desenha o menu das opçoes para jogar normal
 drawState (Opcoes Natal, jogo, images,n) =return $  Pictures [Translate (-110) 0 $ drawOption "Normal",Color blue $ Translate (-110) (-70) $ drawOption "Natal",Translate (-110) (-140) $ drawOption "Sair"]             --desenha o menu das opçoes para jogar natal
 drawState (Opcoes Sair, jogo, images,n) = return $ Pictures [Translate (-110) 0 $ drawOption "Normal",Translate (-110) (-70) $ drawOption "Natal", Color blue $ Translate (-110) (-140) $ drawOption "Sair"]             --desenha o menu das opçoes para sair
-drawState (ModoJogo,(Jogo (Jogador (x,y)) (Mapa l to)), images,n) = return $ Pictures $ [Translate ((i*40)-200) (380 -(j*40))  $ boneco]                                                                                               --desenha o mapa de jogo
+drawState (ModoJogo,(Jogo (Jogador (x,y)) (Mapa l to)), images,n) = return $ Pictures $ [Translate ((i*40)-200) (380 -(j*40)) $ boneco]                                                                                           --desenha o mapa de jogo
      where 
         i=fromIntegral x
         j=fromIntegral y
         boneco = if (mod (round (n*1000)) 200) < 100 then (head images) else (last images)
+
 drawOption option = Translate 0 0 $ Scale (0.5) (0.5) $ Text option 
+
+
+river::Picture
+river= color blue $ rectangleSolid 200 40
+
+road::Picture
+road= color  black $ rectangleSolid 200 40
+
+grass::Picture
+grass = color green $ rectangleSolid 200 40
+
+
+fundo:: Mapa -> [Picture]
+fundo (Mapa lar [t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16,t17,t18,t19,t20])=
+    [Translate 0 380 $ lfundo t1,Translate 0 340    $ lfundo t2,
+    Translate 0 300  $ lfundo t3,Translate 0 260    $ lfundo t4,
+    Translate 0 220  $ lfundo t5,Translate 0 180    $ lfundo t6,
+    Translate 0 140  $ lfundo t7,Translate 0 100    $ lfundo t8,
+    Translate 0  60  $ lfundo t9,Translate 0  20    $ lfundo t10,
+    Translate 0(-20) $ lfundo t11,Translate 0(-60)  $ lfundo t12,
+    Translate 0(-100)$ lfundo t13,Translate 0(-140) $ lfundo t14,
+    Translate 0(-180)$ lfundo t15,Translate 0(-220) $ lfundo t16,
+    Translate 0(-260)$ lfundo t17,Translate 0 (-300)$ lfundo t18,
+    Translate 0(-340)$ lfundo t19,Translate 0 (-380)$ lfundo t20]
+     
+
+
+
+
+
+
+
+lfundo::(Terreno,[Obstaculo])->Picture
+lfundo (Rio v,obs)= river
+lfundo (Estrada v,obs)= road
+lfundo (Relva,obs)= grass
+
+
+
 
 
 event :: Event -> World -> IO World
@@ -87,8 +127,46 @@ event (EventKey (SpecialKey KeyEnter) Down _ _) (Opcoes Sair, jogo,i,n) =       
     do exitSuccess
 event (EventKey (SpecialKey KeySpace) Down _ _) (ModoJogo,jogo,i,n) = return $ (Pause , jogo ,i,n)
 event (EventKey (SpecialKey KeySpace) Down _ _) (Pause ,jogo,i,n) =return $  (ModoJogo , jogo ,i,n) 
-event (EventKey (SpecialKey KeyEnter) Down _ _) (PerdeuJogo, jogo,i,n) =return $  (Opcoes Normal,(Jogo (Jogador (5, 19)) (Mapa 11 [(Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum])])) ,i,n)
-event (EventKey (SpecialKey KeySpace) Down _ _) (PerdeuJogo, jogo,i,n) = return $ (Opcoes Normal,(Jogo (Jogador (5, 19)) (Mapa 11 [(Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum])])) ,i,n)
+event (EventKey (SpecialKey KeyEnter) Down _ _) (PerdeuJogo, jogo,i,n) =return $  (Opcoes Normal,(Jogo (Jogador (5, 19)) (Mapa 11 [(Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum])])) ,i,n)
+event (EventKey (SpecialKey KeySpace) Down _ _) (PerdeuJogo, jogo,i,n) = return $ (Opcoes Normal,(Jogo (Jogador (5, 19)) (Mapa 11 [(Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum])])) ,i,n)
 event (EventKey (SpecialKey KeyUp) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),i,n)   = 
     if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,n) else return $ (ModoJogo, (animaJogo (Jogo (Jogador (x, y))(Mapa l to)) (Move Cima)),i,n)
 event (EventKey (SpecialKey KeyDown) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),i,n) = 
@@ -109,7 +187,7 @@ main = do
  bonecoesq <- loadBMP "bonecoesq.bmp"
  bonecodir <- loadBMP "boneodir.bmp"
  let images = [scale 0.8 0.8 bonecoesq, scale 0.8 0.8 bonecodir]
- playIO window green  fr (initialState images) drawState event time
+ playIO window blue  fr (initialState images) drawState event time
 
 
 
