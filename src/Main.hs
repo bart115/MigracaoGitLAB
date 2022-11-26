@@ -45,7 +45,7 @@ type Time = Float
 type Images = [Picture]
 
 window :: Display
-window = InWindow "CrossyRoad" (700, 900) (0,0)
+window = InWindow "CrossyRoad" (700, 700) (0,0)
 
 fr :: Int
 fr = 50
