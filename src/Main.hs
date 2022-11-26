@@ -12,6 +12,7 @@ import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Game
 import Graphics.Gloss.Interface.IO.Game
 import System.Exit
+import System.Random
 
 
 
@@ -52,13 +53,13 @@ fr = 50
 
 initialState :: Images ->World
 initialState images = (Opcoes Normal,( Jogo (Jogador (3,3)) (Mapa 7 [(Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
-    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Rio (3),[Tronco,Tronco,Tronco,Tronco,Tronco,Tronco,Tronco]), 
     (Relva,[Arvore,Arvore,Arvore,Nenhum,Arvore,Arvore,Arvore]), 
+    (Estrada 2,[Nenhum,Carro,Nenhum,Nenhum,Nenhum,Carro,Nenhum]),
     (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
-    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
-    (Rio 1,[Nenhum,Tronco,Nenhum,Nenhum,Tronco,Nenhum,Nenhum]), 
-    (Rio (-1),[Nenhum,Tronco,Nenhum,Nenhum,Nenhum,Tronco,Nenhum]),
-    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum])])),images, 0,0)
+    (Rio 1,[Nenhum,Tronco,Nenhum,Tronco,Tronco,Tronco,Tronco]), 
+    (Rio (-1),[Tronco,Tronco,Tronco,Tronco,Nenhum,Tronco,Nenhum]),
+    (Relva,[Arvore,Nenhum,Arvore,Nenhum,Arvore,Nenhum,Arvore])])),images, 0,0)
 
 
 drawState :: World ->IO Picture
@@ -69,17 +70,17 @@ drawState (Opcoes Natal, jogo, images,n,p) =return $  Pictures [Translate (-110)
 drawState (Opcoes Sair, jogo, images,n,p) = return $ Pictures [Translate (-110) 0 $ drawOption "Normal",Translate (-110) (-70) $ drawOption "Natal", Color blue $ Translate (-110) (-140) $ drawOption "Sair"]             --desenha o menu das opçoes para sair
 drawState (ModoJogo,(Jogo (Jogador (x,y)) (Mapa l [(tf,[p1,p2,p3,p4,p5,p6,p7]),(t1,[p8,p9,p10,p11,p12,p13,p14]),(t2,[p15,p16,p17,p18,p19,p20,p21]),(t3,[p22,p23,p24,p25,p26,p27,p28]),(t4,[p29,p30,p31,p32,p33,p34,p35]),(t5,[p36,p37,p38,p39,p40,p41,p42]),(t6,[p43,p44,p45,p46,p47,p48,p49]),(t7,[p50,p51,p52,p53,p54,p55,p56])])), images,t,p) = 
     return $ Pictures $ [Translate 0 (400-(2*t/5)) $ lfundo tf ,
-        Translate 0 (300-(2*t/5))       $ lfundo t1,Translate 0 (200-(2*t/5))      $ lfundo t2, Translate 0 (100-(2*t/5))  $ lfundo t3,Translate 0 (0-(2*t/5)) $ lfundo t4, 
-        Translate 0 (-100-(2*t/5))      $ lfundo t5,Translate 0 (-200-(2*t/5))     $ lfundo t6, Translate 0 (-300-(2*t/5)) $ lfundo t7,
-        Translate (-300+(vel tf)/5) (400-(2*t/5))  $ obj tf p1 ,Translate (-200+(vel tf)/5) (400-(2*t/5))  $ obj tf p2 ,Translate (-100+(vel tf)/5) (400-(2*t/5)) $ obj tf p3,  Translate (0+(vel tf)/5) (400-(2*t/5))  $ obj tf p4, Translate (100+(vel tf)/5) (400-(2*t/5))  $ obj tf p5, Translate (200+(vel tf)/5) (400-(2*t/5))  $ obj tf p6, Translate (300+(vel tf)/5) (400-(2*t/5))  $ obj tf p7,
-        Translate (-300+(vel t1)/5) (300-(2*t/5))  $ obj t1 p8 ,Translate (-200+(vel t1)/5) (300-(2*t/5))  $ obj t1 p9 ,Translate (-100+(vel t1)/5) (300-(2*t/5)) $ obj t1 p10, Translate (0+(vel t1)/5) (300-(2*t/5))  $ obj t1 p11,Translate (100+(vel t1)/5)  (300-(2*t/5)) $ obj t1 p12,Translate (200+(vel t1)/5) (300-(2*t/5))  $ obj t1 p13,Translate (300+(vel t1)/5) (300-(2*t/5))  $ obj t1 p14,
-        Translate (-300+(vel t2)/5) (200-(2*t/5))  $ obj t2 p15,Translate (-200+(vel t2)/5) (200-(2*t/5))  $ obj t2 p16,Translate (-100+(vel t2)/5) (200-(2*t/5)) $ obj t2 p17, Translate (0+(vel t2)/5) (200-(2*t/5))  $ obj t2 p18,Translate (100+(vel t2)/5) (200-(2*t/5))  $ obj t2 p19,Translate (200+(vel t2)/5) (200-(2*t/5))  $ obj t2 p20,Translate (300+(vel t2)/5) (200-(2*t/5))  $ obj t2 p21,
-        Translate (-300+(vel t3)/5) (100-(2*t/5))  $ obj t3 p22,Translate (-200+(vel t3)/5) (100-(2*t/5))  $ obj t3 p23,Translate (-100+(vel t3)/5) (100-(2*t/5)) $ obj t3 p24, Translate (0+(vel t3)/5) (100-(2*t/5))  $ obj t3 p25,Translate (100+(vel t3)/5) (100-(2*t/5))  $ obj t3 p26,Translate (200+(vel t3)/5) (100-(2*t/5))  $ obj t3 p27,Translate (300+(vel t3)/5) (100-(2*t/5))  $ obj t3 p28,
-        Translate (-300+(vel t4)/5)   (0-(2*t/5))  $ obj t4 p29 ,Translate (-200+(vel t4)/5)   (0-(2*t/5)) $ obj t4 p30,Translate (-100+(vel t4)/5)   (0-(2*t/5)) $ obj t4 p31, Translate (0+(vel t4)/5)   (0-(2*t/5))  $ obj t4 p32,Translate (100+(vel t4)/5)   (0-(2*t/5))  $ obj t4 p33,Translate (200+(vel t4)/5) (  0-(2*t/5))  $ obj t4 p34,Translate (300+(vel t4)/5) ( 0-(2*t/5))   $ obj t4 p35,
-        Translate (-300+(vel t5)*t/5) (-100-(2*t/5)) $ obj t5 p36 ,Translate (-200+(vel t5)/5) (-100-(2*t/5))$ obj t5 p37,Translate (-100+(vel t5)/5) (-100-(2*t/5)) $ obj t5 p38,Translate (0+(vel t5)/5) (-100-(2*t/5)) $ obj t5 p39,Translate (100+(vel t5)/5) (-100-(2*t/5)) $ obj t5 p40,Translate (200+(vel t5)/5) (-100-(2*t/5)) $ obj t5 p41,Translate (300+(vel t5)/5) (-100-(2*t/5)) $ obj t5 p42,
-        Translate (-300+((vel t6)*(2*t/5))) (-200-(2*t/5)) $ obj t6 p43 ,Translate (-200+(((vel t6)*(t/5)))) (-200-(2*t/5))$ obj t6 p44,Translate (-100+((vel t6)*(2*t/5))) (-200-(2*t/5)) $ obj t6 p45,Translate (0+(((vel t6)*(2*t/5)))) (-200-(2*t/5)) $ obj t6 p46,Translate (100+(((vel t6)*(2*t/5)))) (-200-(2*t/5)) $ obj t6 p47,Translate (200+(((vel t6)*(2*t/5)))) (-200-(2*t/5)) $ obj t6 p48,Translate (300+(((vel t6)*(2*t/5)))) (-200-(2*t/5)) $ obj t6 p49,
-        Translate (-300+((vel t7)*(2*t/5))) (-300-(2*t/5)) $ obj t7 p50 ,Translate (-200+(((vel t7)*(t/5)))) (-300-(2*t/5))$ obj t7 p51,Translate (-100+((vel t7)*(2*t/5))) (-300-(2*t/5)) $ obj t7 p52,Translate (0+(((vel t7)*(2*t/5)))) (-300-(2*t/5)) $ obj t7 p53,Translate (100+(((vel t7)*(2*t/5)))) (-300-(2*t/5)) $ obj t7 p54,Translate (200+(((vel t7)*(2*t/5)))) (-300-(2*t/5)) $ obj t7 p55,Translate (300+(((vel t7)*(2*t/5)))) (-300-(2*t/5)) $ obj t7 p56,
-        Translate ((i*100)-300) (400 -(j*100)-(2*t/5)) $ boneco]                                                                                           --desenha o mapa de jogo
+        Translate 0 (300-(2*t/5))       $ lfundo t1,Translate 0 (200-(2*t/5))      $ lfundo t2, Translate 0 (100-(2*t/5))   $ lfundo t3,Translate 0 (0-(2*t/5)) $ lfundo t4, 
+        Translate 0 (-100-(2*t/5))      $ lfundo t5,Translate 0 (-200-(2*t/5))     $ lfundo t6, Translate 0 (-300-(2*t/5))  $ lfundo t7,
+        Translate (-300+((vel tf)*(2*t/5))) (400-(2*t/5))  $ obj tf p1 , Translate (-200+((vel tf)*(2*t/5))) (400-(2*t/5))  $ obj tf p2 ,Translate (-100+((vel tf)*(2*t/5))) (400-(2*t/5)) $ obj tf p3,  Translate (0+((vel tf)*(2*t/5))) (400-(2*t/5))  $ obj tf p4, Translate (100+((vel tf)*(2*t/5))) (400-(2*t/5))  $ obj tf p5, Translate (200+((vel tf)*(2*t/5))) (400-(2*t/5))  $ obj tf p6, Translate (300+((vel tf)*(2*t/5))) (400-(2*t/5))  $ obj tf p7,
+        Translate (-300+((vel t1)*(2*t/5))) (300-(2*t/5))  $ obj t1 p8 , Translate (-200+((vel t1)*(2*t/5))) (300-(2*t/5))  $ obj t1 p9 ,Translate (-100+((vel t1)*(2*t/5))) (300-(2*t/5)) $ obj t1 p10, Translate (0+((vel t1)*(2*t/5))) (300-(2*t/5))  $ obj t1 p11,Translate (100+((vel t1)*(2*t/5)))  (300-(2*t/5)) $ obj t1 p12,Translate (200+((vel t1)*(2*t/5))) (300-(2*t/5))  $ obj t1 p13,Translate (300+((vel t1)*(2*t/5))) (300-(2*t/5))  $ obj t1 p14,
+        Translate (-300+((vel t2)*(2*t/5))) (200-(2*t/5))  $ obj t2 p15, Translate (-200+((vel t2)*(2*t/5))) (200-(2*t/5))  $ obj t2 p16,Translate (-100+((vel t2)*(2*t/5))) (200-(2*t/5)) $ obj t2 p17, Translate (0+((vel t2)*(2*t/5))) (200-(2*t/5))  $ obj t2 p18,Translate (100+((vel t2)*(2*t/5))) (200-(2*t/5))  $ obj t2 p19,Translate (200+((vel t2)*(2*t/5))) (200-(2*t/5))  $ obj t2 p20,Translate (300+((vel t2)*(2*t/5))) (200-(2*t/5))  $ obj t2 p21,
+        Translate (-300+((vel t3)*(2*t/5))) (100-(2*t/5))  $ obj t3 p22, Translate (-200+((vel t3)*(2*t/5))) (100-(2*t/5))  $ obj t3 p23,Translate (-100+((vel t3)*(2*t/5))) (100-(2*t/5)) $ obj t3 p24, Translate (0+((vel t3)*(2*t/5))) (100-(2*t/5))  $ obj t3 p25,Translate (100+((vel t3)*(2*t/5))) (100-(2*t/5))  $ obj t3 p26,Translate (200+((vel t3)*(2*t/5))) (100-(2*t/5))  $ obj t3 p27,Translate (300+((vel t3)*(2*t/5))) (100-(2*t/5))  $ obj t3 p28,
+        Translate (-300+((vel t4)*(2*t/5)))   (0-(2*t/5))  $ obj t4 p29 ,Translate (-200+((vel t4)*(2*t/5)))   (0-(2*t/5))  $ obj t4 p30,Translate (-100+((vel t4)*(2*t/5)))   (0-(2*t/5)) $ obj t4 p31, Translate (0+((vel t4)*(2*t/5)))   (0-(2*t/5))  $ obj t4 p32,Translate (100+((vel t4)*(2*t/5)))   (0-(2*t/5))  $ obj t4 p33,Translate (200+((vel t4)*(2*t/5))) (  0-(2*t/5))  $ obj t4 p34,Translate (300+((vel t4)*(2*t/5))) ( 0-(2*t/5))   $ obj t4 p35,
+        Translate (-300+((vel t5)*(2*t/5))) (-100-(2*t/5)) $ obj t5 p36 ,Translate (-200+((vel t5)*(2*t/5))) (-100-(2*t/5)) $ obj t5 p37,Translate (-100+((vel t5)*(2*t/5))) (-100-(2*t/5)) $ obj t5 p38,Translate (0+((vel t5)*(2*t/5))) (-100-(2*t/5)) $ obj t5 p39,Translate (100+((vel t5)*(2*t/5))) (-100-(2*t/5)) $ obj t5 p40,Translate (200+((vel t5)*(2*t/5))) (-100-(2*t/5)) $ obj t5 p41,Translate (300+((vel t5)*(2*t/5))) (-100-(2*t/5)) $ obj t5 p42,
+        Translate (-300+((vel t6)*(2*t/5))) (-200-(2*t/5)) $ obj t6 p43 ,Translate (-200+((vel t6)*(2*t/5))) (-200-(2*t/5)) $ obj t6 p44,Translate (-100+((vel t6)*(2*t/5))) (-200-(2*t/5)) $ obj t6 p45,Translate (0+((vel t6)*(2*t/5))) (-200-(2*t/5)) $ obj t6 p46,Translate (100+((vel t6)*(2*t/5))) (-200-(2*t/5)) $ obj t6 p47,Translate (200+((vel t6)*(2*t/5))) (-200-(2*t/5)) $ obj t6 p48,Translate (300+((vel t6)*(2*t/5))) (-200-(2*t/5)) $ obj t6 p49,
+        Translate (-300+((vel t7)*(2*t/5))) (-300-(2*t/5)) $ obj t7 p50 ,Translate (-200+((vel t7)*(2*t/5))) (-300-(2*t/5)) $ obj t7 p51,Translate (-100+((vel t7)*(2*t/5))) (-300-(2*t/5)) $ obj t7 p52,Translate (0+((vel t7)*(2*t/5))) (-300-(2*t/5)) $ obj t7 p53,Translate (100+((vel t7)*(2*t/5))) (-300-(2*t/5)) $ obj t7 p54,Translate (200+((vel t7)*(2*t/5))) (-300-(2*t/5)) $ obj t7 p55,Translate (300+((vel t7)*(2*t/5))) (-300-(2*t/5)) $ obj t7 p56,
+        Translate ((i*100)-300+ (fromIntegral (aux (ty y))*(2*t/5))) (400 -(j*100)-(2*t/5)) $ boneco, drawPoints p]                                                                                           --desenha o mapa de jogo
      where
         i=fromIntegral x
         j=fromIntegral y
@@ -87,17 +88,39 @@ drawState (ModoJogo,(Jogo (Jogador (x,y)) (Mapa l [(tf,[p1,p2,p3,p4,p5,p6,p7]),(
         vel (Rio v) = l where l =fromIntegral v
         vel (Estrada v) = l where l =fromIntegral v
         vel Relva = 0
+        ty 0 = tf
+        ty 1= t1
+        ty 2= t2
+        ty 3= t3
+        ty 4= t4
+        ty 5= t5
+        ty 6= t6 
+        ty 7= t7
+        ty _= t7 
+        aux (Rio v)=if v>0 then v else (if v<0 then -v else 0)
+        aux _ = 0
+    
+
+
+                             
 
 drawOption option = Translate 0 0 $ Scale (0.5) (0.5) $ Text option
+drawPoints p = Translate 300 300 $ color red $ Scale (0.4) (0.4) $ Text (inttostri p)
+
+inttostri::Int -> String
+inttostri p = "p"
 
 obj::Terreno->Obstaculo->Picture
 obj (Rio v) Nenhum = color blue $ rectangleSolid 100 100 
-obj (Rio v) Tronco = color black $ rectangleSolid 80 80 
-obj (Estrada v) Nenhum = color black $ rectangleSolid 100 100 
+obj (Rio v) Tronco = color black $ rectangleSolid 100 70 
+obj (Estrada v) Nenhum = color cinza $ rectangleSolid 100 100 
 obj (Estrada v) Carro = color white $ rectangleSolid 80 80 
 obj (Relva) Nenhum = color green $ rectangleSolid 100 100
-obj (Relva) Arvore = color blue $ circleSolid 30
+obj (Relva) Arvore = color brown $ circleSolid 45
 obj t o = color orange $ rectangleSolid 100 100
+
+brown= makeColor 78 80 40 10 
+cinza= makeColor 0 0 0 40
 
 
 
@@ -105,10 +128,12 @@ river::Picture
 river= color blue $ rectangleSolid 700 100
 
 road::Picture
-road= color  black $ rectangleSolid 700 100
+road= color cinza $ rectangleSolid 700 100
 
 grass::Picture
 grass = color green $ rectangleSolid 700 100
+
+
      
 
 
@@ -170,7 +195,7 @@ posit  (Jogo (Jogador (x,y)) (Mapa l to)) = (x,y)
 
 
 time :: Float -> World ->IO World
-time f (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)), i,249,p) = if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to)) ==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,0,0) else return $ (ModoJogo,(deslizaJogo (p+3) (animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) (Parado))),i, 0,p+1)
+time f (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)), i,249,p) = if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to)) ==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,0,0) else return $ (ModoJogo,(deslizaJogo (p+x+y) (animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) (Parado))),i, 0,p+1)
 time f (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)), i,t,p) = if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to)) ==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,0,0) else return $ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)) , i,t+1,p+1)
 time f (m,j,i,t,p)= return $ (m,j,i,t,p)
 
@@ -180,7 +205,7 @@ main :: IO ()
 main = do
  bonecoesq <- loadBMP "bonecoesq.bmp"
  bonecodir <- loadBMP "boneodir.bmp"
- let images = [scale 0.8 0.8 bonecoesq, scale 0.8 0.8 bonecodir]
+ let images = [scale (1.1) (1.1) bonecoesq, scale (1.1) (1.1) bonecodir]
  playIO window white  fr (initialState images) drawState event time
 
 
