@@ -150,19 +150,27 @@ event (EventKey (SpecialKey KeySpace) Down _ _) (PerdeuJogo, jogo,i,n,p) = retur
     (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
     (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum])])) ,i,n,p)
 event (EventKey (SpecialKey KeyUp) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),i,n,p)   = 
-    if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) else return $ (ModoJogo, (animaJogo (Jogo (Jogador (x, y))(Mapa l to)) (Move Cima)),i,n,p)
+    if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) else return $ (ModoJogo,(Jogo (Jogador (posit  ((animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) (Move Cima))))) (Mapa l to)),i,n,p)
 event (EventKey (SpecialKey KeyDown) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) = 
-    if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) else return $ (ModoJogo, (animaJogo (Jogo (Jogador (x, y))(Mapa l to)) (Move Baixo)),i,n,p)
+    if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) else return $ (ModoJogo,(Jogo (Jogador (posit  ((animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) (Move Baixo))))) (Mapa l to)),i,n,p)
 event (EventKey (SpecialKey KeyLeft) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) = 
-    if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) else return $ (ModoJogo, (animaJogo (Jogo (Jogador (x, y))(Mapa l to)) (Move Esquerda)),i,n,p)
+    if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) else return $ (ModoJogo,(Jogo (Jogador (posit  ((animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) (Move Esquerda))))) (Mapa l to)),i,n,p)
 event (EventKey (SpecialKey KeyRight) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),i,n,p)= 
-    if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) else return $ (ModoJogo, (animaJogo (Jogo (Jogador (x, y))(Mapa l to)) (Move Direita)),i,n,p)
+    if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) else return $ (ModoJogo,(Jogo (Jogador (posit  ((animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) (Move Direita))))) (Mapa l to)),i,n,p)
 event _ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) = 
-    if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) else return $ (ModoJogo,(animaJogo (Jogo (Jogador (x, y))(Mapa l to)) Parado) ,i,n,p) 
+    if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) else return $ (ModoJogo,(Jogo (Jogador (posit  ((animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) (Parado))))) (Mapa l to)) ,i,n,p) 
 event _ w = return w
 
+
+
+
+posit::Jogo -> (Int,Int)
+posit  (Jogo (Jogador (x,y)) (Mapa l to)) = (x,y)
+
+
+
 time :: Float -> World ->IO World
-time f (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)), i,249,p) = if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to)) ==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,0,0) else return $ (ModoJogo,(deslizaJogo (p+3) (animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) (Parado)),i, 0,p+1)
+time f (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)), i,249,p) = if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to)) ==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,0,0) else return $ (ModoJogo,(deslizaJogo (p+3) (animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) (Parado))),i, 0,p+1)
 time f (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)), i,t,p) = if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to)) ==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,0,0) else return $ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)) , i,t+1,p+1)
 time f (m,j,i,t,p)= return $ (m,j,i,t,p)
 
