@@ -37,7 +37,10 @@ data Opcao = Normal
 data Menu = Opcoes Opcao
           | ModoJogo 
           | PerdeuJogo
-          | Pause 
+          | Pause Escolha
+
+data Escolha = Retomar
+             |Quit
 
 type World = (Menu, Jogo,Images, Time,Pontuação)
 type Pontuação = Int
@@ -53,9 +56,9 @@ fr = 50
 
 initialState :: Images ->World
 initialState images = (Opcoes Normal,( Jogo (Jogador (3,3)) (Mapa 7 [(Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
-    (Rio (3),[Tronco,Tronco,Tronco,Tronco,Tronco,Tronco,Tronco]), 
+    (Rio (2),[Tronco,Tronco,Tronco,Tronco,Tronco,Tronco,Tronco]), 
     (Relva,[Arvore,Arvore,Arvore,Nenhum,Arvore,Arvore,Arvore]), 
-    (Estrada 2,[Nenhum,Carro,Nenhum,Nenhum,Nenhum,Carro,Nenhum]),
+    (Estrada 1,[Nenhum,Carro,Nenhum,Nenhum,Nenhum,Carro,Nenhum]),
     (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
     (Rio 1,[Nenhum,Tronco,Nenhum,Tronco,Tronco,Tronco,Tronco]), 
     (Rio (-1),[Tronco,Tronco,Tronco,Tronco,Nenhum,Tronco,Nenhum]),
@@ -63,11 +66,12 @@ initialState images = (Opcoes Normal,( Jogo (Jogador (3,3)) (Mapa 7 [(Relva,[Nen
 
 
 drawState :: World ->IO Picture
-drawState (PerdeuJogo, jogo, images, n,p) =return $  Scale (0.5) (0.5) $ Translate (-300) 0 $ Color red $ Text "Take the L"                                                                                                --desenha o estado perdeujogo
-drawState (Pause ,jogo,images,n,p)= return $ Pictures [color red $ Translate (-10) 0 $ polygon [(0,(-40)),((-16),(-40)),((-16),0),(0,0)],color red $ Translate 20 0 $ polygon [(0,(-40)),((-16),(-40)),((-16),0),(0,0)]]   --desenha o estado pause
-drawState (Opcoes Normal, jogo, images,n,p) = return $ Pictures [Color blue $ Translate (-110) 0 $ drawOption "Normal", Translate (-110) (-70) $ drawOption "Natal",Translate (-110) (-140) $ drawOption "Sair"]           --desenha o menu das opçoes para jogar normal
-drawState (Opcoes Natal, jogo, images,n,p) =return $  Pictures [Translate (-110) 0 $ drawOption "Normal",Color blue $ Translate (-110) (-70) $ drawOption "Natal",Translate (-110) (-140) $ drawOption "Sair"]             --desenha o menu das opçoes para jogar natal
-drawState (Opcoes Sair, jogo, images,n,p) = return $ Pictures [Translate (-110) 0 $ drawOption "Normal",Translate (-110) (-70) $ drawOption "Natal", Color blue $ Translate (-110) (-140) $ drawOption "Sair"]             --desenha o menu das opçoes para sair
+drawState (PerdeuJogo, jogo, images, n,p) =return $ Scale (0.5) (0.5) $ Translate (-300) 0 $ Color red $ Text "Take the L"                                                                                                                                                                           --desenha o estado perdeujogo
+drawState (Pause Retomar ,jogo,images,n,p)= return $ Pictures [color red $ Translate (-10) 0 $ polygon [(0,(-40)),((-16),(-40)),((-16),0),(0,0)],color red $ Translate 20 0 $ polygon [(0,(-40)),((-16),(-40)),((-16),0),(0,0)],Translate 300 250 $ scale (0.4) (0.4) $ drawOption "Sair"]           --desenha o estado pause
+drawState (Pause Quit ,jogo,images,n,p)= return $ Pictures [ Translate (-10) 0 $ polygon [(0,(-40)),((-16),(-40)),((-16),0),(0,0)], Translate 20 0 $ polygon [(0,(-40)),((-16),(-40)),((-16),0),(0,0)],color red $ Translate 300 250 $ scale (0.5) (0.5) $ drawOption "Sair"]  -- desenha o estado pause 
+drawState (Opcoes Normal, jogo, images,n,p) = return $ Pictures [Color blue $ Translate (-110) 0 $ drawOption "Normal", Translate (-110) (-70) $ drawOption "Natal",Translate (-110) (-140) $ drawOption "Sair"]                                                                                     --desenha o menu das opçoes para jogar normal
+drawState (Opcoes Natal, jogo, images,n,p) =return $  Pictures [Translate (-110) 0 $ drawOption "Normal",Color blue $ Translate (-110) (-70) $ drawOption "Natal",Translate (-110) (-140) $ drawOption "Sair"]                                                                                       --desenha o menu das opçoes para jogar natal
+drawState (Opcoes Sair, jogo, images,n,p) = return $ Pictures [Translate (-110) 0 $ drawOption "Normal",Translate (-110) (-70) $ drawOption "Natal", Color blue $ Translate (-110) (-140) $ drawOption "Sair"]                                                                                       --desenha o menu das opçoes para sair
 drawState (ModoJogo,(Jogo (Jogador (x,y)) (Mapa l [(tf,[p1,p2,p3,p4,p5,p6,p7]),(t1,[p8,p9,p10,p11,p12,p13,p14]),(t2,[p15,p16,p17,p18,p19,p20,p21]),(t3,[p22,p23,p24,p25,p26,p27,p28]),(t4,[p29,p30,p31,p32,p33,p34,p35]),(t5,[p36,p37,p38,p39,p40,p41,p42]),(t6,[p43,p44,p45,p46,p47,p48,p49]),(t7,[p50,p51,p52,p53,p54,p55,p56])])), images,t,p) = 
     return $ Pictures $ [Translate 0 (400-(2*t/5)) $ lfundo tf ,
         Translate 0 (300-(2*t/5))       $ lfundo t1,Translate 0 (200-(2*t/5))      $ lfundo t2, Translate 0 (100-(2*t/5))   $ lfundo t3,Translate 0 (0-(2*t/5)) $ lfundo t4, 
@@ -80,7 +84,7 @@ drawState (ModoJogo,(Jogo (Jogador (x,y)) (Mapa l [(tf,[p1,p2,p3,p4,p5,p6,p7]),(
         Translate (-300+((vel t5)*(2*t/5))) (-100-(2*t/5)) $ obj t5 p36 ,Translate (-200+((vel t5)*(2*t/5))) (-100-(2*t/5)) $ obj t5 p37,Translate (-100+((vel t5)*(2*t/5))) (-100-(2*t/5)) $ obj t5 p38,Translate (0+((vel t5)*(2*t/5))) (-100-(2*t/5)) $ obj t5 p39,Translate (100+((vel t5)*(2*t/5))) (-100-(2*t/5)) $ obj t5 p40,Translate (200+((vel t5)*(2*t/5))) (-100-(2*t/5)) $ obj t5 p41,Translate (300+((vel t5)*(2*t/5))) (-100-(2*t/5)) $ obj t5 p42,
         Translate (-300+((vel t6)*(2*t/5))) (-200-(2*t/5)) $ obj t6 p43 ,Translate (-200+((vel t6)*(2*t/5))) (-200-(2*t/5)) $ obj t6 p44,Translate (-100+((vel t6)*(2*t/5))) (-200-(2*t/5)) $ obj t6 p45,Translate (0+((vel t6)*(2*t/5))) (-200-(2*t/5)) $ obj t6 p46,Translate (100+((vel t6)*(2*t/5))) (-200-(2*t/5)) $ obj t6 p47,Translate (200+((vel t6)*(2*t/5))) (-200-(2*t/5)) $ obj t6 p48,Translate (300+((vel t6)*(2*t/5))) (-200-(2*t/5)) $ obj t6 p49,
         Translate (-300+((vel t7)*(2*t/5))) (-300-(2*t/5)) $ obj t7 p50 ,Translate (-200+((vel t7)*(2*t/5))) (-300-(2*t/5)) $ obj t7 p51,Translate (-100+((vel t7)*(2*t/5))) (-300-(2*t/5)) $ obj t7 p52,Translate (0+((vel t7)*(2*t/5))) (-300-(2*t/5)) $ obj t7 p53,Translate (100+((vel t7)*(2*t/5))) (-300-(2*t/5)) $ obj t7 p54,Translate (200+((vel t7)*(2*t/5))) (-300-(2*t/5)) $ obj t7 p55,Translate (300+((vel t7)*(2*t/5))) (-300-(2*t/5)) $ obj t7 p56,
-        Translate ((i*100)-300+ (fromIntegral (aux (ty y))*(2*t/5))) (400 -(j*100)-(2*t/5)) $ boneco, drawPoints p]                                                                                           --desenha o mapa de jogo
+        Translate ((i*100)-300+ (fromIntegral (aux (ty y)))*(2*t/5)) (400 -(j*100)-(2*t/5)) $ boneco, drawPoints p]                                                                                           --desenha o mapa de jogo
      where
         i=fromIntegral x
         j=fromIntegral y
@@ -97,14 +101,14 @@ drawState (ModoJogo,(Jogo (Jogador (x,y)) (Mapa l [(tf,[p1,p2,p3,p4,p5,p6,p7]),(
         ty 6= t6 
         ty 7= t7
         ty _= t7 
-        aux (Rio v)=if v>0 then v else (if v<0 then -v else 0)
+        aux (Rio v )= v
         aux _ = 0
     
 
 
                              
 
-drawOption option = Translate 0 0 $ Scale (0.5) (0.5) $ Text option
+drawOption option = Translate (-100) 100 $ Scale (0.5) (0.5) $ Text option
 drawPoints p = Translate 300 300 $ color red $ Scale (0.4) (0.4) $ Text (inttostri p)
 
 inttostri::Int -> String
@@ -112,7 +116,7 @@ inttostri p = "p"
 
 obj::Terreno->Obstaculo->Picture
 obj (Rio v) Nenhum = color blue $ rectangleSolid 100 100 
-obj (Rio v) Tronco = color black $ rectangleSolid 100 70 
+obj (Rio v) Tronco = color black $ rectangleSolid 90 70 
 obj (Estrada v) Nenhum = color cinza $ rectangleSolid 100 100 
 obj (Estrada v) Carro = color white $ rectangleSolid 80 80 
 obj (Relva) Nenhum = color green $ rectangleSolid 100 100
@@ -156,10 +160,14 @@ event (EventKey (SpecialKey KeyUp) Down _ _) (Opcoes Natal, jogo,i,n,p) = return
 event (EventKey (SpecialKey KeyDown) Down _ _) (Opcoes Normal, jogo,i,n,p) = return $ (Opcoes Natal, jogo,i,n,p)                    --passa da opção jogar normal para a opção jogar natal
 event (EventKey (SpecialKey KeyDown) Down _ _) (Opcoes Natal, jogo,i,n,p) = return $ (Opcoes Sair, jogo,i,n,p)                      --passa da opção jogar natal para a opção sair
 event (EventKey (SpecialKey KeyDown) Down _ _) (Opcoes Sair, jogo,i,n,p) = return $ (Opcoes Normal, jogo,i,n,p)                     --passa da opção sair para a opção jogar normal
-event (EventKey (SpecialKey KeyEnter) Down _ _) (Opcoes Sair, jogo,i,n,p) =                                                       --sai do jogo
+event (EventKey (SpecialKey KeyEnter) Down _ _) (Opcoes Sair, jogo,i,n,p) =                                                         --sai do jogo
     do exitSuccess
-event (EventKey (SpecialKey KeySpace) Down _ _) (ModoJogo,jogo,i,n,p) = return $ (Pause , jogo ,i,n,p)
-event (EventKey (SpecialKey KeySpace) Down _ _) (Pause ,jogo,i,n,p) =return $  (ModoJogo , jogo ,i,n,p) 
+event (EventKey (SpecialKey KeySpace) Down _ _) (ModoJogo,jogo,i,n,p) = return $ (Pause Retomar, jogo ,i,n,p)
+event (EventKey (SpecialKey KeySpace) Down _ _) (Pause Retomar,jogo,i,n,p) =return $  (ModoJogo , jogo ,i,n,p) 
+event (EventKey (SpecialKey KeyUp) Down _ _) (Pause Retomar,jogo,i,n,p) =return $  (Pause Quit, jogo ,i,n,p) 
+event (EventKey (SpecialKey KeyDown) Down _ _) (Pause Quit,jogo,i,n,p) =return $  (Pause Retomar, jogo ,i,n,p) 
+event (EventKey (SpecialKey KeyEnter) Down _ _) (Pause Quit,jogo,i,n,p) =
+    do exitSuccess 
 event (EventKey (SpecialKey KeyEnter) Down _ _) (PerdeuJogo, jogo,i,n,p) =return $  (Opcoes Normal,( Jogo (Jogador (3,3)) (Mapa 7 [(Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
     (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
     (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
@@ -183,7 +191,7 @@ event (EventKey (SpecialKey KeyLeft) Down _ _) (ModoJogo, (Jogo (Jogador (x, y))
 event (EventKey (SpecialKey KeyRight) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),i,n,p)= 
     if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) else return $ (ModoJogo,(Jogo (Jogador (posit  ((animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) (Move Direita))))) (Mapa l to)),i,n,p)
 event _ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) = 
-    if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) else return $ (ModoJogo,(Jogo (Jogador (posit  ((animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) (Parado))))) (Mapa l to)) ,i,n,p) 
+    if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) else return $ (ModoJogo,(Jogo(Jogador (x, y))  (Mapa l to)) ,i,n,p) 
 event _ w = return w
 
 
@@ -203,8 +211,8 @@ time f (m,j,i,t,p)= return $ (m,j,i,t,p)
 
 main :: IO ()
 main = do
- bonecoesq <- loadBMP "bonecoesq.bmp"
- bonecodir <- loadBMP "boneodir.bmp"
+ bonecoesq <- loadBMP "boneco_perna_es.bmp"
+ bonecodir <- loadBMP "boneco_perna_di.bmp"
  let images = [scale (1.1) (1.1) bonecoesq, scale (1.1) (1.1) bonecodir]
  playIO window white  fr (initialState images) drawState event time
 
