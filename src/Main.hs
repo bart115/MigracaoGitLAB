@@ -56,7 +56,7 @@ fr = 50
 
 initialState :: Images ->World
 initialState images = (Opcoes Normal,( Jogo (Jogador (3,3)) (Mapa 7 [(Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
-    (Rio (2),[Tronco,Tronco,Tronco,Tronco,Tronco,Tronco,Tronco]), 
+    (Rio (4),[Tronco,Tronco,Tronco,Tronco,Tronco,Tronco,Tronco]), 
     (Relva,[Arvore,Arvore,Arvore,Nenhum,Arvore,Arvore,Arvore]), 
     (Estrada 1,[Nenhum,Carro,Nenhum,Nenhum,Nenhum,Carro,Nenhum]),
     (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
