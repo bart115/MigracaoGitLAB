@@ -48,14 +48,14 @@ posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) Parado |y == 0 && hatronco 
                                                                                           where posaux (Rio v) = x+v 
                                                                                                 posaux te = x
 posx (Jogo (Jogador (x,y)) (Mapa lar [])) (Move Esquerda) = (x-1) 
-posx (Jogo (Jogador (x,0)) (Mapa lar ((Rio v,obs):tf))) (Move Esquerda)=if hatronco x obs then x-1 else x-1  
+posx (Jogo (Jogador (x,0)) (Mapa lar ((Rio v,obs):tf))) (Move Esquerda)=if hatronco x obs then x+v-1 else x-1  
 posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Esquerda) |y==0 && haarvore (x-1) obs = x
                                                                      |y==0 && x==0 = 0 --posaux te
                                                                      |otherwise =  posx (Jogo (Jogador (x,y-1)) (Mapa lar tf)) (Move Esquerda) 
                                                                                          --where posaux (Rio v) = v 
                                                                                          --      posaux te = 0
 posx (Jogo (Jogador (x,y)) (Mapa lar [])) (Move Direita) = x+1
-posx (Jogo (Jogador (x,0)) (Mapa lar ((Rio v,obs):tf))) (Move Direita)=if hatronco x obs then x+1 else x+1 
+posx (Jogo (Jogador (x,0)) (Mapa lar ((Rio v,obs):tf))) (Move Direita)=if hatronco x obs then x+v+1 else x+1 
 posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) (Move Direita) |y==0 && haarvore (x+1) obs = x
                                                                     |y==0 && x==(lar-1)= x-- posaux te
                                                                     |otherwise =  posx (Jogo (Jogador (x,y-1)) (Mapa lar tf)) (Move Direita) 

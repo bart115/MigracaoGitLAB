@@ -60,7 +60,7 @@ initialState images = (Opcoes Normal,( Jogo (Jogador (3,3)) (Mapa 7 [(Relva,[Nen
     (Relva,[Arvore,Arvore,Arvore,Nenhum,Arvore,Arvore,Arvore]), 
     (Estrada 1,[Nenhum,Carro,Nenhum,Nenhum,Nenhum,Carro,Nenhum]),
     (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
-    (Rio 1,[Nenhum,Tronco,Nenhum,Tronco,Tronco,Tronco,Tronco]), 
+    (Rio 2,[Nenhum,Tronco,Nenhum,Tronco,Tronco,Tronco,Tronco]), 
     (Rio (-1),[Tronco,Tronco,Tronco,Tronco,Nenhum,Tronco,Nenhum]),
     (Relva,[Arvore,Nenhum,Arvore,Nenhum,Arvore,Nenhum,Arvore])])),images, 0,0)
 
@@ -114,6 +114,10 @@ drawPoints p = Translate 300 300 $ color red $ Scale (0.4) (0.4) $ Text (inttost
 inttostri::Int -> String
 inttostri p = "p"
 
+
+
+{-A função obj desenha os obstáculos
+-}
 obj::Terreno->Obstaculo->Picture
 obj (Rio v) Nenhum = color blue $ rectangleSolid 100 100 
 obj (Rio v) Tronco = color black $ rectangleSolid 90 70 
@@ -139,7 +143,8 @@ grass = color green $ rectangleSolid 700 100
 
 
      
-
+{-A função lfundo desenha a "linha" em função do terreno
+-}
 
 lfundo::Terreno->Picture
 lfundo (Rio v)= river
@@ -186,17 +191,25 @@ event (EventKey (SpecialKey KeyUp) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (
     if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) else return $ (ModoJogo,(Jogo (Jogador (posit  ((animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) (Move Cima))))) (Mapa l to)),i,n,p)
 event (EventKey (SpecialKey KeyDown) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) = 
     if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) else return $ (ModoJogo,(Jogo (Jogador (posit  ((animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) (Move Baixo))))) (Mapa l to)),i,n,p)
-event (EventKey (SpecialKey KeyLeft) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) = 
-    if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) else return $ (ModoJogo,(Jogo (Jogador (posit  ((animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) (Move Esquerda))))) (Mapa l to)),i,n,p)
-event (EventKey (SpecialKey KeyRight) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),i,n,p)= 
-    if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) else return $ (ModoJogo,(Jogo (Jogador (posit  ((animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) (Move Direita))))) (Mapa l to)),i,n,p)
+event (EventKey (SpecialKey KeyLeft) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),i,n,p)    | jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))==True = return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,n,p)  
+                                                                                                        | tronco2 (Jogo (Jogador (x, y)) (Mapa l to))==True = return $  (ModoJogo,(Jogo (Jogador (x-1,y)) (Mapa l to)),i,n,p)
+                                                                                                        | otherwise = return $ (ModoJogo,(Jogo (Jogador (posit  ((animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) (Move Esquerda))))) (Mapa l to)),i,n,p)
+event (EventKey (SpecialKey KeyRight) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),i,n,p)   | jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))==True = return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,n,p)  
+                                                                                                        | tronco2 (Jogo (Jogador (x, y)) (Mapa l to))==True = return $ (ModoJogo,(Jogo (Jogador (x+1,y)) (Mapa l to)),i,n,p) 
+                                                                                                        | otherwise = return $ (ModoJogo,(Jogo (Jogador (posit  ((animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) (Move Direita))))) (Mapa l to)),i,n,p)
 event _ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) = 
     if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,n,p) else return $ (ModoJogo,(Jogo(Jogador (x, y))  (Mapa l to)) ,i,n,p) 
 event _ w = return w
 
 
+{-a função tronco2 verifica se o jogador está em cima de um tronco
+-}
+tronco2::Jogo -> Bool
+tronco2 (Jogo (Jogador (x,0)) (Mapa l ((te,obs):tf))) = if hatronco x obs ==True then True else False
+tronco2 (Jogo (Jogador (x,y)) (Mapa l ((te,obs):tf))) = tronco2 (Jogo (Jogador (x,y-1)) (Mapa l (tf))) 
 
-
+{-A função posit dá as cordenadas de um jogador
+-}
 posit::Jogo -> (Int,Int)
 posit  (Jogo (Jogador (x,y)) (Mapa l to)) = (x,y)
 
