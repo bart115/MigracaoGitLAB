@@ -25,7 +25,7 @@ data Opção1 = Play
 
 data Opção2 = Resume 
             |Quit
-            |Quitandsave 
+           
 
 data Menu = Opcoes Opção1 
           |ModoJogo
@@ -44,19 +44,22 @@ window :: Display
 window = InWindow "CrossyRoad" (700, 700) (0,0)
 
 fr :: Int
-fr = 100
+fr = 120
 
 
 
 initialState :: Images ->World
-initialState images = (Opcoes Play,( Jogo (Jogador (3,3)) (Mapa 7 [(Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+initialState images = (Opcoes Play,jogoinit,Parado,images, 0,0)
+
+jogoinit::Jogo
+jogoinit = ( Jogo (Jogador (3,3)) (Mapa 7 [(Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
     (Rio (1),[Tronco,Tronco,Tronco,Tronco,Tronco,Tronco,Tronco]), 
     (Relva,[Arvore,Arvore,Arvore,Nenhum,Arvore,Arvore,Arvore]), 
     (Estrada 1,[Nenhum,Carro,Nenhum,Nenhum,Nenhum,Carro,Nenhum]),
     (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
     (Rio 2,[Nenhum,Tronco,Nenhum,Tronco,Tronco,Tronco,Tronco]), 
     (Rio (-1),[Tronco,Tronco,Tronco,Tronco,Nenhum,Tronco,Nenhum]),
-    (Relva,[Arvore,Nenhum,Arvore,Nenhum,Arvore,Nenhum,Arvore])])),Parado,images, 0,0)
+    (Relva,[Arvore,Nenhum,Arvore,Nenhum,Arvore,Nenhum,Arvore])]))
 
 
 drawState :: World ->IO Picture
@@ -97,6 +100,7 @@ drawState (ModoJogo,(Jogo (Jogador (x,y)) (Mapa l [(tf,[p1,p2,p3,p4,p5,p6,p7]),(
         ty _= t7 
         aux (Rio v )= v
         aux _ = 0
+drawstate _ = return $ rectangleSolid 700 700
 
 drawOption option = Translate (-100) 100 $ Scale (0.5) (0.5) $ Text option
 drawPoints p = Translate 270 300 $ color red $ Scale (0.4) (0.4) $ Text (show p) --where l = truncate p 
@@ -132,7 +136,7 @@ lfundo (Rio v)= river
 lfundo (Estrada v)= road
 lfundo (Relva)= grass
 
-
+    
 event :: Event -> World -> IO World
 -- Menu
 event (EventKey (SpecialKey KeyEnter) Down _ _) (Opcoes Play, jogo,jog,i,n,p) = return $ (ModoJogo, jogo,jog,i,n,p)                       --passa do menu das opçoes para o jogo
@@ -149,22 +153,9 @@ event (EventKey (SpecialKey KeySpace) Down _ _) (ModoJogo,jogo,jog,i,n,p) = retu
 event (EventKey (SpecialKey KeySpace) Down _ _) (Pause Resume,jogo,jog,i,n,p) =return $  (ModoJogo , jogo,jog,i,n,p) 
 event (EventKey (SpecialKey KeyUp) Down _ _) (Pause Resume,jogo,jog,i,n,p) =return $  (Pause Quit, jogo ,jog,i,n,p) 
 event (EventKey (SpecialKey KeyDown) Down _ _) (Pause Quit,jogo,jog,i,n,p) =return $  (Pause Resume, jogo ,jog,i,n,p) 
-event (EventKey (SpecialKey KeyEnter) Down _ _) (Pause Quit,jogo,jog,i,n,p) =
-    do exitSuccess 
-event (EventKey (SpecialKey KeyEnter) Down _ _) (PerdeuJogo, jogo,_,i,n,p) =return $  (Opcoes Play,( Jogo (Jogador (3,3)) (Mapa 7 [(Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
-    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
-    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
-    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
-    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
-    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
-    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum])])) ,Parado,i,n,p)
-event (EventKey (SpecialKey KeySpace) Down _ _) (PerdeuJogo, jogo,_,i,n,p) = return $ (Opcoes Play,( Jogo (Jogador (3,3)) (Mapa 7 [(Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
-    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
-    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
-    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
-    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
-    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
-    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum])])) ,Parado,i,n,p)
+event (EventKey (SpecialKey KeyEnter) Down _ _) (Pause Quit,jogo,jog,i,n,p) = return $ (Opcoes Play,jogo,jog,i,n,p)
+event (EventKey (SpecialKey KeyEnter) Down _ _) (PerdeuJogo, jogo,_,i,n,p) =return $  (Opcoes Play,jogoinit,Parado,i,n,p)
+event (EventKey (SpecialKey KeySpace) Down _ _) (PerdeuJogo, jogo,_,i,n,p) = return $ (Opcoes Play,jogoinit ,Parado,i,n,p)
 event (EventKey (SpecialKey KeyUp) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),_,i,n,p)   = 
      return $ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)), (Move Cima),i,n,p) 
 event (EventKey (SpecialKey KeyDown) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),_,i,n,p) = 
@@ -190,8 +181,8 @@ time f w = return $ w
 
 main :: IO ()
 main = do
- bonecoesq <- loadBMP "boneco_perna_es.bmp"
- bonecodir <- loadBMP "boneco_perna_di.bmp"
+ bonecoesq <- loadBMP "player1.bmp"
+ bonecodir <- loadBMP "player2.bmp"
  let images = [scale (1.1) (1.1) bonecoesq, scale (1.1) (1.1) bonecodir]
  playIO window white  fr (initialState images) drawState event time
 
