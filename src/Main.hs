@@ -14,8 +14,192 @@ import Graphics.Gloss.Interface.IO.Game
 import System.Exit
 import System.Random
 
+{-
+
+data Opção1 = Play
+            |Save
+            |Sair
+
+data Opção2 = Resume 
+            |Quit
+           
+
+data Menu = Opcoes Opção1 
+          |ModoJogo
+          |PerdeuJogo
+          |Pause Opção2
+
+type Pontuação = Int 
+
+type Time = Float 
+
+type Images = [Picture]
+
+type Textures = [Picture]
+
+type World = (Menu,Jogo,Jogada,Images,Textures,Time,Pontuação)
+
+window :: Display 
+window = InWindow "CrossyRoad" (700, 700) (0,0)
+
+fr :: Int
+fr = 120
 
 
+
+initialState :: Images ->Textures->World
+initialState images textures = (Opcoes Play,jogoinit,Parado,images,textures, 0,0)
+
+jogoinit::Jogo
+jogoinit = ( Jogo (Jogador (3,3)) (Mapa 7 [(Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Rio (1),[Tronco,Tronco,Tronco,Tronco,Tronco,Tronco,Tronco]), 
+    (Relva,[Arvore,Arvore,Arvore,Nenhum,Arvore,Arvore,Arvore]), 
+    (Estrada 1,[Nenhum,Carro,Nenhum,Nenhum,Nenhum,Carro,Nenhum]),
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Rio 2,[Nenhum,Tronco,Nenhum,Tronco,Tronco,Tronco,Tronco]), 
+    (Rio (-1),[Tronco,Tronco,Tronco,Tronco,Nenhum,Tronco,Nenhum]),
+    (Relva,[Arvore,Nenhum,Arvore,Nenhum,Arvore,Nenhum,Arvore])]))
+
+
+drawState :: World ->Picture
+drawState (PerdeuJogo, jogo, _, images,textures,n,p) =Scale (0.5) (0.5) (Translate (-300) 0 (Color red (Text "TAKE THE L")))                                                                                                                                                                          --desenha o estado perdeujogo
+drawState (Pause Resume ,jogo,_, images,textures,n,p)= Pictures [pause1,pause2,quitar]
+                                            where pause1= color red  (Translate (-10) 0 (polygon [(0,(-40)),((-16),(-40)),((-16),0),(0,0)]))
+                                                  pause2= color red (Translate 20 0 (polygon [(0,(-40)),((-16),(-40)),((-16),0),(0,0)])) 
+                                                  quitar= Translate 300 250 (scale (0.4) (0.4) (drawOption "QUIT") ) 
+drawState (Pause Quit ,jogo,_,images,textures,n,p)   = Pictures [pause3,pause4,quitar2]
+                                            where pause3= (Translate (-10) 0 (polygon [(0,(-40)),((-16),(-40)),((-16),0),(0,0)]))
+                                                  pause4= (Translate 20 0 (polygon [(0,(-40)),((-16),(-40)),((-16),0),(0,0)])) 
+                                                  quitar2= color red (Translate 300 250 (scale (0.4) (0.4) (drawOption "QUIT"))) 
+drawState (Opcoes Play, jogo,_, images,textures,n,p) = Pictures [opplay,opsave,opsair]
+                                           where opplay=Color blue (Translate (-110) 0 (drawOption "PLAY"))
+                                                 opsave=Translate (-110) (-70) (drawOption "SAVE")
+                                                 opsair=Translate (-110) (-140) (drawOption "QUIT") 
+drawState (Opcoes Save, jogo,_, images,textures,n,p) = Pictures [opplay2,opsave2,opsair2]
+                                           where opplay2=Translate (-110) 0 (drawOption "PLAY")
+                                                 opsave2=color blue (Translate (-110) (-70) (drawOption "SAVE"))
+                                                 opsair2=Translate (-110) (-140) (drawOption "QUIT") 
+drawState (Opcoes Sair, jogo,_, images,textures,n,p) = Pictures [opplay3,opsave3,opsair3]
+                                           where opplay3=Translate (-110) 0 (drawOption "PLAY")
+                                                 opsave3=Translate (-110) (-70) (drawOption "SAVE")
+                                                 opsair3=color blue (Translate (-110) (-140) (drawOption "QUIT"))
+drawState (ModoJogo,(Jogo (Jogador (x,y)) (Mapa lar to)),_,images,textures,n,p) = Pictures[fundos,obstaculos,playe,pontos]
+                                                                                     where fundos = desenhafundos (desenhafundosaux (Mapa lar to)) 400
+                                                                                           obstaculos = desenhaobs (Mapa lar to) 400 textures 
+                                                                                           playe =desenhaplayer (Jogo (Jogador (x,y)) (Mapa lar to)) images n
+                                                                                           pontos = desenhapoints p 
+--    desenhafundos (Mapa lar to) 400  ++ desenhaobs (Mapa lar to) 400 textures ++ desenhaplayer (Jogo (Jogador (x,y)) (Mapa lar to)) images n++ desenhapoints p 
+drawstate _ = rectangleSolid 700 700
+
+drawOption option = Translate (-100) 100 (Scale (0.5) (0.5) (Text option))
+desenhapoints p = Translate 270 300 $ color red (Scale (0.4) (0.4) (Text (show p))) --where l = truncate p 
+
+
+desenhafundosaux::Mapa->Picture
+desenhafundosaux (Mapa lar to) n1 = map f to where f (Rio v,_)= river
+                                                f (Estrada v,_)=road 
+                                                f (Relva,_)=grass                                
+
+desenhafundos1::Mapa->Int->Picture 
+desenhafundos1 (Mapa lar []) _ = blank
+desenhafundos1 (Mapa lar ((Rio v,_):tf)) n1= (Translate 0 n1 river) ++ desenhafundos1 (Mapa lar (tf)) (n1-100)
+desenhafundos1 (Mapa lar ((Estrada v,_):tf)) n1= (Translate 0 n1 road) ++ desenhafundos1 (Mapa lar (tf)) (n1-100)
+desenhafundos1 (Mapa lar ((Relva,_):tf)) n1= (Translate 0 n1 grass) ++ desenhafundos1 (Mapa lar (tf)) (n1-100)
+
+
+desenhaobs::Mapa->Int->[Picture]->Picture
+desenhaobs (Mapa lar []) n1 textures = Blank  
+desenhaobs (Mapa lar [(te,obs)]) n1 textures= (Translate 0 n1 (desenhalinha obs (-300)) )
+desenhaobs (Mapa lar ((te,obs):t)) n1 texture = (Translate 0 n1 (desenhalinha obs (-300)) ) ++ desenhaobs (Mapa lar t) (n1-100)
+
+
+desenhalinha::(Terreno,[Obstaculo])->Int->[Picture]->Picture
+desenhalinha (_,[]) n1 textures = Blank 
+desenhalinha (Rio v,(Tronco:xs)) n1 textures = (Translate n1 0 (head textures) )++ desenhalinha (Rio v,xs) n1+100 textures
+desenhalinha (Rio v,(Nenhum:xs)) n1 textures = desenhalinha (Rio v,xs) n1+100 textures   
+desenhalinha (Estrada v,(Carro:xs)) n1 textures = if v >0 then (Translate n1 0 (last (init textures))) ++ desenhalinha (Estrada v,xs) n1+100 textures else (Translate n1 0 (last textures)) ++ desenhalinha (Estrada v,xs) n1+100 textures
+desenhalinha (Estrada v,(Nenhum:xs)) n1 textures = desenhalinha (Estrada v,xs) n1+100 textures
+desenhalinha (Relva,(Arvore:xs)) n1 textures = (Translate n1 0 (head (tail textures))) ++ desenhalinha (Relva,xs) n1+100 textures
+desenhalinha (Relva,(Nenhum:xs)) n1 textures = desenhalinha (Relva,xs) n1+100 textures
+
+desenhaplayer::Jogo->Images->Float->Picture
+desenhaplayer (Jogo (Jogador (x,y)) (Mapa lar to)) images t =Translate ((i*100)-300) (400 -(j*100)) boneco 
+                               where i=fromIntegral x 
+                                     j=fromIntegral y
+                                     boneco = if (t <30 )||(t>60 && t <90) then (head images) else (last images)
+
+
+
+
+
+river::Picture
+river= color blue (rectangleSolid 700 100)
+
+road::Picture
+road= color black (rectangleSolid 700 100)
+
+grass::Picture
+grass = color green (rectangleSolid 700 100)
+
+
+
+
+    
+event :: Event -> World -> World
+-- Menu
+event (EventKey (SpecialKey KeyEnter) Down _ _) (Opcoes Play, jogo,jog,i,t,n,p) =  (ModoJogo, jogo,jog,t,i,n,p)                       --passa do menu das opçoes para o jogo
+event (EventKey (SpecialKey KeyEnter) Down _ _) (Opcoes Save, jogo,jog,i,t,n,p) =  (ModoJogo, jogo,jog,i,t,n,p)                        --passa do menu das opçoes para o jogo 
+event (EventKey (SpecialKey KeyUp) Down _ _) (Opcoes Play, jogo,jog,i,t,n,p) = (Opcoes Sair, jogo,jog,i,t,n,p)                       --passa da opção jogar normal para a opção sair
+event (EventKey (SpecialKey KeyUp) Down _ _) (Opcoes Sair, jogo,jog,i,t,n,p) =  (Opcoes Save, jogo,jog,i,t,n,p)                        --passa da opção sair para a opção jogar natal
+event (EventKey (SpecialKey KeyUp) Down _ _) (Opcoes Save, jogo,jog,i,t,n,p) =  (Opcoes Play, jogo,jog,i,t,n,p)                      --passa da opção jogar natal para a opção jogar normal
+event (EventKey (SpecialKey KeyDown) Down _ _) (Opcoes Play, jogo,jog,i,t,n,p) =  (Opcoes Save, jogo,jog,i,t,n,p)                    --passa da opção jogar normal para a opção jogar natal
+event (EventKey (SpecialKey KeyDown) Down _ _) (Opcoes Save, jogo,jog,i,t,n,p) =  (Opcoes Sair, jogo,jog,i,t,n,p)                      --passa da opção jogar natal para a opção sair
+event (EventKey (SpecialKey KeyDown) Down _ _) (Opcoes Sair, jogo,jog,i,t,n,p) = (Opcoes Play, jogo,jog,i,t,n,p)                     --passa da opção sair para a opção jogar normal
+event (EventKey (SpecialKey KeyEnter) Down _ _) (Opcoes Sair, jogo,jog,i,t,n,p) =                                                         --sai do jogo
+    do exitSuccess
+event (EventKey (SpecialKey KeySpace) Down _ _) (ModoJogo,jogo,jog,i,t,n,p) = (Pause Resume, jogo ,jog,i,t,n,p)
+event (EventKey (SpecialKey KeySpace) Down _ _) (Pause Resume,jogo,jog,i,t,n,p) =  (ModoJogo , jogo,jog,i,t,n,p) 
+event (EventKey (SpecialKey KeyUp) Down _ _) (Pause Resume,jogo,jog,i,t,n,p) = (Pause Quit, jogo ,jog,i,t,n,p) 
+event (EventKey (SpecialKey KeyDown) Down _ _) (Pause Quit,jogo,jog,i,t,n,p) =  (Pause Resume, jogo ,jog,i,t,n,p) 
+event (EventKey (SpecialKey KeyEnter) Down _ _) (Pause Quit,jogo,jog,i,t,n,p) =  (Opcoes Play,jogo,jog,i,t,n,p)
+event (EventKey (SpecialKey KeyEnter) Down _ _) (PerdeuJogo, jogo,_,i,t,n,p) =  (Opcoes Play,jogoinit,Parado,i,t,n,p)
+event (EventKey (SpecialKey KeySpace) Down _ _) (PerdeuJogo, jogo,_,i,t,n,p) =  (Opcoes Play,jogoinit ,Parado,i,t,n,p)
+event (EventKey (SpecialKey KeyUp) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),_,i,t,n,p)   = 
+     (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)), (Move Cima),i,t,n,p) 
+event (EventKey (SpecialKey KeyDown) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),_,i,t,n,p) = 
+     (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),(Move Baixo),i,t,n,p)
+event (EventKey (SpecialKey KeyLeft) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),_,i,t,n,p)   =
+     (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),(Move Esquerda),i,t,n,p) 
+event (EventKey (SpecialKey KeyRight) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),_,i,t,n,p) =
+     (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),(Move Direita) ,i,t,n,p) 
+event _ w =  w
+
+
+
+time :: Float -> World ->World
+time f (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),jog,i,t,99,p) = if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to)) ==True then (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),jog,i,0,0) else (ModoJogo,(deslizaJogo (p+x+y) (animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) jog)),Parado,i,t, 0,p+1)  
+time f (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),jog,i,t,n,p) = if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to)) ==True then (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),jog,i,0,0) else (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)) ,jog,i,t,n+1,p+1)
+time f w = w 
+
+
+
+
+
+
+
+main :: IO ()
+main = do
+ bonecoesq <- loadBMP "player1.bmp"
+ bonecodir <- loadBMP "player2.bmp"
+ log <- loadBMP "logex.bmp"
+ tree <- loadBMP "treeex.bmp"
+ car1 <- loadBMP "car1.bmp"
+ car2 <- loadBMP "car2.bmp"
+ let images = [scale (1.1) (1.1) bonecoesq, scale (1.1) (1.1) bonecodir]
+ let textures = [scale (1.1) (1.1) log,scale (1.1) (1.1) tree,scale (1.1) (1.1) car1,scale (1.1) (1.1) car2 ]
+ play window white  fr (initialState images textures) drawState event time
+
+-}
 
 
 
@@ -85,7 +269,7 @@ drawState (ModoJogo,(Jogo (Jogador (x,y)) (Mapa l [(tf,[p1,p2,p3,p4,p5,p6,p7]),(
      where
         i=fromIntegral x
         j=fromIntegral y
-        boneco = if (t <25 )||(t>50 && t <75)||(t>100 && t<125 )||(t>150 && t<175 )||(t>200 &&t<225)  then (head images) else (last images)
+        boneco = if (t <25 )||(t>50 && t <75) then (head images) else (last images)
         vel (Rio v) = l where l =fromIntegral v
         vel (Estrada v) = l where l =fromIntegral v
         vel Relva = 0
@@ -107,15 +291,15 @@ drawPoints p = Translate 270 300 $ color red $ Scale (0.4) (0.4) $ Text (show p)
 
 
 obj::Terreno->Obstaculo->Picture
-obj (Rio v) Nenhum = color blue $ rectangleSolid 100 100 
+obj (Rio v) Nenhum = Blank --color blue $ rectangleSolid 100 100 
 obj (Rio v) Tronco = color black $ rectangleSolid 90 70 
-obj (Estrada v) Nenhum = color cinza $ rectangleSolid 100 100 
+obj (Estrada v) Nenhum = Blank -- color cinza $ rectangleSolid 100 100 
 obj (Estrada v) Carro = color white $ rectangleSolid 80 80 
-obj (Relva) Nenhum = color green $ rectangleSolid 100 100
+obj (Relva) Nenhum = Blank -- color green $ rectangleSolid 100 100
 obj (Relva) Arvore = color brown $ circleSolid 45
-obj t o = color orange $ rectangleSolid 100 100
+obj t o = Blank 
 
-brown= makeColor 78 80 40 10 
+brown= makeColor 60 30 10 60 
 cinza= makeColor 0 0 0 40
 
 
@@ -185,8 +369,6 @@ main = do
  bonecodir <- loadBMP "player2.bmp"
  let images = [scale (1.1) (1.1) bonecoesq, scale (1.1) (1.1) bonecodir]
  playIO window white  fr (initialState images) drawState event time
-
-
 
 {-a função princpal q usei foi a playIO 
 tem 50 frames por segundo
