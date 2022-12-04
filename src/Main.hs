@@ -14,7 +14,7 @@ import Graphics.Gloss.Interface.IO.Game
 import System.Exit
 import System.Random
 
-
+{-
 data Opção1 = Play
             |Save
             |Sair
@@ -165,7 +165,8 @@ main = do
  car1 <- loadBMP "carro.bmp"
  let images = [scale (1.1) (1.1) bonecoesq, scale (1.1) (1.1) bonecodir,scale (0.6) (0.6) log,scale (1.8) (1.8) tree,scale (0.8) (0.8)  car1]
  playIO window white  fr (initialState images) drawState event time
-{-
+ -}
+
 data Opção1 = Play
             |Save
             |Sair
@@ -232,7 +233,7 @@ drawState (ModoJogo,(Jogo (Jogador (x,y)) (Mapa l [(tf,[p1,p2,p3,p4,p5,p6,p7]),(
      where
         k=fromIntegral x
         j=fromIntegral y
-        boneco = if (t <25 )||(t>50 && t <75) then (head i) else (last i )
+        boneco = if (t <25 )||(t>50 && t <75) then (head i) else (head (tail i ))
         vel (Rio v) = l where l =fromIntegral v
         vel (Estrada v) = l where l =fromIntegral v
         vel Relva = 0
@@ -254,13 +255,10 @@ drawPoints p = Translate 270 300 $ color red $ Scale (0.4) (0.4) $ Text (show p)
 
 
 obj::Terreno->Obstaculo->Images->Picture
-obj (Rio v) Nenhum images= Blank --color blue $ rectangleSolid 100 100 
-obj (Rio v) Tronco images = color black $ rectangleSolid 90 70 
-obj (Estrada v) Nenhum images= Blank -- color cinza $ rectangleSolid 100 100 
-obj (Estrada v) Carro images=  color white $ rectangleSolid 80 80 
-obj (Relva) Nenhum images = Blank -- color green $ rectangleSolid 100 100
-obj (Relva) Arvore images = color brown $ circleSolid 45
-obj t o images = Blank 
+obj (Rio v) Tronco images = Translate 0 (-100) $ last (init (init images))--color black $ rectangleSolid 90 70 
+obj (Estrada v) Carro images=  Translate 0 (-30) $ last images--color white $ rectangleSolid 80 80 
+obj (Relva) Arvore images = Translate 10 (-30) $ last (init images)--color brown $ circleSolid 45
+obj _ _ _ = Blank 
 
 brown= makeColor 60 30 10 60 
 cinza= makeColor 0 0 0 40
@@ -330,10 +328,13 @@ main :: IO ()
 main = do
  bonecoesq <- loadBMP "player1.bmp"
  bonecodir <- loadBMP "player2.bmp"
- let images = [scale (1.1) (1.1) bonecoesq, scale (1.1) (1.1) bonecodir]
+ log <- loadBMP "tronco.bmp"
+ tree <- loadBMP "arvore1.bmp"
+ car1 <- loadBMP "carro.bmp"
+ let images = [scale (1.1) (1.1) bonecoesq, scale (1.1) (1.1) bonecodir,scale (0.5) (0.5) log,scale (2) (2) tree,scale (0.9) (0.9)  car1]
  playIO window white  fr (initialState images) drawState event time
 
--}
+
 {-
 
 data Opção1 = Play
