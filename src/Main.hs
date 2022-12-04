@@ -51,6 +51,157 @@ jogoinit::Jogo
 jogoinit = ( Jogo (Jogador (3,3)) (Mapa 7 [(Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
     (Rio (1),[Tronco,Tronco,Tronco,Tronco,Tronco,Tronco,Tronco]), 
     (Relva,[Arvore,Arvore,Arvore,Nenhum,Arvore,Arvore,Arvore]), 
+    (Estrada 1,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Carro,Nenhum]),
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Rio 2,[Nenhum,Tronco,Nenhum,Tronco,Tronco,Tronco,Tronco]), 
+    (Rio (-1),[Tronco,Tronco,Tronco,Tronco,Nenhum,Tronco,Nenhum]),
+    (Relva,[Arvore,Nenhum,Arvore,Nenhum,Arvore,Nenhum,Arvore])]))
+
+
+drawState :: World ->IO Picture
+drawState (PerdeuJogo, jogo, _, images, n,p) =return $ Scale (0.5) (0.5) $ Translate (-300) 0 $ Color red $ Text "TAKE THE L"                                                                                                                                                                           --desenha o estado perdeujogo
+drawState (Pause Resume ,jogo,_, images,n,p)= return $ Pictures [color red $ Translate (-10) 0 $ polygon [(0,(-40)),((-16),(-40)),((-16),0),(0,0)],color red $ Translate 20 0 $ polygon [(0,(-40)),((-16),(-40)),((-16),0),(0,0)],Translate 300 250 $ scale (0.4) (0.4) $ drawOption "QUIT"]           --desenha o estado pause
+drawState (Pause Quit ,jogo,_,images,n,p)= return $ Pictures [ Translate (-10) 0 $ polygon [(0,(-40)),((-16),(-40)),((-16),0),(0,0)], Translate 20 0 $ polygon [(0,(-40)),((-16),(-40)),((-16),0),(0,0)],color red $ Translate 300 250 $ scale (0.5) (0.5) $ drawOption "QUIT"]  -- desenha o estado pause 
+drawState (Opcoes Play, jogo,_, images,n,p) = return $ Pictures [Color blue $ Translate (-110) 0 $ drawOption "PLAY", Translate (-110) (-70) $ drawOption "SAVE",Translate (-110) (-140) $ drawOption "QUIT"]                                                                                     --desenha o menu das opçoes para jogar normal
+drawState (Opcoes Save, jogo,_, images,n,p) =return $  Pictures [Translate (-110) 0 $ drawOption "PLAY",Color blue $ Translate (-110) (-70) $ drawOption "SAVE",Translate (-110) (-140) $ drawOption "QUIT"]                                                                                       --desenha o menu das opçoes para jogar natal
+drawState (Opcoes Sair, jogo,_, images,n,p) = return $ Pictures [Translate (-110) 0 $ drawOption "PLAY",Translate (-110) (-70) $ drawOption "SAVE", Color blue $ Translate (-110) (-140) $ drawOption "QUIT"]                                                                                       --desenha o menu das opçoes para sair
+drawstate (ModoJogo,(Jogo (Jogador (x,y)) (Mapa lar l)),_,images,t,p)= return $ Pictures [(mapa2 (mapa1 (Mapa lar l) 400 t)),(mapa4 (mapa3 (Mapa lar l) 400 (-300) t images)),(Translate ((i*100)-300) (400 -(j*100)-(t)) $ boneco),drawPoints p ]
+                                                                                                                                                                                             where i=fromIntegral x 
+                                                                                                                                                                                                   j=fromIntegral y 
+                                                                                                                                                                                                   boneco = if (t <25 )||(t>50 && t <75) then (head images) else (head (tail images ))
+drawstate _ = return $ Blank
+
+drawOption option = Translate (-100) 100 $ Scale (0.5) (0.5) $ Text option
+drawPoints p = Translate 270 300 $ color red $ Scale (0.4) (0.4) $ Text (show p) 
+
+
+mapa1::Mapa->Float->Float->[(Terreno,Float,Float)]
+mapa1 (Mapa lar []) _ _ = []
+mapa1 (Mapa lar ((te,obs):tf)) a t= (te,a,t):mapa1 (Mapa lar tf) (a-100) t
+
+mapa2::[(Terreno,Float,Float)]->Picture
+mapa2 l = Pictures (map f l) 
+                         where f (te,a,t) = Translate 0 (a-t) $ (lfundo te) 
+
+mapa3::Mapa->Float->Float->Float->Images->[(Terreno,Obstaculo,Float,Float,Images)]
+mapa3 (Mapa lar []) _ _ _ _ = []
+mapa3 (Mapa lar ((te,[]):tf)) a l t textures = mapa3 (Mapa lar (tf)) (a-100) (-300) t textures
+mapa3 (Mapa lar ((te,(ob1:obs)):tf)) a l t textures = (te,ob1,a-t,l+((vel te)* t),textures):mapa3 (Mapa lar ((te,obs):tf)) a (l+100) t textures 
+                                                                    where vel (Rio v) = fromIntegral v
+                                                                          vel (Estrada v) = fromIntegral v 
+                                                                          vel Relva = 0 
+
+mapa4::[(Terreno,Obstaculo,Float,Float,Images)]->Picture
+mapa4 l = Pictures (map f l) 
+              where f (te,obs,a,l,textures) = Translate a l $ (obj te obs textures) 
+
+obj::Terreno->Obstaculo->Images->Picture
+obj (Rio v) Nenhum images= Blank --color blue $ rectangleSolid 100 100 
+obj (Rio v) Tronco images = Translate 0 (-100) $ last (init (init images))
+obj (Estrada v) Nenhum images= Blank -- color cinza $ rectangleSolid 100 100 
+obj (Estrada v) Carro images=  Translate 0 (-50) $ last images
+obj (Relva) Nenhum images = Blank -- color green $ rectangleSolid 100 100
+obj (Relva) Arvore images = Translate 10 (-30) $ last (init images)
+obj _ _ images = Blank 
+
+
+brown= makeColor 60 30 10 60 
+cinza= makeColor 0 0 0 40
+
+lfundo::Terreno->Picture
+lfundo (Rio v)= color blue $ rectangleSolid 700 100
+lfundo (Estrada v)= color cinza $ rectangleSolid 700 100
+lfundo (Relva)= color green $ rectangleSolid 700 100
+
+
+event :: Event -> World -> IO World
+-- Menu
+event (EventKey (SpecialKey KeyEnter) Down _ _) (Opcoes Play, jogo,jog,i,n,p) = return $ (ModoJogo, jogo,jog,i,n,p)                       --passa do menu das opçoes para o jogo
+event (EventKey (SpecialKey KeyEnter) Down _ _) (Opcoes Save, jogo,jog,i,n,p) = return $ (ModoJogo, jogo,jog,i,n,p)                        --passa do menu das opçoes para o jogo 
+event (EventKey (SpecialKey KeyUp) Down _ _) (Opcoes Play, jogo,jog,i,n,p) = return $ (Opcoes Sair, jogo,jog,i,n,p)                       --passa da opção jogar normal para a opção sair
+event (EventKey (SpecialKey KeyUp) Down _ _) (Opcoes Sair, jogo,jog,i,n,p) = return $ (Opcoes Save, jogo,jog,i,n,p)                        --passa da opção sair para a opção jogar natal
+event (EventKey (SpecialKey KeyUp) Down _ _) (Opcoes Save, jogo,jog,i,n,p) = return $ (Opcoes Play, jogo,jog,i,n,p)                      --passa da opção jogar natal para a opção jogar normal
+event (EventKey (SpecialKey KeyDown) Down _ _) (Opcoes Play, jogo,jog,i,n,p) = return $ (Opcoes Save, jogo,jog,i,n,p)                    --passa da opção jogar normal para a opção jogar natal
+event (EventKey (SpecialKey KeyDown) Down _ _) (Opcoes Save, jogo,jog,i,n,p) = return $ (Opcoes Sair, jogo,jog,i,n,p)                      --passa da opção jogar natal para a opção sair
+event (EventKey (SpecialKey KeyDown) Down _ _) (Opcoes Sair, jogo,jog,i,n,p) = return $ (Opcoes Play, jogo,jog,i,n,p)                     --passa da opção sair para a opção jogar normal
+event (EventKey (SpecialKey KeyEnter) Down _ _) (Opcoes Sair, jogo,jog,i,n,p) =                                                         --sai do jogo
+    do exitSuccess
+event (EventKey (SpecialKey KeySpace) Down _ _) (ModoJogo,jogo,jog,i,n,p) = return $ (Pause Resume, jogo ,jog,i,n,p)
+event (EventKey (SpecialKey KeySpace) Down _ _) (Pause Resume,jogo,jog,i,n,p) =return $  (ModoJogo , jogo,jog,i,n,p) 
+event (EventKey (SpecialKey KeyUp) Down _ _) (Pause Resume,jogo,jog,i,n,p) =return $  (Pause Quit, jogo ,jog,i,n,p) 
+event (EventKey (SpecialKey KeyDown) Down _ _) (Pause Quit,jogo,jog,i,n,p) =return $  (Pause Resume, jogo ,jog,i,n,p) 
+event (EventKey (SpecialKey KeyEnter) Down _ _) (Pause Quit,jogo,jog,i,n,p) = return $ (Opcoes Play,jogo,jog,i,n,p)
+event (EventKey (SpecialKey KeyEnter) Down _ _) (PerdeuJogo, jogo,_,i,n,p) =return $  (Opcoes Play,jogoinit,Parado,i,n,p)
+event (EventKey (SpecialKey KeySpace) Down _ _) (PerdeuJogo, jogo,_,i,n,p) = return $ (Opcoes Play,jogoinit ,Parado,i,n,p)
+event (EventKey (SpecialKey KeyUp) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),_,i,n,p)   = 
+     return $ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)), (Move Cima),i,n,p) 
+event (EventKey (SpecialKey KeyDown) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),_,i,n,p) = 
+     return $ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),(Move Baixo),i,n,p)
+event (EventKey (SpecialKey KeyLeft) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),_,i,n,p)   =
+     return $ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),(Move Esquerda),i,n,p) 
+event (EventKey (SpecialKey KeyRight) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),_,i,n,p) =
+     return $ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),(Move Direita) ,i,n,p) 
+event _ w = return w
+
+
+
+time :: Float -> World ->IO World
+time f (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),jog,i,99,p) = if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to)) ==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),jog,i,0,0) else return $ (ModoJogo,(deslizaJogo (p+x+y) (animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) jog)),Parado,i, 0,p+1)  
+time f (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),jog,i,t,p) = if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to)) ==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),jog,i,0,0) else return $ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)) ,jog,i,t+1,p+1)
+time f w = return $ w
+
+
+
+
+
+
+
+main :: IO ()
+main = do
+ bonecoesq <- loadBMP "player1.bmp"
+ bonecodir <- loadBMP "player2.bmp"
+ log <- loadBMP "tronco.bmp"
+ tree <- loadBMP "arvore1.bmp"
+ car1 <- loadBMP "carro.bmp"
+ let images = [scale (1.1) (1.1) bonecoesq, scale (1.1) (1.1) bonecodir,scale (0.6) (0.6) log,scale (1.8) (1.8) tree,scale (0.8) (0.8)  car1]
+ playIO window white  fr (initialState images) drawState event time
+{-
+data Opção1 = Play
+            |Save
+            |Sair
+
+data Opção2 = Resume 
+            |Quit
+           
+
+data Menu = Opcoes Opção1 
+          |ModoJogo
+          |PerdeuJogo
+          |Pause Opção2
+
+type Pontuação = Int 
+
+type Time = Float 
+
+type Images = [Picture]
+
+type World = (Menu,Jogo,Jogada,Images,Time,Pontuação)
+
+window :: Display 
+window = InWindow "CrossyRoad" (700, 700) (0,0)
+
+fr :: Int
+fr = 120
+
+
+
+initialState :: Images ->World
+initialState images = (Opcoes Play,jogoinit,Parado,images, 0,0)
+
+jogoinit::Jogo
+jogoinit = ( Jogo (Jogador (3,3)) (Mapa 7 [(Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Rio (1),[Tronco,Tronco,Tronco,Tronco,Tronco,Tronco,Tronco]), 
+    (Relva,[Arvore,Arvore,Arvore,Nenhum,Arvore,Arvore,Arvore]), 
     (Estrada 1,[Nenhum,Carro,Nenhum,Nenhum,Nenhum,Carro,Nenhum]),
     (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
     (Rio 2,[Nenhum,Tronco,Nenhum,Tronco,Tronco,Tronco,Tronco]), 
@@ -181,6 +332,8 @@ main = do
  bonecodir <- loadBMP "player2.bmp"
  let images = [scale (1.1) (1.1) bonecoesq, scale (1.1) (1.1) bonecodir]
  playIO window white  fr (initialState images) drawState event time
+
+-}
 {-
 
 data Opção1 = Play
@@ -333,10 +486,11 @@ event (EventKey (SpecialKey KeyEnter) Down _ _) (PerdeuJogo, jogo,_,i,n,p) =  (O
 event (EventKey (SpecialKey KeySpace) Down _ _) (PerdeuJogo, jogo,_,i,n,p) =  (Opcoes Play,jogoinit ,Parado,i,n,p)
 event (EventKey (SpecialKey KeyUp) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),_,i,n,p)   = 
      (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)), (Move Cima),i,n,p) 
-event (EventKey (SpecialKey KeyDown) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),_,i,n,p) = 
-     (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),(Move Baixo),i,n,p)
-event (EventKey (SpecialKey KeyLeft) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),_,i,n,p)   =
-     (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),(Move Esquerda),i,n,p) 
+event (EventKey (SpecialKey KeyDown) Down _ _) (ModoJogo, (Jogo (Jogador (x log <- loadBMP "logex.bmp"
+ tree <- loadBMP "treeex.bmp"
+ car1 <- loadBMP "car1.bmp"
+ car2 <- loadBMP "car2.bmp"
+ let images = [scale (1.1) (1.1) bonecoesq, scale (1.1) (1.1) bonecodir,scale (1.1) (1.1) log,scale (1.1) (1.1) tree,scale (1.1) (1.1) car1,scale (1.1) (1.1) car2]
 event (EventKey (SpecialKey KeyRight) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),_,i,n,p) =
      (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),(Move Direita) ,i,n,p) 
 event _ w =  w
