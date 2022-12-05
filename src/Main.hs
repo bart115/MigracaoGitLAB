@@ -14,7 +14,7 @@ import Graphics.Gloss.Interface.IO.Game
 import System.Exit
 import System.Random
 
-{-
+
 data Opção1 = Play
             |Save
             |Sair
@@ -37,7 +37,7 @@ type Images = [Picture]
 type World = (Menu,Jogo,Jogada,Images,Time,Pontuação)
 
 window :: Display 
-window = InWindow "CrossyRoad" (700, 700) (0,0)
+window = InWindow "CrossyRoad: The Indie Game" (700, 700) (0,0)
 
 fr :: Int
 fr = 120
@@ -65,10 +65,10 @@ drawState (Pause Quit ,jogo,_,images,n,p)= return $ Pictures [ Translate (-10) 0
 drawState (Opcoes Play, jogo,_, images,n,p) = return $ Pictures [Color blue $ Translate (-110) 0 $ drawOption "PLAY", Translate (-110) (-70) $ drawOption "SAVE",Translate (-110) (-140) $ drawOption "QUIT"]                                                                                     --desenha o menu das opçoes para jogar normal
 drawState (Opcoes Save, jogo,_, images,n,p) =return $  Pictures [Translate (-110) 0 $ drawOption "PLAY",Color blue $ Translate (-110) (-70) $ drawOption "SAVE",Translate (-110) (-140) $ drawOption "QUIT"]                                                                                       --desenha o menu das opçoes para jogar natal
 drawState (Opcoes Sair, jogo,_, images,n,p) = return $ Pictures [Translate (-110) 0 $ drawOption "PLAY",Translate (-110) (-70) $ drawOption "SAVE", Color blue $ Translate (-110) (-140) $ drawOption "QUIT"]                                                                                       --desenha o menu das opçoes para sair
-drawstate (ModoJogo,(Jogo (Jogador (x,y)) (Mapa lar l)),_,images,t,p)= return $ Pictures [(mapa2 (mapa1 (Mapa lar l) 400 t)),(mapa4 (mapa3 (Mapa lar l) 400 (-300) t images)),(Translate ((i*100)-300) (400 -(j*100)-(t)) $ boneco),drawPoints p ]
-                                                                                                                                                                                             where i=fromIntegral x 
-                                                                                                                                                                                                   j=fromIntegral y 
-                                                                                                                                                                                                   boneco = if (t <25 )||(t>50 && t <75) then (head images) else (head (tail images ))
+drawState (ModoJogo,(Jogo (Jogador (x,y)) (Mapa lar l)),_,images,t,p)= return $ Pictures [(mapa2 (mapa1 (Mapa lar l) 400 t)),(mapa4 (mapa3 (Mapa lar l) (-300) 400 t images)),(Translate ((i*100)-300) (400 -(j*100)-(t)) $ boneco),drawPoints p ]
+                                                            where i=fromIntegral x 
+                                                                  j=fromIntegral y 
+                                                                  boneco = if (t <25 )||(t>50 && t <75) then Translate 0 15 $ (head images) else Translate 0 15 $ (head (tail images ))
 drawstate _ = return $ Blank
 
 drawOption option = Translate (-100) 100 $ Scale (0.5) (0.5) $ Text option
@@ -85,27 +85,22 @@ mapa2 l = Pictures (map f l)
 
 mapa3::Mapa->Float->Float->Float->Images->[(Terreno,Obstaculo,Float,Float,Images)]
 mapa3 (Mapa lar []) _ _ _ _ = []
-mapa3 (Mapa lar ((te,[]):tf)) a l t textures = mapa3 (Mapa lar (tf)) (a-100) (-300) t textures
-mapa3 (Mapa lar ((te,(ob1:obs)):tf)) a l t textures = (te,ob1,a-t,l+((vel te)* t),textures):mapa3 (Mapa lar ((te,obs):tf)) a (l+100) t textures 
+mapa3 (Mapa lar ((te,[]):tf)) l a t textures = mapa3 (Mapa lar (tf)) (-300) (a-100) t textures
+mapa3 (Mapa lar ((te,(ob1:obs)):tf)) l a t textures = (te,ob1,l+((vel te)* t),a-t,textures):mapa3 (Mapa lar ((te,obs):tf)) (l+100) a t textures 
                                                                     where vel (Rio v) = fromIntegral v
                                                                           vel (Estrada v) = fromIntegral v 
                                                                           vel Relva = 0 
 
 mapa4::[(Terreno,Obstaculo,Float,Float,Images)]->Picture
 mapa4 l = Pictures (map f l) 
-              where f (te,obs,a,l,textures) = Translate a l $ (obj te obs textures) 
+              where f (te,obs,l,a,textures) = Translate l a $ (obj te obs textures) 
 
-obj::Terreno->Obstaculo->Images->Picture
-obj (Rio v) Nenhum images= Blank --color blue $ rectangleSolid 100 100 
-obj (Rio v) Tronco images = Translate 0 (-100) $ last (init (init images))
-obj (Estrada v) Nenhum images= Blank -- color cinza $ rectangleSolid 100 100 
-obj (Estrada v) Carro images=  Translate 0 (-50) $ last images
-obj (Relva) Nenhum images = Blank -- color green $ rectangleSolid 100 100
-obj (Relva) Arvore images = Translate 10 (-30) $ last (init images)
+obj::Terreno->Obstaculo->Images->Picture  
+obj (Rio v) Tronco images = Translate 0 (-100) $ last (init (init images))  
+obj (Estrada v) Carro images=  Translate 0 (-30) $ last images
+obj (Relva) Arvore images = Translate 10 (-20) $ last (init images)
 obj _ _ images = Blank 
 
-
-brown= makeColor 60 30 10 60 
 cinza= makeColor 0 0 0 40
 
 lfundo::Terreno->Picture
@@ -163,9 +158,12 @@ main = do
  log <- loadBMP "tronco.bmp"
  tree <- loadBMP "arvore1.bmp"
  car1 <- loadBMP "carro.bmp"
- let images = [scale (1.1) (1.1) bonecoesq, scale (1.1) (1.1) bonecodir,scale (0.6) (0.6) log,scale (1.8) (1.8) tree,scale (0.8) (0.8)  car1]
+ let images = [scale (1.1) (1.1) bonecoesq, scale (1.1) (1.1) bonecodir,scale (0.6) (0.6) log,scale 2 2 tree,scale (0.8) (1.2)  car1]
  playIO window white  fr (initialState images) drawState event time
- -}
+ 
+{-
+
+
 
 data Opção1 = Play
             |Save
@@ -333,7 +331,7 @@ main = do
  car1 <- loadBMP "carro.bmp"
  let images = [scale (1.1) (1.1) bonecoesq, scale (1.1) (1.1) bonecodir,scale (0.5) (0.5) log,scale (2) (2) tree,scale (0.9) (0.9)  car1]
  playIO window white  fr (initialState images) drawState event time
-
+-}
 
 {-
 
