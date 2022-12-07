@@ -14,7 +14,7 @@ import Graphics.Gloss.Interface.IO.Game
 import System.Exit
 import System.Random
 
-
+{-
 
 data Opção1 = Play
             |Save
@@ -191,7 +191,189 @@ main = do
  car2 <- loadBMP "carro3.bmp"
  let images = [scale (1.1) (1.1) bonecoesq, scale (1.1) (1.1) bonecodir,scale (0.6) (0.6) log,scale 2 2 tree,scale (0.8) (1.2)  car1,scale (0.5) (0.8)  car2]
  playIO window white  fr (initialState images) drawState event time
+-}
 
+data Opção1 = Play
+            |Save
+            |Sair
+
+data Opção2 = Resume 
+            |Quit
+           
+
+data Menu = Opcoes Opção1 
+          |ModoJogo
+          |PerdeuJogo
+          |Pause Opção2
+
+type Pontuação = Int 
+
+type Time = Float 
+
+type Images = [Picture]
+
+type World = (Menu,Jogo,Jogada,Images,Time,Pontuação)
+
+window :: Display 
+window = InWindow "CrossyRoad: The Indie Game" (950,950) (0,0)
+
+fr :: Int
+fr = 80
+
+
+
+initialState :: Images ->World
+initialState images = (Opcoes Play,jogoinit,Parado,images, 0,0)
+
+jogoinit::Jogo
+jogoinit = ( Jogo (Jogador (10,8)) (Mapa 19 [(Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Rio (1),[Tronco,Nenhum,Tronco,Tronco,Tronco,Nenhum,Tronco,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Estrada (-1),[Carro,Carro,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Estrada 2,[Carro,Nenhum,Nenhum,Nenhum,Nenhum,Carro,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Rio 2,[Nenhum,Tronco,Nenhum,Tronco,Tronco,Tronco,Tronco,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Rio (-1),[Tronco,Tronco,Tronco,Tronco,Nenhum,Tronco,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Relva,[Arvore,Nenhum,Arvore,Nenhum,Arvore,Nenhum,Arvore,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Rio (1),[Tronco,Nenhum,Tronco,Tronco,Tronco,Nenhum,Tronco,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Estrada (-1),[Carro,Carro,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Estrada 2,[Carro,Nenhum,Nenhum,Nenhum,Nenhum,Carro,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Rio 2,[Nenhum,Tronco,Nenhum,Tronco,Tronco,Tronco,Tronco,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Rio (-1),[Tronco,Tronco,Tronco,Tronco,Nenhum,Tronco,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Relva,[Arvore,Nenhum,Arvore,Nenhum,Arvore,Nenhum,Arvore,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Relva,[Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]),
+    (Rio (1),[Tronco,Nenhum,Tronco,Tronco,Tronco,Nenhum,Tronco,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Estrada (-1),[Carro,Carro,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum]), 
+    (Estrada 2,[Carro,Nenhum,Nenhum,Nenhum,Nenhum,Carro,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum,Nenhum])]))
+
+
+drawState :: World ->IO Picture
+drawState (PerdeuJogo, jogo, _, images, n,p) =return $ Pictures [Scale (0.5) (0.5) $ Translate (-300) 0 $ Color red $ Text "TAKE THE L" , Translate (-200) (-200) $ Text ("Score:" ++ (show p))]                                                                                                                                                                          --desenha o estado perdeujogo
+drawState (Pause Resume ,jogo,_, images,n,p)= return $ Pictures [color red $ Translate (-10) 0 $ polygon [(0,(-40)),((-16),(-40)),((-16),0),(0,0)],color red $ Translate 20 0 $ polygon [(0,(-40)),((-16),(-40)),((-16),0),(0,0)],Translate 300 250 $ scale (0.4) (0.4) $ drawOption "QUIT"]           --desenha o estado pause
+drawState (Pause Quit ,jogo,_,images,n,p)= return $ Pictures [ Translate (-10) 0 $ polygon [(0,(-40)),((-16),(-40)),((-16),0),(0,0)], Translate 20 0 $ polygon [(0,(-40)),((-16),(-40)),((-16),0),(0,0)],color red $ Translate 300 250 $ scale (0.5) (0.5) $ drawOption "QUIT"]  -- desenha o estado pause 
+drawState (Opcoes Play, jogo,_, images,n,p) = return $ Pictures [Color blue $ Translate (-110) 0 $ drawOption "PLAY", Translate (-110) (-70) $ drawOption "SAVE",Translate (-110) (-140) $ drawOption "QUIT"]                                                                                     --desenha o menu das opçoes para jogar normal
+drawState (Opcoes Save, jogo,_, images,n,p) =return $  Pictures [Translate (-110) 0 $ drawOption "PLAY",Color blue $ Translate (-110) (-70) $ drawOption "SAVE",Translate (-110) (-140) $ drawOption "QUIT"]                                                                                       --desenha o menu das opçoes para jogar natal
+drawState (Opcoes Sair, jogo,_, images,n,p) = return $ Pictures [Translate (-110) 0 $ drawOption "PLAY",Translate (-110) (-70) $ drawOption "SAVE", Color blue $ Translate (-110) (-140) $ drawOption "QUIT"]                                                                                       --desenha o menu das opçoes para sair
+drawState (ModoJogo,(Jogo (Jogador (x,y)) (Mapa lar l)),_,images,t,p)= return $ Pictures [(mapa2 (mapa1 (Mapa lar l) 500 t)),(mapa4 (mapa3 (Mapa lar l) (-450) 500 t images)),(Translate ((i*50)-450) (500 -(j*50)-(t)) $ boneco),drawPoints p ]
+                                                            where i=fromIntegral x 
+                                                                  j=fromIntegral y 
+                                                                  boneco = if (t <25 )||(t>50 && t <75) then Translate 0 0 $ (head images) else Translate 0 0 $ (head (tail images ))
+drawstate _ = return $ Blank
+
+drawOption option = Translate (-100) 100 $ Scale (0.5) (0.5) $ Text option
+drawPoints p |p<100 = Translate 400 400 $ color red $ Scale (0.4) (0.4) $ Text (show p) 
+             |p>100 && p<1000 = Translate 400 400 $ color red $ Scale (0.4) (0.4) $ Text (show p) 
+             |otherwise = Translate 400 400 $ color red $ Scale (0.4) (0.4) $ Text (show p) 
+{-
+velplayer::[(Terreno,[Obstaculo])]->Int->Float
+velplayer ((te,obs):xs) 0 = vel te 
+                where vel (Rio v) = fromIntegral v
+                      vel (Estrada v) = 0 
+                      vel Relva = 0
+velplayer (x:xs) n = velplayer xs (n-1)
+-}             
+
+mapa1::Mapa->Float->Float->[(Terreno,Float,Float)]
+mapa1 (Mapa lar []) _ _ = []
+mapa1 (Mapa lar ((te,obs):tf)) a t= (te,a,t):mapa1 (Mapa lar tf) (a-50) t
+
+mapa2::[(Terreno,Float,Float)]->Picture
+mapa2 l = Pictures (map f l) 
+                         where f (te,a,t) = Translate 0 (a-t) $ (lfundo te) 
+
+mapa3::Mapa->Float->Float->Float->Images->[(Terreno,Obstaculo,Float,Float,Images)]
+mapa3 (Mapa lar []) _ _ _ _ = []
+mapa3 (Mapa lar ((te,[]):tf)) l a t textures = mapa3 (Mapa lar (tf)) (-450) (a-50) t textures
+mapa3 (Mapa lar ((te,(ob1:obs)):tf)) l a t textures = (te,ob1,l,a-t,textures):mapa3 (Mapa lar ((te,obs):tf)) (l+50) a t textures 
+                                                                    where vel (Rio v) = fromIntegral v
+                                                                          vel (Estrada v) = fromIntegral v 
+                                                                          vel Relva = 0 
+
+mapa4::[(Terreno,Obstaculo,Float,Float,Images)]->Picture
+mapa4 l = Pictures (map f l) 
+              where f (te,obs,l,a,textures) = Translate l a $ (obj te obs textures) 
+
+obj::Terreno->Obstaculo->Images->Picture  
+obj (Rio v) Tronco images = Translate 0 (-50) $ last (init (init (init images)))  
+obj (Estrada v) Carro images= if v<0 then  Translate 0 (-15) $ last (init images) else Translate 10 0 $ last images
+obj (Relva) Arvore images = Translate 5 (-10) $ last (init (init images)) 
+obj _ _ images = Blank 
+
+cinza= makeColor 0 0 0 40
+
+lfundo::Terreno->Picture
+lfundo (Rio v)= color blue $ rectangleSolid 950 50
+lfundo (Estrada v)= color cinza $ rectangleSolid 950 50
+lfundo (Relva)= color green $ rectangleSolid 950 50
+
+
+event :: Event -> World -> IO World
+-- Menu
+event (EventKey (SpecialKey KeyEnter) Down _ _) (Opcoes Play, jogo,jog,i,n,p) = return $ (ModoJogo, jogo,jog,i,n,p)                       --passa do menu das opçoes para o jogo
+event (EventKey (SpecialKey KeyEnter) Down _ _) (Opcoes Save, jogo,jog,i,n,p) = return $ (ModoJogo, jogo,jog,i,n,p)                        --passa do menu das opçoes para o jogo 
+event (EventKey (SpecialKey KeyUp) Down _ _) (Opcoes Play, jogo,jog,i,n,p) = return $ (Opcoes Sair, jogo,jog,i,n,p)                       --passa da opção jogar normal para a opção sair
+event (EventKey (SpecialKey KeyUp) Down _ _) (Opcoes Sair, jogo,jog,i,n,p) = return $ (Opcoes Save, jogo,jog,i,n,p)                        --passa da opção sair para a opção jogar natal
+event (EventKey (SpecialKey KeyUp) Down _ _) (Opcoes Save, jogo,jog,i,n,p) = return $ (Opcoes Play, jogo,jog,i,n,p)                      --passa da opção jogar natal para a opção jogar normal
+event (EventKey (SpecialKey KeyDown) Down _ _) (Opcoes Play, jogo,jog,i,_,_) = return $ (Opcoes Save, jogo,jog,i,0,0)                    --passa da opção jogar normal para a opção jogar natal
+event (EventKey (SpecialKey KeyDown) Down _ _) (Opcoes Save, jogo,jog,i,_,_) = return $ (Opcoes Sair, jogo,jog,i,0,0)                      --passa da opção jogar natal para a opção sair
+event (EventKey (SpecialKey KeyDown) Down _ _) (Opcoes Sair, jogo,jog,i,n,p) = return $ (Opcoes Play, jogo,jog,i,n,p)                     --passa da opção sair para a opção jogar normal
+event (EventKey (SpecialKey KeyEnter) Down _ _) (Opcoes Sair, jogo,jog,i,n,p) =                                                         --sai do jogo
+    do exitSuccess
+event (EventKey (SpecialKey KeySpace) Down _ _) (ModoJogo,jogo,jog,i,n,p) = return $ (Pause Resume, jogo ,jog,i,n,p)
+event (EventKey (SpecialKey KeySpace) Down _ _) (Pause Resume,jogo,jog,i,n,p) =return $  (ModoJogo , jogo,jog,i,n,p) 
+event (EventKey (SpecialKey KeyUp) Down _ _) (Pause Resume,jogo,jog,i,n,p) =return $  (Pause Quit, jogo ,jog,i,n,p) 
+event (EventKey (SpecialKey KeyDown) Down _ _) (Pause Quit,jogo,jog,i,n,p) =return $  (Pause Resume, jogo ,jog,i,n,p) 
+event (EventKey (SpecialKey KeyEnter) Down _ _) (Pause Quit,jogo,jog,i,n,p) = return $ (Opcoes Play,jogo,jog,i,n,p)
+event (EventKey (SpecialKey KeyEnter) Down _ _) (PerdeuJogo, jogo,_,i,n,p) =return $  (Opcoes Play,jogoinit,Parado,i,n,p)
+event (EventKey (SpecialKey KeySpace) Down _ _) (PerdeuJogo, jogo,_,i,n,p) = return $ (Opcoes Play,jogoinit ,Parado,i,n,p)
+event (EventKey (SpecialKey KeyUp) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),_,i,n,p)   = 
+     return $ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)), (Move Cima),i,n,p) 
+event (EventKey (SpecialKey KeyDown) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),_,i,n,p) = 
+     return $ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),(Move Baixo),i,n,p)
+event (EventKey (SpecialKey KeyLeft) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),_,i,n,p)   =
+     return $ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),(Move Esquerda),i,n,p) 
+event (EventKey (SpecialKey KeyRight) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),_,i,n,p) =
+     return $ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),(Move Direita) ,i,n,p) 
+event _ w = return w
+
+
+
+time :: Float -> World ->IO World
+time f (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),jog,i,49,p) = if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to)) ==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),jog,i,0,p) else return $ (ModoJogo,atualizavelocidades (deslizaJogo (p+x+y) (animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) jog)) (p+x+y),Parado,i, 0,p+1)  
+time f (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),jog,i,t,p) = if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to)) ==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),jog,i,0,p) else return $ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)) ,jog,i,t+1,p+1)
+time f w = return $ w
+
+
+atualizavelocidades::Jogo->Int->Jogo
+atualizavelocidades (Jogo x (Mapa l ((Rio v1,ob1):(Rio v2,ob2):resto))) _ |v2<0 = (Jogo x (Mapa l ((Rio (1),ob1):(Rio v2,ob2):resto)))
+                                                                          |otherwise = (Jogo x (Mapa l ((Rio (1),ob1):(Rio v2,ob2):resto)))
+atualizavelocidades (Jogo x (Mapa l ((Rio v,ob1):resto))) seed = (Jogo x (Mapa l ((Rio (velocidadealeatoria seed),ob1):resto)))
+atualizavelocidades (Jogo x (Mapa l ((Estrada v1,ob1):(Estrada v2,ob2):resto))) _ |v2<0 = (Jogo x (Mapa l ((Estrada 1,ob1):(Estrada v2,ob2):resto)))
+                                                                                  |otherwise = (Jogo x (Mapa l ((Estrada (-1),ob1):(Estrada v2,ob2):resto)))
+atualizavelocidades (Jogo x (Mapa l ((Estrada v,ob1):resto))) seed = (Jogo x (Mapa l  ((Estrada (velocidadealeatoria seed ),ob1):resto)))
+atualizavelocidades w _ = w 
+
+
+velocidadealeatoria::Int->Int 
+velocidadealeatoria seed |mod 2 seed == 0 = 1
+                         |otherwise= (-1) 
+
+
+
+
+
+
+main :: IO ()
+main = do
+ bonecoesq <- loadBMP "player1.bmp"
+ bonecodir <- loadBMP "player2.bmp"
+ log <- loadBMP "tronco.bmp"
+ tree <- loadBMP "arvore1.bmp"
+ car1 <- loadBMP "carro.bmp"
+ car2 <- loadBMP "carro3.bmp"
+ let images = [scale (0.5) (0.5) bonecoesq, scale (0.5) (0.5) bonecodir,scale (0.3) (0.3) log, tree,scale (0.4) (0.6)  car1,scale (0.2) (0.4)  car2]
+ playIO window white  fr (initialState images) drawState event time
 {-
 data Opção1 = Play
             |Save
@@ -328,10 +510,24 @@ event _ w = return w
 
 
 time :: Float -> World ->IO World
-time f (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),jog,i,99,p) = if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to)) ==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),jog,i,0,0) else return $ (ModoJogo,(deslizaJogo (p+x+y) (animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) jog)),Parado,i, 0,p+1)  
+time f (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),jog,i,99,p) = if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to)) ==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),jog,i,0,0) else return $ (ModoJogo,atualizavelocidades (deslizaJogo (p+x+y) (animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) jog)) (p+x+y),Parado,i, 0,p+1)  
 time f (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),jog,i,t,p) = if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to)) ==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),jog,i,0,0) else return $ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)) ,jog,i,t+1,p+1)
 time f w = return $ w
 
+
+atualizavelocidades::Jogo->Int->Jogo
+atualizavelocidades (Jogo x (Mapa l ((Rio v1,ob1):(Rio v2,ob2):resto))) _ |v2<0 = (Jogo x (Mapa l ((Rio (1),ob1):(Rio v2,ob2):resto)))
+                                                                          |otherwise = (Jogo x (Mapa l ((Rio (1),ob1):(Rio v2,ob2):resto)))
+atualizavelocidades (Jogo x (Mapa l ((Rio v,ob1):resto))) seed = (Jogo x (Mapa l ((Rio (velocidadealeatoria seed),ob1):resto)))
+atualizavelocidades (Jogo x (Mapa l ((Estrada v1,ob1):(Estrada v2,ob2):resto))) _ |v2<0 = (Jogo x (Mapa l ((Estrada 1,ob1):(Estrada v2,ob2):resto)))
+                                                                                  |otherwise = (Jogo x (Mapa l ((Estrada (-1),ob1):(Estrada v2,ob2):resto)))
+atualizavelocidades (Jogo x (Mapa l ((Estrada v,ob1):resto))) seed = (Jogo x (Mapa l  ((Estrada (velocidadealeatoria seed ),ob1):resto)))
+atualizavelocidades w _ = w 
+
+
+velocidadealeatoria::Int->Int 
+velocidadealeatoria seed |mod 2 seed == 0 = 1
+                         |otherwise= (-1) 
 
 
 
@@ -348,7 +544,7 @@ main = do
  car2 <- loadBMP "carro3.bmp"
  let images = [scale (1.1) (1.1) bonecoesq, scale (1.1) (1.1) bonecodir,scale (0.6) (0.6) log,scale 2 2 tree,scale (0.8) (1.2)  car1,scale (0.5) (0.8)  car2]
  playIO window white  fr (initialState images) drawState event time
-
+-}
 {-
 data Opção1 = Play
             |Save
@@ -853,7 +1049,7 @@ main = do
  playIO window white  fr (initialState images) drawState event time
 
 -}
-
+{-}
 data Opcao = Normal
             |Natal
             | Sair
