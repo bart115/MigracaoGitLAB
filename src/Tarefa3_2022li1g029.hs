@@ -173,7 +173,7 @@ obsmove (Estrada v,obs) |v==0 = obs
 
 
 obsmove2:: Int-> (Terreno,[Obstaculo])->[Obstaculo]
-obsmove2 x (Estrada v,obs) |v<0 && haCarro x obs ==False = obsmove2 x (Estrada (v-1),tail obs++[head obs])
+obsmove2 x (Estrada v,obs) |v<0 && haCarro x obs ==False = obsmove2 x (Estrada (v+1),tail obs++[head obs])
                            |v>0 && haCarro x obs ==False = obsmove2 x (Estrada (v-1),[last obs]++init obs)
                            |otherwise = obs 
 
