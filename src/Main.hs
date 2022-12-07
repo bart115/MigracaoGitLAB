@@ -153,7 +153,7 @@ event _ w = return w
 
 time :: Float -> World ->IO World
 time f (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),i,99,p) = if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to)) then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),i,0,0) else return $ (ModoJogo,atualizavelocidades ((deslizaJogo (p+x+y) (animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) Parado))) (p+x+y),i,0,p+1)  
-time f (ModoJogo, jogo,i,t,p) = if jogoTerminou jogo  then return $ (PerdeuJogo,jogo,i,0,0) else return $ (ModoJogo,jogo ,i,t+1,p+1)
+time f (ModoJogo,jogo,i,t,p) = if jogoTerminou jogo  then return $ (PerdeuJogo,jogo,i,0,0) else return $ (ModoJogo,jogo ,i,t+1,p+1)
 time f w = return $ w
 
 atualizajogador::Jogo->Jogador
