@@ -255,11 +255,11 @@ jogoinit = ( Jogo (Jogador (10,3)) (Mapa 19 [(Relva,[n,n,n,n,n,n,n,n,n,n,n,n,n,n
 
 desenhaestado :: World ->IO Picture
 desenhaestado (PerdeuJogo,_, _,_, images,_,p) =return $ Pictures [Scale (0.8) (0.8) $ Translate (-400) 0 $ Color red $ Text "TAKE THE L" , Translate (-200) (350)$ scale (0.5) (0.5) $ Text ("Final Score:" ++ (show p))]                                                                                                                                                                          --desenha o estado perdeujogo
-desenhaestado (Pause Resume ,_,_,_, images,_,p)= return $ Pictures [last images ,color red $ desenhapause,desenhaquit,desenhascore p]           --desenha o estado pause
-desenhaestado (Pause Quit ,_,_,_,images,_,p)= return $ Pictures [last images, desenhapause,color red $ desenhaquit,desenhascore p]  -- desenha o estado pause 
-desenhaestado (Opcoes Play, jogo,_,skin, images,_,p) = return $ Pictures [last images,Color red $ drawplay , drawsave,drawquit,desenhaskinmenu skin images]                                                                                     --desenha o menu das opçoes para jogar normal
-desenhaestado (Opcoes Save, jogo,_,skin, images,_,p) =return $  Pictures [last images,drawplay ,Color red $ drawsave,drawquit,desenhaskinmenu skin images]                                                                                       --desenha o menu das opçoes para jogar natal
-desenhaestado (Opcoes Sair, jogo,_,skin, images,_,p) = return $ Pictures [last images,drawplay ,drawsave, Color red $ drawquit,desenhaskinmenu skin images]                                                                                       --desenha o menu das opçoes para sair
+desenhaestado (Pause Resume ,_,_,_, images,_,p)= return $ Pictures [last images ,color red $ desenhapause,desenhaquit,desenhascore p]           
+desenhaestado (Pause Quit ,_,_,_,images,_,p)= return $ Pictures [last images, desenhapause,color red $ desenhaquit,desenhascore p]   
+desenhaestado (Opcoes Play, jogo,_,skin, images,_,p) = return $ Pictures [last images,Color red $ drawplay , drawsave,drawquit,desenhaskinmenu skin images]                                                                                   
+desenhaestado (Opcoes Save, jogo,_,skin, images,_,p) =return $  Pictures [last images,drawplay ,Color red $ drawsave,drawquit,desenhaskinmenu skin images]                                                                                       
+desenhaestado (Opcoes Sair, jogo,_,skin, images,_,p) = return $ Pictures [last images,drawplay ,drawsave, Color red $ drawquit,desenhaskinmenu skin images]                                                                                      
 desenhaestado (ModoJogo,(Jogo (Jogador (x,y)) (Mapa lar l)),_,skin,images,t,p)= return $ Pictures [(desenhaterrenos (listaterrenos (Mapa lar l) 500 t)),(desenhaobstaculos (listaobstaculos (Mapa lar l) (-450) 500 t images)),(desenhaplayer x y t skin images),drawPoints p ]
 
 
