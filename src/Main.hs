@@ -230,8 +230,8 @@ initialState images = (Opcoes Play,jogoinit,Parado,Kid,images,0,0)
 jogoinit::Jogo
 jogoinit = ( Jogo (Jogador (10,1)) (Mapa 19 [(Relva,[n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]),
     (Relva,[n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]), 
-    (Estrada (-1),[c,c,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]),
-    (Estrada (2),[c,n,n,n,n,n,n,n,n,n,n,c,c,n,n,n,n,n,n]), 
+    (Estrada (-2),[c,n,n,n,n,n,n,n,n,n,c,n,n,n,n,n,n,n,n]),
+    (Estrada (2),[c,n,n,n,n,n,n,n,n,n,n,n,c,n,n,n,n,n,n]), 
     (Rio 3,[t,n,t,t,t,n,t,n,n,n,n,n,n,n,n,n,n,n,n]), 
     (Rio (-1),[t,n,t,t,t,n,t,n,n,n,n,n,n,n,n,n,n,n,n]),
     (Relva,[n,n,n,n,n,a,n,n,n,a,n,n,n,n,n,a,n,n,n]),
