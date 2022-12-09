@@ -172,22 +172,24 @@ obsmove (Estrada v,obs) |v==0 = obs
                         |otherwise = obsmove (Estrada (v+1),tail obs ++ [head obs])
 
 
-obsmove2:: Int-> (Terreno,[Obstaculo])->Jogada->[Obstaculo]
-obsmove2 x (Estrada v,obs) (Move Cima)|v<0 = obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Cima)
-                                      |v>0 = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Cima)
-                                      |otherwise = obs 
-obsmove2 x (Estrada v,obs) (Move Baixo)|v<0 = obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Baixo)
-                                       |v>0 = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Baixo)
-                                       |otherwise = obs
-obsmove2 x (Estrada v,obs) (Move Esquerda)|v<0 && haCarro (x-1) obs == False = obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Esquerda)
-                                          |v>0 && haCarro (x-1) obs == False = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Esquerda)
-                                          |otherwise = obs 
-obsmove2 x (Estrada v,obs) (Move Direita) |v<0 && haCarro (x+1) obs == False = obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Direita)
-                                          |v>0 && haCarro (x+1) obs == False = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Direita)
-                                          |otherwise = obs  
-obsmove2 x (Estrada v,obs) m |v<0 && haCarro x obs ==False = obsmove2 x (Estrada (v+1),tail obs++[head obs]) m
-                             |v>0 && haCarro x obs ==False = obsmove2 x (Estrada (v-1),[last obs]++init obs) m
-                             |otherwise = obs 
+obsmove2:: Int-> (Terreno,[Obstaculo])->Jogada->Int->[Obstaculo]
+obsmove2 x (Estrada v,obs) (Move Cima) ac|v<0 = obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Cima) ac
+                                         |v>0 = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Cima) ac
+                                         |otherwise = obs 
+obsmove2 x (Estrada v,obs) (Move Baixo) ac|v<0 = obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Baixo) ac
+                                          |v>0 = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Baixo) ac
+                                          |otherwise = obs
+obsmove2 x (Estrada v,obs) (Move Esquerda) ac|ac==0 && v<0 =  obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Esquerda) (ac+1)
+                                             |v<0 && haCarro (x-1) obs == False = obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Esquerda) ac
+                                             |v>0 && haCarro (x-1) obs == False = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Esquerda) ac
+                                             |otherwise = obs 
+obsmove2 x (Estrada v,obs) (Move Direita) ac|ac==0  && v>0 = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Direita) (ac+1)
+                                            |v<0 && haCarro (x+1) obs == False = obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Direita) ac
+                                            |v>0 && haCarro (x+1) obs == False = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Direita) ac
+                                            |otherwise = obs  
+obsmove2 x (Estrada v,obs) m ac|v<0 && haCarro x obs ==False = obsmove2 x (Estrada (v+1),tail obs++[head obs]) m ac
+                               |v>0 && haCarro x obs ==False = obsmove2 x (Estrada (v-1),[last obs]++init obs) m ac
+                               |otherwise = obs 
 
 {- |A função 'mapamove' usa a função obsmove para mover todos os obstaculos e está definida por: 
 
@@ -200,7 +202,7 @@ mapamove ((te,obs):fs) = (te,obsmove (te,obs)):mapamove fs
 
 mapamove::[(Terreno,[Obstaculo])]->Int->Int->Jogada->[(Terreno,[Obstaculo])]
 mapamove [] x y m= []
-mapamove ((Estrada v,obs):fs) x y m|y==0 =((Estrada v,obsmove2 x (Estrada v,obs) m):mapamove fs x (y-1) m)
+mapamove ((Estrada v,obs):fs) x y m|y==0 =((Estrada v,obsmove2 x (Estrada v,obs) m 0):mapamove fs x (y-1) m)
                                    |otherwise =((Estrada v,obsmove (Estrada v,obs)):mapamove fs x (y-1) m)
 mapamove ((te,obs):fs) x y m= (te,obsmove (te,obs)):(mapamove fs x (y-1) m) 
                
