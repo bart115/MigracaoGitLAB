@@ -254,7 +254,7 @@ jogoinit = ( Jogo (Jogador (10,1)) (Mapa 19 [(Relva,[n,n,n,n,n,n,n,n,n,n,n,n,n,n
           t = Tronco 
 
 desenhaestado :: World ->IO Picture
-desenhaestado (PerdeuJogo,_, _,_, images,_,p) =return $ Pictures [Scale (0.8) (0.8) $ Translate (-400) 0 $ Color red $ Text "TAKE THE L" , Translate (-200) (350)$ scale (0.5) (0.5) $ Text ("Final Score:" ++ (show p))]                                                                                                                                                                          --desenha o estado perdeujogo
+desenhaestado (PerdeuJogo,_, _,_, images,_,p) =return $ Pictures [Scale (0.8) (0.8) $ Translate (-400) 0 $ Color red $ Text "GAME OVER" , Translate (-200) (350)$ scale (0.5) (0.5) $ Text ("Final Score:" ++ (show p))]                                                                                                                                                                          --desenha o estado perdeujogo
 desenhaestado (Pause Resume ,_,_,_, images,_,p)= return $ Pictures [last images ,color red $ desenhapause,desenhaquit,desenhascore p]           
 desenhaestado (Pause Quit ,_,_,_,images,_,p)= return $ Pictures [last images, desenhapause,color red $ desenhaquit,desenhascore p]   
 desenhaestado (Opcoes Play, jogo,_,skin, images,_,p) = return $ Pictures [last images,Color red $ drawplay , drawsave,drawquit,desenhaskinmenu skin images]                                                                                   
@@ -346,7 +346,8 @@ event (EventKey (SpecialKey KeyRight) Down _ _) (Opcoes op, jogo,jog,Warrior,i,n
 event (EventKey (SpecialKey KeyLeft) Down _ _) (Opcoes op, jogo,jog,Zelda,i,n,p) = return $ (Opcoes op, jogo,jog,Kid,i,n,p)
 event (EventKey (SpecialKey KeyRight) Down _ _) (Opcoes op, jogo,jog,Zelda,i,n,p) = return $ (Opcoes op, jogo,jog,Warrior,i,n,p)
 event (EventKey (SpecialKey KeyEnter) Down _ _) (Opcoes Sair,_,_,_,_,_,_) =                                                         --sai do jogo
-    do exitSuccess
+    do putStrLn "EndGame"
+       exitSuccess
 event (EventKey (SpecialKey KeySpace) Down _ _) (ModoJogo,jogo,jog,skin,i,n,p) = return $ (Pause Resume, jogo ,jog,skin,i,n,p)
 event (EventKey (SpecialKey KeySpace) Down _ _) (Pause _ ,jogo,jog,skin,i,n,p) =return $  (ModoJogo , jogo,jog,skin,i,n,p) 
 event (EventKey (SpecialKey KeyUp) Down _ _) (Pause Resume,jogo,jog,skin,i,n,p) =return $  (Pause Quit, jogo ,jog,skin,i,n,p) 
