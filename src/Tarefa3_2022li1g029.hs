@@ -165,18 +165,29 @@ haCarro x (ob1:obs) |x==0 && ob1==Carro=True
 obsmove::(Terreno,[Obstaculo])->[Obstaculo]
 obsmove (Relva,obs) = obs
 obsmove (Rio v,obs)  |v==0 = obs
-                     |v>0 = obsmove (Rio (v-1),(last obs: init obs ))
+                     |v>0 = obsmove (Rio (v-1),([last obs]++ init obs ))
                      |otherwise= obsmove (Rio (v+1),tail obs ++ [head obs] )
 obsmove (Estrada v,obs) |v==0 = obs
-                        |v>0 = obsmove (Estrada (v-1),last obs: init obs )
+                        |v>0 = obsmove (Estrada (v-1),[last obs ]++ init obs )
                         |otherwise = obsmove (Estrada (v+1),tail obs ++ [head obs])
 
 
-obsmove2:: Int-> (Terreno,[Obstaculo])->[Obstaculo]
-obsmove2 x (Estrada v,obs) |v<0 && haCarro x obs ==False = obsmove2 x (Estrada (v+1),tail obs++[head obs])
-                           |v>0 && haCarro x obs ==False = obsmove2 x (Estrada (v-1),[last obs]++init obs)
-                           |otherwise = obs 
-
+obsmove2:: Int-> (Terreno,[Obstaculo])->Jogada->[Obstaculo]
+obsmove2 x (Estrada v,obs) (Move Cima)|v<0 = obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Cima)
+                                      |v>0 = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Cima)
+                                      |otherwise = obs 
+obsmove2 x (Estrada v,obs) (Move Baixo)|v<0 = obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Baixo)
+                                       |v>0 = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Baixo)
+                                       |otherwise = obs
+obsmove2 x (Estrada v,obs) (Move Esquerda)|v<0 && haCarro (x-1) obs == False = obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Esquerda)
+                                          |v>0 && haCarro (x-1) obs == False = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Esquerda)
+                                          |otherwise = obs 
+obsmove2 x (Estrada v,obs) (Move Direita) |v<0 && haCarro (x+1) obs == False = obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Direita)
+                                          |v>0 && haCarro (x+1) obs == False = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Direita)
+                                          |otherwise = obs  
+obsmove2 x (Estrada v,obs) m |v<0 && haCarro x obs ==False = obsmove2 x (Estrada (v+1),tail obs++[head obs]) m
+                             |v>0 && haCarro x obs ==False = obsmove2 x (Estrada (v-1),[last obs]++init obs) m
+                             |otherwise = obs 
 
 {- |A função 'mapamove' usa a função obsmove para mover todos os obstaculos e está definida por: 
 
@@ -187,11 +198,11 @@ mapamove ((te,obs):fs) = (te,obsmove (te,obs)):mapamove fs
 @
 -}
 
-mapamove::[(Terreno,[Obstaculo])]->Int->Int->[(Terreno,[Obstaculo])]
-mapamove [] x y= []
-mapamove ((Estrada v,obs):fs) x y |y==0 =((Estrada v,obsmove2 x (Estrada v,obs)):mapamove fs x y)
-                                  |otherwise =((Estrada v,obsmove (Estrada v,obs)):mapamove fs x (y-1))
-mapamove ((te,obs):fs) x y = (te,obsmove (te,obs)):(mapamove fs x (y-1)) 
+mapamove::[(Terreno,[Obstaculo])]->Int->Int->Jogada->[(Terreno,[Obstaculo])]
+mapamove [] x y m= []
+mapamove ((Estrada v,obs):fs) x y m|y==0 =((Estrada v,obsmove2 x (Estrada v,obs) m):mapamove fs x (y-1) m)
+                                   |otherwise =((Estrada v,obsmove (Estrada v,obs)):mapamove fs x (y-1) m)
+mapamove ((te,obs):fs) x y m= (te,obsmove (te,obs)):(mapamove fs x (y-1) m) 
                
 
 {- |Finalmente,a função 'animaJogo' dá movimento tanto ao jogador como aos obstaculos do jogo.
@@ -244,7 +255,7 @@ Jogo (Jogador (3,2)) (Mapa 3 [(Relva,[Arvore,Nenhum,Nenhum]),(Rio 1,[Tronco,Nenh
 
 -}
 animaJogo :: Jogo -> Jogada -> Jogo
-animaJogo (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m  = Jogo (Jogador (px,py)) (Mapa lar (mapamove ((te,obs):tf) x y))
+animaJogo (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m  = Jogo (Jogador (px,py)) (Mapa lar (mapamove ((te,obs):tf) x y m))
                                                                                      where px=posx (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m
                                                                                            py=posy 0 (Jogo (Jogador (x,y)) (Mapa lar ((te,obs):tf))) m 
 
