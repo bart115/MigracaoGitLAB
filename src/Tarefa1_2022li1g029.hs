@@ -22,7 +22,7 @@ cada uma desta têm funções especificas que serão explicadas mais tarde.
  >>> mapaValido (Mapa 3 [(Rio 3,[Nenhum,Nenhum,Tronco]),(Rio 1,[Nenhum,Nenhum,Tronco]),(Relva,[Nenhum,Nenhum,Arvore]),(Estrada 1,[Carro,Carro,Carro]),(Rio 1,[Tronco,Nenhum,Tronco])])]
  >>> False-}
 mapaValido :: Mapa -> Bool
-mapaValido (Mapa lr l) = (mapaValido1 (Mapa lr l) && mapaValido2 (Mapa lr l)) && (mapaValido3 (Mapa lr l) && mapaValido4 (Mapa lr l)) && (mapaValido5 (Mapa lr l) && mapaValido6 (Mapa lr l)) && mapaValido7 (Mapa lr l)
+mapaValido (Mapa lr l) = (obsvalidos (Mapa lr l) && mapaValido2 (Mapa lr l)) && (mapaValido3 (Mapa lr l) && mapaValido4 (Mapa lr l)) && (mapaValido5 (Mapa lr l) && mapaValido6 (Mapa lr l)) && mapaValido7 (Mapa lr l)
 
 {-|Como referi anteriormentente a função principal, 'mapaValido' é composta por algumas auxiliares sendo uma delas a função 'mapaValido1',
 esta função recebe um mapa e confirma se nesse mapa consoante o terreno os obstaculos estão corretos.
@@ -39,19 +39,16 @@ esta função recebe um mapa e confirma se nesse mapa consoante o terreno os obs
  >>> False
 
 -}
-mapaValido1 :: Mapa -> Bool
-mapaValido1 (Mapa lr []) = True
-mapaValido1 (Mapa lr ((Relva,lo):t)) 
-        |(elem Carro lo || elem Tronco lo) = False  
-        |otherwise = mapaValido1 (Mapa lr t)
- 
-mapaValido1 (Mapa lr (((Rio vr),lo):t))
-        |(elem Carro lo || elem Arvore lo) = False 
-        |otherwise = mapaValido1 (Mapa lr t)
-        
-mapaValido1 (Mapa lr (((Estrada ve),lo):t))
-        |(elem Arvore lo || elem Tronco lo) = False
-        |otherwise = mapaValido1 (Mapa lr t)
+obsvalidos :: Mapa -> Bool
+obsvalidos (Mapa _ []) = True 
+obsvalidos (Mapa l (x:xs)) | mapaValido1 x = obsvalidos (Mapa l  xs)
+                       | otherwise = False
+
+mapaValido1 :: (Terreno,[Obstaculo]) -> Bool
+mapaValido1 (_, []) = True
+mapaValido1 (Relva,lo) = not $ elem Carro lo || elem Tronco lo 
+mapaValido1 ((Rio vr),lo) = not $ elem Carro lo || elem Arvore lo
+mapaValido1 ((Estrada ve),lo) = not $ elem Arvore lo || elem Tronco lo
 
 {-|A função 'mapaValido2' recebe um @Mapa@ e compara os terrenos, se o terrenos forem @Estrada@ , @Relva@ , @Rio@ e depois outra qualquer 
 a função faz a recursiva se os terrenos forem @Rio@ e depois outro @Rio@ a função compara as velocidades. Se ambas forem tiverem o mesmo sinal então ambos os rios estão a dirigir se 
