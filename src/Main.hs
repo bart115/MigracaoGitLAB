@@ -196,18 +196,19 @@ main = do
 data Opção1 = Play
             |Save
             |Sair
-
+           deriving (Show,Eq)
 data Opção2 = Resume 
             |Quit
-           
+           deriving (Show,Eq)
 
 data Menu = Opcoes Opção1 
           |ModoJogo
           |PerdeuJogo
           |Pause Opção2
-
+         deriving (Show,Eq)
 
 data Skin = Kid | Warrior | Zelda
+         deriving (Show,Eq)
 type Pontuação = Int 
 
 type Time = Float 
@@ -331,39 +332,41 @@ lfundo (Relva)= color green $ rectangleSolid 950 50
 
 event :: Event -> World -> IO World
 -- Menu
-event (EventKey (SpecialKey KeyEnter) Down _ _) (Opcoes Play, jogo,jog,skin,i,n,p) = return $ (ModoJogo, jogo,jog,skin,i,n,p)                       --passa do menu das opçoes para o jogo
-event (EventKey (SpecialKey KeyEnter) Down _ _) (Opcoes Save, jogo,jog,skin,i,n,p) = return $ (ModoJogo, jogo,jog,skin,i,n,p)                        --passa do menu das opçoes para o jogo 
-event (EventKey (SpecialKey KeyUp) Down _ _) (Opcoes Play, jogo,jog,skin,i,n,p) = return $ (Opcoes Sair, jogo,jog,skin,i,n,p)                       --passa da opção jogar normal para a opção sair
-event (EventKey (SpecialKey KeyUp) Down _ _) (Opcoes Sair, jogo,jog,skin,i,n,p) = return $ (Opcoes Save, jogo,jog,skin,i,n,p)                        --passa da opção sair para a opção jogar natal
-event (EventKey (SpecialKey KeyUp) Down _ _) (Opcoes Save, jogo,jog,skin,i,n,p) = return $ (Opcoes Play, jogo,jog,skin,i,n,p)                      --passa da opção jogar natal para a opção jogar normal
-event (EventKey (SpecialKey KeyDown) Down _ _) (Opcoes Play, jogo,jog,skin,i,_,_) = return $ (Opcoes Save, jogo,jog,skin,i,0,0)                    --passa da opção jogar normal para a opção jogar natal
-event (EventKey (SpecialKey KeyDown) Down _ _) (Opcoes Save, jogo,jog,skin,i,_,_) = return $ (Opcoes Sair, jogo,jog,skin,i,0,0)                      --passa da opção jogar natal para a opção sair
-event (EventKey (SpecialKey KeyDown) Down _ _) (Opcoes Sair, jogo,jog,skin,i,n,p) = return $ (Opcoes Play, jogo,jog,skin,i,n,p)                     --passa da opção sair para a opção jogar normal
-event (EventKey (SpecialKey KeyLeft) Down _ _) (Opcoes op, jogo,jog,Kid,i,n,p) = return $ (Opcoes op, jogo,jog,Warrior,i,n,p)
-event (EventKey (SpecialKey KeyRight) Down _ _) (Opcoes op, jogo,jog,Kid,i,n,p) = return $ (Opcoes op, jogo,jog,Zelda,i,n,p)
-event (EventKey (SpecialKey KeyLeft) Down _ _) (Opcoes op, jogo,jog,Warrior,i,n,p) = return $ (Opcoes op, jogo,jog,Zelda,i,n,p)
-event (EventKey (SpecialKey KeyRight) Down _ _) (Opcoes op, jogo,jog,Warrior,i,n,p) = return $ (Opcoes op, jogo,jog,Kid,i,n,p)
-event (EventKey (SpecialKey KeyLeft) Down _ _) (Opcoes op, jogo,jog,Zelda,i,n,p) = return $ (Opcoes op, jogo,jog,Kid,i,n,p)
-event (EventKey (SpecialKey KeyRight) Down _ _) (Opcoes op, jogo,jog,Zelda,i,n,p) = return $ (Opcoes op, jogo,jog,Warrior,i,n,p)
+event (EventKey (SpecialKey key) Down _ _) (Opcoes op, jogo,jog,skin,i,n,p) 
+                                    |(key == KeyEnter && (op == Play || op == Save)) = return $ (ModoJogo, jogo,jog,skin,i,n,p)  
+                                    |(key == KeyUp && op == Play) = return $ (Opcoes Sair, jogo,jog,skin,i,n,p)
+                                    |(key == KeyUp && op == Sair) = return $ (Opcoes Save, jogo,jog,skin,i,n,p)
+                                    |(key == KeyUp && op == Save) = return $ (Opcoes Play, jogo,jog,skin,i,n,p) 
+                                    |(key == KeyDown && op == Play ) = return $ (Opcoes Save, jogo,jog,skin,i,0,0) 
+                                    |(key == KeyDown && op == Save ) = return $ (Opcoes Sair, jogo,jog,skin,i,0,0)
+                                    |(key == KeyDown && op == Sair) = return $ (Opcoes Play, jogo,jog,skin,i,n,p)                                   
+                                    |(key == KeyLeft && skin == Kid) = return $ (Opcoes op, jogo,jog,Warrior,i,n,p)
+                                    |(key == KeyRight && skin == Kid) = return $ (Opcoes op, jogo,jog,Zelda,i,n,p)
+                                    |(key == KeyLeft && skin == Warrior) = return $ (Opcoes op, jogo,jog,Zelda,i,n,p)
+                                    |(key == KeyRight && skin == Warrior) = return $ (Opcoes op, jogo,jog,Kid,i,n,p) 
+                                    |(key == KeyLeft && skin == Zelda) = return $ (Opcoes op, jogo,jog,Kid,i,n,p)
+                                    |(key == KeyRight && skin == Zelda) = return $ (Opcoes op,jogo,jog,Warrior,i,n,p) 
+                                                                                                                                   --passa do menu das opçoes para o jogo --passa da opção jogar normal para a opção jogar natal--passa da opção jogar natal para a opção sair
+                     --passa da opção sair para a opção jogar normal 
 event (EventKey (SpecialKey KeyEnter) Down _ _) (Opcoes Sair,_,_,_,_,_,_) =                                                         --sai do jogo
     do putStrLn "EndGame"
        exitSuccess
-event (EventKey (SpecialKey KeySpace) Down _ _) (ModoJogo,jogo,jog,skin,i,n,p) = return $ (Pause Resume, jogo ,jog,skin,i,n,p)
-event (EventKey (SpecialKey KeySpace) Down _ _) (Pause _ ,jogo,jog,skin,i,n,p) =return $  (ModoJogo , jogo,jog,skin,i,n,p) 
-event (EventKey (SpecialKey KeyUp) Down _ _) (Pause Resume,jogo,jog,skin,i,n,p) =return $  (Pause Quit, jogo ,jog,skin,i,n,p) 
-event (EventKey (SpecialKey KeyDown) Down _ _) (Pause Quit,jogo,jog,skin,i,n,p) =return $  (Pause Resume, jogo ,jog,skin,i,n,p) 
-event (EventKey (SpecialKey KeyEnter) Down _ _) (Pause Quit,jogo,jog,skin,i,n,p) = return $ (Opcoes Play,jogo,jog,skin,i,n,p)
-event (EventKey (SpecialKey KeyEnter) Down _ _) (PerdeuJogo, jogo,_,skin,i,n,p) =return $  (Opcoes Play,jogoinit,Parado,skin,i,n,p)
-event (EventKey (SpecialKey KeySpace) Down _ _) (PerdeuJogo, jogo,_,skin,i,n,p) = return $ (Opcoes Play,jogoinit ,Parado,skin,i,n,p)
-event (EventKey (SpecialKey KeyUp) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),_,skin,i,n,p)   = 
-     return $ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)), (Move Cima),skin,i,n,p) 
-event (EventKey (SpecialKey KeyDown) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),_,skin,i,n,p) = 
-     return $ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),(Move Baixo),skin,i,n,p)
-event (EventKey (SpecialKey KeyLeft) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),_,skin,i,n,p)   =
-     return $ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),(Move Esquerda),skin,i,n,p) 
-event (EventKey (SpecialKey KeyRight) Down _ _) (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),_,skin,i,n,p) =
-     return $ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),(Move Direita) ,skin,i,n,p) 
+event (EventKey (SpecialKey key) Down _ _) (menu,jogo,jog,skin,i,n,p) 
+                                          |(key == KeySpace && menu == ModoJogo) = return $ (Pause Resume, jogo ,jog,skin,i,n,p)
+                                          |((key == KeyEnter || key == KeySpace) && menu == PerdeuJogo) = return $  (Opcoes Play,jogoinit,Parado,skin,i,n,p)
+                                          |(key == KeyUp && menu == ModoJogo) = return $ (ModoJogo,jogo,(Move Cima),skin,i,n,p)
+                                          |(key == KeyDown && menu == ModoJogo) = return $ (ModoJogo,jogo,(Move Baixo),skin,i,n,p)
+                                          |(key == KeyLeft && menu == ModoJogo) = return $ (ModoJogo,jogo,(Move Esquerda),skin,i,n,p)
+                                          |(key == KeyRight && menu == ModoJogo) = return $ (ModoJogo,jogo,(Move Direita),skin,i,n,p)
+
+event (EventKey (SpecialKey key) Down _ _) (Pause op2,jogo,jog,skin,i,n,p)
+                                          |(key == KeySpace ) =return $  (ModoJogo , jogo,jog,skin,i,n,p)
+                                          |(key == KeyUp && op2 == Resume ) = return $  (Pause Quit, jogo ,jog,skin,i,n,p)
+                                          |(key == KeyDown && op2 == Quit ) = return $  (Pause Resume, jogo ,jog,skin,i,n,p)
+                                          |(key == KeyEnter && op2 == Quit) = return $ (Opcoes Play,jogo,jog,skin,i,n,p)
 event _ w = return w
+
+
 
 
 
