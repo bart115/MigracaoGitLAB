@@ -179,11 +179,14 @@ obsmove2 x (Estrada v,obs) (Move Cima) ac|v<0 = obsmove2 x (Estrada (v+1),tail o
 obsmove2 x (Estrada v,obs) (Move Baixo) ac|v<0 = obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Baixo) ac
                                           |v>0 = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Baixo) ac
                                           |otherwise = obs
+obsmove2 0 (Estrada v,obs) (Move Esquerda) ac=obsmove2 0 (Estrada v,obs) Parado ac                                          
 obsmove2 x (Estrada v,obs) (Move Esquerda) ac|ac==0 && v<0 =  obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Esquerda) (ac+1)
                                              |v<0 && haCarro (x-1) obs == False = obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Esquerda) ac
                                              |v>0 && haCarro (x-1) obs == False = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Esquerda) ac
                                              |otherwise = obs 
-obsmove2 x (Estrada v,obs) (Move Direita) ac|ac==0  && v>0 = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Direita) (ac+1)
+ 
+obsmove2 x (Estrada v,obs) (Move Direita) ac|x==((length obs)-1)= obsmove2 x (Estrada v,obs) Parado ac
+                                            |ac==0  && v>0 = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Direita) (ac+1)
                                             |v<0 && haCarro (x+1) obs == False = obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Direita) ac
                                             |v>0 && haCarro (x+1) obs == False = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Direita) ac
                                             |otherwise = obs  
