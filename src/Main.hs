@@ -228,7 +228,7 @@ initialState :: Images ->World
 initialState images = (Opcoes Play,jogoinit,Parado,Kid,images,0,0)
 
 jogoinit::Jogo
-jogoinit = ( Jogo (Jogador (10,1)) (Mapa 19 [(Relva,[n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]),
+jogoinit = ( Jogo (Jogador (10,0)) (Mapa 19 [(Estrada 2,[n,n,n,n,c,n,n,c,n,n,n,n,n,n,n,n,n,n,n]),
     (Relva,[n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]), 
     (Estrada (-1),[c,n,n,n,n,n,n,n,n,n,c,n,n,n,n,n,n,n,n]),
     (Estrada (2),[c,n,n,n,n,n,n,n,n,n,n,n,c,n,n,n,n,n,n]), 
