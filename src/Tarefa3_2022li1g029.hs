@@ -202,6 +202,8 @@ mapamove ((te,obs):fs) = (te,obsmove (te,obs)):mapamove fs
 
 mapamove::[(Terreno,[Obstaculo])]->Int->Int->Jogada->[(Terreno,[Obstaculo])]
 mapamove [] x y m= []
+mapamove ((Estrada v,obs):(Estrada v1,obs2):fs) x 1 (Move Cima)  = (Estrada v,obsmove2 x (Estrada v,obs) Parado 0):(Estrada v1,obsmove2 x (Estrada v1,obs2) (Move Cima) 0):mapamove fs x (-1) (Move Cima)
+mapamove ((Estrada v,obs):(Estrada v1,obs2):fs) x 0 (Move Baixo) = (Estrada v,obsmove2 x (Estrada v,obs) (Move Baixo) 0):(Estrada v1,obsmove2 x (Estrada v1,obs2) Parado 0):mapamove fs x (-2) (Move Baixo) 
 mapamove ((Estrada v,obs):fs) x y m|y==0 =((Estrada v,obsmove2 x (Estrada v,obs) m 0):mapamove fs x (y-1) m)
                                    |otherwise =((Estrada v,obsmove (Estrada v,obs)):mapamove fs x (y-1) m)
 mapamove ((te,obs):fs) x y m= (te,obsmove (te,obs)):(mapamove fs x (y-1) m) 
