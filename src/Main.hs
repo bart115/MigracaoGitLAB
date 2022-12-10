@@ -229,30 +229,33 @@ initialState :: Images ->World
 initialState images = (Opcoes Play,jogoinit,Parado,Kid,images,0,0)
 
 jogoinit::Jogo
-jogoinit = ( Jogo (Jogador (10,0)) (Mapa 19 [(Estrada 2,[n,n,n,n,c,n,n,c,n,n,n,n,n,n,n,n,n,n,n]),
-    (Relva,[n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]), 
-    (Estrada (-1),[c,n,n,n,n,n,n,n,n,n,c,n,n,n,n,n,n,n,n]),
-    (Estrada (2),[c,n,n,n,n,n,n,n,n,n,n,n,c,n,n,n,n,n,n]), 
-    (Rio 3,[t,n,t,t,t,n,t,n,n,n,n,n,n,n,n,n,n,n,n]), 
-    (Rio (-1),[t,n,t,t,t,n,t,n,n,n,n,n,n,n,n,n,n,n,n]),
-    (Relva,[n,n,n,n,n,a,n,n,n,a,n,n,n,n,n,a,n,n,n]),
-    (Relva,[n,n,n,n,n,a,n,n,n,a,n,n,n,n,n,a,n,n,n]),
-    (Rio (1),[t,n,t,t,t,n,t,n,n,n,n,n,n,n,n,n,n,n,n]), 
-    (Estrada (-1),[c,c,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]), 
-    (Estrada 1,[c,c,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]),
-    (Relva,[n,n,n,n,n,a,n,n,n,a,n,n,n,n,n,a,n,n,n]),
-    (Rio 1,[t,n,t,t,t,n,t,n,n,n,n,n,n,n,n,n,n,n,n]), 
-    (Rio (-1),[t,n,t,t,t,n,t,n,n,n,n,n,n,n,n,n,n,n,n]),
-    (Relva,[n,n,n,n,n,a,n,n,n,a,n,n,n,n,n,a,n,n,n]),
-    (Estrada 2,[c,n,n,n,n,c,n,n,n,n,n,n,n,n,n,n,n,n,n]),
-    (Relva,[n,n,n,n,n,a,n,n,n,a,n,n,n,n,a,a,n,n,n]),
-    (Rio (1),[t,n,t,t,t,n,t,n,n,n,n,n,t,n,n,n,n,n,n]), 
-    (Estrada (-1),[c,c,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]), 
-    (Estrada 2,[c,c,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n])]))
+jogoinit = ( Jogo (Jogador (10,0)) (Mapa 19 [(e 2,[n,n,n,n,c,n,n,c,n,n,n,n,n,n,n,n,n,n,n]),
+    (r,[n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]), 
+    (e (-1),[c,n,n,n,n,n,n,n,n,n,c,n,n,n,n,n,n,n,n]),
+    (e (2),[c,n,n,n,n,n,n,n,n,n,n,n,c,n,n,n,n,n,n]), 
+    (ri 3,[t,n,t,t,t,n,t,n,n,n,n,n,n,n,n,n,n,n,n]), 
+    (ri (-1),[t,n,t,t,t,n,t,n,n,n,n,n,n,n,n,n,n,n,n]),
+    (r,[n,n,n,n,n,a,n,n,n,a,n,n,n,n,n,a,n,n,n]),
+    (r,[n,n,n,n,n,a,n,n,n,a,n,n,n,n,n,a,n,n,n]),
+    (ri (1),[t,n,t,t,t,n,t,n,n,n,n,n,n,n,n,n,n,n,n]), 
+    (e (-1),[c,c,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]), 
+    (e 1,[c,c,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]),
+    (r,[n,n,n,n,n,a,n,n,n,a,n,n,n,n,n,a,n,n,n]),
+    (ri 1,[t,n,t,t,t,n,t,n,n,n,n,n,n,n,n,n,n,n,n]), 
+    (ri (-1),[t,n,t,t,t,n,t,n,n,n,n,n,n,n,n,n,n,n,n]),
+    (r,[n,n,n,n,n,a,n,n,n,a,n,n,n,n,n,a,n,n,n]),
+    (e 2,[c,n,n,n,n,c,n,n,n,n,n,n,n,n,n,n,n,n,n]),
+    (r,[n,n,n,n,n,a,n,n,n,a,n,n,n,n,a,a,n,n,n]),
+    (ri (1),[t,n,t,t,t,n,t,n,n,n,n,n,t,n,n,n,n,n,n]), 
+    (e (-1),[c,c,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]), 
+    (e 2,[c,c,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n])]))
     where a = Arvore
           n = Nenhum
           c = Carro 
           t = Tronco 
+          r = Relva
+          ri = Rio
+          e = Estrada
 
 desenhaestado :: World ->IO Picture
 desenhaestado (PerdeuJogo,_, _,_, images,_,p) =return $ Pictures [Scale (0.8) (0.8) $ Translate (-400) 0 $ Color red $ Text "GAME OVER" , Translate (-200) (350)$ scale (0.5) (0.5) $ Text ("Final Score:" ++ (show p))]                                                                                                                                                                          --desenha o estado perdeujogo
@@ -412,7 +415,7 @@ main = do
  warrior2 <- loadBMP "warrior2.bmp"
  zelda1<- loadBMP "zelda1.bmp"
  zelda2<- loadBMP "zelda2.bmp"
- kidmenu<- loadBMP "kidmenu2.bmp"
+ kidmenu<- loadBMP "kidmenu.bmp"
  warriormenu<- loadBMP "warriormenu.bmp"
  zeldamenu<- loadBMP "zeldamenu.bmp"
  fundomenu<- loadBMP "fundo.bmp"
