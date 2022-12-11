@@ -216,6 +216,8 @@ mapamove ((Estrada v,obs):(Estrada v1,obs2):fs) x 1 (Move Cima)  ac= (Estrada v,
 mapamove ((Relva,obs):(Estrada v1,obs2):fs) x 1 (Move Cima) ac = if haarvore x obs then  (Relva,obs):(Estrada v1,obsmove2 x (Estrada v1,obs2) Parado 0): mapamove fs x (-1) (Move Cima) (ac+1) else (Relva,obs):(Estrada v1,obsmove(Estrada v1,obs2)): mapamove fs x (-1) (Move Cima) (ac+1)
 mapamove ((Estrada v,obs):(Estrada v1,obs2):fs) x 0 (Move Baixo) ac= (Estrada v,obsmove (Estrada v,obs)):(Estrada v1,obsmove2 x (Estrada v1,obs2) (Move Baixo) 0):mapamove fs x (-2) (Move Baixo) (ac+1)
 mapamove ((Estrada v,obs):(Relva,obs2):fs) x 0 (Move Baixo) ac = if haarvore x obs2 then (Estrada v,obsmove2 x (Estrada v,obs) Parado 0):(Relva,obs2):mapamove fs x (-1) (Move Baixo) (ac+1) else (Estrada v,obsmove(Estrada v,obs)):(Relva,obs2):mapamove fs x (-1) (Move Baixo) (ac+1)
+mapamove ((Estrada v,obs):fs) x 0 (Move Cima) ac = ((Estrada v,obsmove (Estrada v,obs) ):mapamove fs x (-1) (Move Cima) (ac+1))
+mapamove ((Estrada v,obs):fs) x 0 (Move Baixo) ac = ((Estrada v,obsmove (Estrada v,obs) ):mapamove fs x (-1) (Move Baixo) (ac+1))
 mapamove ((Estrada v,obs):fs) x y m ac|y==0 =((Estrada v,obsmove2 x (Estrada v,obs) m 0):mapamove fs x (y-1) m (ac+1))
                                       |otherwise =((Estrada v,obsmove (Estrada v,obs)):mapamove fs x (y-1) m (ac+1))
 mapamove ((te,obs):fs) x y m ac= (te,obsmove (te,obs)):(mapamove fs x (y-1) m (ac+1)) 
