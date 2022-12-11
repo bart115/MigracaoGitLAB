@@ -374,8 +374,13 @@ event _ w = return w
 
 
 time :: Float -> World ->IO World
-time f (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),jog,skin,i,49,p) = if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to)) ==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),jog,skin,i,0,p) else return $ (ModoJogo,verificamapa (deslizaJogo (p-y) (animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) jog)) (p+x+y),Parado,skin,i, 0,p+1)  
-time f (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),jog,skin,i,t,p) = if jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to)) ==True then return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),jog,skin,i,0,p) else return $ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)) ,jog,skin,i,t+1,p+1)
+time f (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),jog,skin,i,49,p) 
+                            |jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))  = return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),jog,skin,i,0,p) 
+                            |otherwise = return $ (ModoJogo,verificamapa (deslizaJogo (p-y) (animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) jog)) (p+x+y),Parado,skin,i, 0,p+1)  
+                            
+time f (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),jog,skin,i,t,p) 
+                            |jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))  = return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),jog,skin,i,0,p) 
+                            |otherwise = return $ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)) ,jog,skin,i,t+1,p+1)
 time f w = return $ w
 
 
