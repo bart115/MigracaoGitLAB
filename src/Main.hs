@@ -282,9 +282,9 @@ imageindex (x:_) 0 = x
 imageindex (_:xs) n = imageindex xs (n-1)
 
 
-desenhaskinmenu Kid images= Pictures [Translate 300 0 $ scale 5 5 $ imageindex images 10, Translate 250 180 $ scale (0.3) (0.3) $ Text "Kid", Translate 300 0 $ color red $ rectangleWire 200 300 ]
-desenhaskinmenu Warrior images= Pictures [Translate 300 0 $ scale 5 5 $ imageindex images 11, Translate 250 180 $ scale (0.3) (0.3) $ Text "Warrior", Translate 300 0 $ color red $ rectangleWire 200 300 ]   
-desenhaskinmenu _ images= Pictures [Translate 300 0 $ scale 5 5 $ imageindex images 12, Translate 250 180 $ scale (0.3) (0.3) $ Text "Zelda",Translate 300 0 $ color red $ rectangleWire 200 300] 
+desenhaskinmenu Kid images= Pictures [Translate 300 20 $ scale 5 5 $ imageindex images 10, Translate 270 150 $ scale (0.4) (0.3) $ Text "Kid", Translate 300 0 $ color red $ rectangleWire 200 250 ]
+desenhaskinmenu Warrior images= Pictures [Translate 295 0 $ scale 5 5 $ imageindex images 11, Translate 225 150 $ scale (0.4) (0.3) $ Text "Warrior", Translate 300 0 $ color red $ rectangleWire 200 250 ]   
+desenhaskinmenu _ images= Pictures [Translate 295 (-5) $ scale 6 6 $ imageindex images 12, Translate 250 150 $ scale (0.4) (0.3) $ Text "Zelda",Translate 300 0 $ color red $ rectangleWire 200 250 ] 
 
 drawOption option = Translate (-100) 100 $ Scale (0.5) (0.5) $ Text option
 drawPoints p |p<100 = Translate 400 400 $ color red $ Scale (0.4) (0.4) $ Text (show p) 
@@ -377,7 +377,7 @@ time :: Float -> World ->IO World
 time f (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),jog,skin,i,49,p) 
                             |jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))  = return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),jog,skin,i,0,p) 
                             |otherwise = return $ (ModoJogo,verificamapa (deslizaJogo (p-y) (animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) jog)) (p+x+y),Parado,skin,i, 0,p+1)  
-                            
+
 time f (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),jog,skin,i,t,p) 
                             |jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))  = return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),jog,skin,i,0,p) 
                             |otherwise = return $ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)) ,jog,skin,i,t+1,p+1)
