@@ -230,7 +230,7 @@ initialState images = (Opcoes Play,jogoinit,Parado,Kid,images,0,0)
 
 jogoinit::Jogo
 jogoinit = ( Jogo (Jogador (10,0)) (Mapa 19 [(e 2,[n,n,n,n,c,n,n,c,n,n,n,n,n,n,n,n,n,n,n]),
-    (r,[n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]), 
+    (e (-1),[c,n,n,n,n,n,n,n,n,n,c,n,n,n,n,n,n,n,n]),
     (e (-1),[c,n,n,n,n,n,n,n,n,n,c,n,n,n,n,n,n,n,n]),
     (e (2),[c,n,n,n,n,n,n,n,n,n,n,n,c,n,n,n,n,n,n]), 
     (ri 3,[t,n,t,t,t,n,t,n,n,n,n,n,n,n,n,n,n,n,n]), 
@@ -264,7 +264,7 @@ desenhaestado (Pause Quit ,_,_,_,images,_,p)= return $ Pictures [last images, de
 desenhaestado (Opcoes Play, jogo,_,skin, images,_,p) = return $ Pictures [last images,Color red $ drawplay , drawsave,drawquit,desenhaskinmenu skin images]                                                                                   
 desenhaestado (Opcoes Save, jogo,_,skin, images,_,p) =return $  Pictures [last images,drawplay ,Color red $ drawsave,drawquit,desenhaskinmenu skin images]                                                                                       
 desenhaestado (Opcoes Sair, jogo,_,skin, images,_,p) = return $ Pictures [last images,drawplay ,drawsave, Color red $ drawquit,desenhaskinmenu skin images]                                                                                      
-desenhaestado (ModoJogo,(Jogo (Jogador (x,y)) (Mapa lar l)),_,skin,images,t,p)= return $ Pictures [(desenhaterrenos (listaterrenos (Mapa lar l) 500 t)),(desenhaobstaculos (listaobstaculos (Mapa lar l) (-450) 500 t images)),(desenhaplayer x y t skin images),drawPoints p ]
+desenhaestado (ModoJogo,(Jogo (Jogador (x,y)) (Mapa lar l)),_,skin,images,t,p)= return $ Pictures [(desenhaterrenos (listaterrenos (agrupaestradas (terrenos l)) 500 t)),(desenhaobstaculos (listaobstaculos (Mapa lar l) (-450) 500 t images)),(desenhaplayer x y t skin images),drawPoints p ]
 
 
 
@@ -301,11 +301,32 @@ desenhaskin Kid t images = if t<25 then imageindex images 0 else Translate 0 0 $
 desenhaskin Warrior t images = if t<25 then Translate 0 15 $ imageindex images 6 else Translate 0 15 $ imageindex images 7 
 desenhaskin Zelda t images = if t<25 then Translate 0 10 $ imageindex images 8 else Translate 0 10 $ imageindex images 9 
 
-listaterrenos::Mapa->Float->Float->[(Terreno,Float,Float)]
-listaterrenos (Mapa lar []) _ _ = []
-listaterrenos (Mapa lar ((te,_):tf)) a t= (te,a,t):listaterrenos (Mapa lar tf) (a-50) t
 
-desenhaterrenos::[(Terreno,Float,Float)]->Picture
+agrupaestradas::[Terreno]->[[Terreno]]
+agrupaestradas []= []
+agrupaestradas [te]=[[te]]
+agrupaestradas ((Estrada v):tf)|existeestrada (head (agrupaestradas tf)) = ((Estrada v):(head (agrupaestradas tf))):(tail (agrupaestradas tf))
+                               |otherwise = [Estrada v]:agrupaestradas tf
+agrupaestradas (h:t)=[h]:agrupaestradas t                                            
+    
+
+terrenos::[(Terreno,[Obstaculo])]->[Terreno]
+terrenos []=[]
+terrenos ((te,obs):tf) = te:terrenos tf 
+                                             
+existeestrada::[Terreno]->Bool
+existeestrada []=False 
+existeestrada ((Estrada v):tf) = True 
+existeestrada (_:tf) =existeestrada tf 
+
+    
+
+listaterrenos::[[Terreno]]->Float->Float->[([Terreno],Float,Float)]
+listaterrenos [] _ _ = []
+listaterrenos (te:tf) a t = (te,a,t):listaterrenos tf (a-(50*l)) t
+                                   where l = fromIntegral (length te) 
+
+desenhaterrenos::[([Terreno],Float,Float)]->Picture
 desenhaterrenos l = Pictures (map f l) 
                          where f (te,a,t) = Translate 0 (a-t) $ (lfundo te) 
 
@@ -327,10 +348,19 @@ obj _ _ images = Blank
 
 --cinza= makeColor 0 0 0 40
 
-lfundo::Terreno->Picture
-lfundo (Rio v)= color blue $ rectangleSolid 950 50
-lfundo (Estrada v)= color (greyN (0.2)) $ rectangleSolid 950 50
-lfundo (Relva)= color green $ rectangleSolid 950 50
+lfundo::[Terreno]->Picture
+lfundo [(Rio v)]= color blue $ rectangleSolid 950 50
+lfundo [(Relva)]= color green $ rectangleSolid 950 50
+lfundo [(Estrada v)]=color (greyN (0.2)) $ rectangleSolid 950 50
+lfundo [(Estrada v),(Estrada v1)]= Pictures [color (greyN (0.2)) $ Translate 0 (-25) $ rectangleSolid 950 100,Translate 0 (-25) $ (desenhalinhasestrada 0)]
+lfundo [(Estrada v),(Estrada v1),(Estrada v2)]= Pictures [color (greyN (0.2)) $ Translate 0 (-50) $ rectangleSolid 950 150 ,Translate 0 (-25)  $ (desenhalinhasestrada 1),Translate 0 (-75)  $ (desenhalinhasestrada 1) ]
+lfundo [(Estrada v),(Estrada v1),(Estrada v2),(Estrada v3)]= Pictures [color (greyN (0.2)) $  Translate 0 (-75) $ rectangleSolid 950 200,Translate 0 (-25) $ (desenhalinhasestrada 2),Translate 0 (-75) (desenhalinhasestrada 2),Translate 0 (-125)  $ (desenhalinhasestrada 2)]
+lfundo [(Estrada v),(Estrada v1),(Estrada v2),(Estrada v3),(Estrada v4)]= Pictures [color (greyN (0.2)) $  Translate 0 (-100) $ rectangleSolid 950 250,Translate 0 (-25) $ (desenhalinhasestrada 3),Translate 0 (-75) (desenhalinhasestrada 3),Translate 0 (-125)  $ (desenhalinhasestrada 3),Translate 0 (-155)  $ (desenhalinhasestrada 3)]
+
+
+desenhalinhasestrada::Float->Picture
+desenhalinhasestrada n = Pictures [Translate (-300-(50*n)) 0 $ linha ,Translate (-150-(25*n)) 0 $ linha ,linha,Translate (150+(25*n)) 0 $ linha ,Translate (300+(50*n)) 0 $ linha ]
+                            where linha = color white $ polygon [(-25,1),(-25,-1),(25,-1),(25,1)]
 
 
 event :: Event -> World -> IO World
