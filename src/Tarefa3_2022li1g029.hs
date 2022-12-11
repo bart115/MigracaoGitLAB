@@ -173,18 +173,25 @@ obsmove (Estrada v,obs) |v==0 = obs
 
 
 obsmove2:: Int-> (Terreno,[Obstaculo])->Jogada->Int->[Obstaculo]
-obsmove2 x (Estrada v,obs) (Move Cima) ac|v<0 = obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Cima) ac
+{-obsmove2 x (Estrada v,obs) (Move Cima) ac|v<0 = obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Cima) ac
                                          |v>0 = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Cima) ac
                                          |otherwise = obs 
 obsmove2 x (Estrada v,obs) (Move Baixo) ac|v<0 = obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Baixo) ac
                                           |v>0 = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Baixo) ac
+                                          |otherwise = obs-}
+obsmove2 x (Estrada v,obs) (Move Cima) 0 |v<0 = obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Cima) 1
+                                         |v>0 = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Cima) 1
+                                         |otherwise = obs
+obsmove2 x (Estrada v,obs) (Move Cima) ac = obsmove2 x (Estrada v,obs) (Parado) (ac+1) 
+obsmove2 x (Estrada v,obs) (Move Baixo) 0|v<0 = obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Baixo) 1
+                                          |v>0 = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Baixo) 1
                                           |otherwise = obs
-obsmove2 0 (Estrada v,obs) (Move Esquerda) ac=obsmove2 0 (Estrada v,obs) Parado ac                                          
+obsmove2 x (Estrada v,obs) (Move Baixo) ac = obsmove2 x (Estrada v,obs) (Parado) (ac+1)
+obsmove2 0 (Estrada v,obs) (Move Esquerda) ac= obsmove2 0 (Estrada v,obs) Parado ac                                          
 obsmove2 x (Estrada v,obs) (Move Esquerda) ac|ac==0 && v<0 =  obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Esquerda) (ac+1)
                                              |v<0 && haCarro (x-1) obs == False = obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Esquerda) ac
                                              |v>0 && haCarro (x-1) obs == False = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Esquerda) ac
                                              |otherwise = obs 
- 
 obsmove2 x (Estrada v,obs) (Move Direita) ac|x==((length obs)-1)= obsmove2 x (Estrada v,obs) Parado ac
                                             |ac==0  && v>0 = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Direita) (ac+1)
                                             |v<0 && haCarro (x+1) obs == False = obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Direita) ac
@@ -202,7 +209,18 @@ mapamove [(te,obs)] = [(te,obsmove (te,obs))]
 mapamove ((te,obs):fs) = (te,obsmove (te,obs)):mapamove fs
 @
 -}
+mapamove::[(Terreno,[Obstaculo])]->Int->Int->Jogada->Int->[(Terreno,[Obstaculo])]
+mapamove [] x y m ac= []
+mapamove ((Estrada v,obs):fs) x 0 (Move Cima) 0 =  (Estrada v,obsmove2 x (Estrada v,obs) Parado 0):mapamove fs x (-1) (Move Cima) 1
+mapamove ((Estrada v,obs):(Estrada v1,obs2):fs) x 1 (Move Cima)  ac= (Estrada v,obsmove2 x (Estrada v,obs) (Move Cima) 0):(Estrada v1,obsmove (Estrada v1,obs2)):mapamove fs x (-1) (Move Cima) (ac+1)
+mapamove ((Relva,obs):(Estrada v1,obs2):fs) x 1 (Move Cima) ac = if haarvore x obs then  (Relva,obs):(Estrada v1,obsmove2 x (Estrada v1,obs2) Parado 0): mapamove fs x (-1) (Move Cima) (ac+1) else (Relva,obs):(Estrada v1,obsmove(Estrada v1,obs2)): mapamove fs x (-1) (Move Cima) (ac+1)
+mapamove ((Estrada v,obs):(Estrada v1,obs2):fs) x 0 (Move Baixo) ac= (Estrada v,obsmove (Estrada v,obs)):(Estrada v1,obsmove2 x (Estrada v1,obs2) (Move Baixo) 0):mapamove fs x (-2) (Move Baixo) (ac+1)
+mapamove ((Estrada v,obs):(Relva,obs2):fs) x 0 (Move Baixo) ac = if haarvore x obs2 then (Estrada v,obsmove2 x (Estrada v,obs) Parado 0):(Relva,obs2):mapamove fs x (-1) (Move Baixo) (ac+1) else (Estrada v,obsmove(Estrada v,obs)):(Relva,obs2):mapamove fs x (-1) (Move Baixo) (ac+1)
+mapamove ((Estrada v,obs):fs) x y m ac|y==0 =((Estrada v,obsmove2 x (Estrada v,obs) m 0):mapamove fs x (y-1) m (ac+1))
+                                      |otherwise =((Estrada v,obsmove (Estrada v,obs)):mapamove fs x (y-1) m (ac+1))
+mapamove ((te,obs):fs) x y m ac= (te,obsmove (te,obs)):(mapamove fs x (y-1) m (ac+1)) 
 
+{-
 mapamove::[(Terreno,[Obstaculo])]->Int->Int->Jogada->Int->[(Terreno,[Obstaculo])]
 mapamove [] x y m ac= []
 mapamove ((Estrada v,obs):fs) x 0 (Move Cima) 0 =  (Estrada v,obsmove2 x (Estrada v,obs) Parado 0):mapamove fs x (-1) (Move Cima) 1
@@ -213,6 +231,7 @@ mapamove ((Estrada v,obs):(Relva,obs2):fs) x 0 (Move Baixo) ac = if haarvore x o
 mapamove ((Estrada v,obs):fs) x y m ac|y==0 =((Estrada v,obsmove2 x (Estrada v,obs) m 0):mapamove fs x (y-1) m (ac+1))
                                       |otherwise =((Estrada v,obsmove (Estrada v,obs)):mapamove fs x (y-1) m (ac+1))
 mapamove ((te,obs):fs) x y m ac= (te,obsmove (te,obs)):(mapamove fs x (y-1) m (ac+1)) 
+-}
                
 
 {- |Finalmente,a função 'animaJogo' dá movimento tanto ao jogador como aos obstaculos do jogo.
