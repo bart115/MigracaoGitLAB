@@ -260,7 +260,7 @@ jogoinit = ( Jogo (Jogador (10,2)) (Mapa 19 [(e 2,[n,n,n,n,c,n,n,c,n,n,n,n,n,n,n
           e = Estrada
 
 desenhaestado :: World ->IO Picture
-desenhaestado (PerdeuJogo,_, _,_, images,_,p,_) =return $ Pictures [Scale (0.8) (0.8) $ Translate (-400) 0 $ Color red $ Text "GAME OVER" , Translate (-200) (350)$ Scale (0.5) (0.5) $ Text ("Final Score:" ++ (show p)), Translate (-150) (-200) $ Scale (0.4) (0.4) $ Color green $ Text ("Press Space")]                                                                                                                                                                          --desenha o estado perdeujogo
+desenhaestado (PerdeuJogo,_, _,_, images,_,p,_) =return $ Pictures [Scale (0.8) (0.8) $ Translate (-400) 0 $ Color red $ Text "GAME OVER" , Translate (-200) (350)$ Scale (0.5) (0.5) $ Text ("Final Score:" ++ (show p)), Translate (-150) (-200) $ Scale (0.4) (0.4) $ Text ("Press Space")]                                                                                                                                                                          --desenha o estado perdeujogo
 desenhaestado (Pause Resume ,_,_,_, images,_,p,_)= return $ Pictures [last images ,color red $ desenhapause,desenhaquit,desenhascore p]           
 desenhaestado (Pause Quit ,_,_,_,images,_,p,_)= return $ Pictures [last images, desenhapause,color red $ desenhaquit,desenhascore p]   
 desenhaestado (Opcoes Play, jogo,_,skin, images,_,p,_) = return $ Pictures [last images,Color red $ drawplay , drawsimulater,drawquit,desenhaskinmenu skin images]                                                                                   
@@ -365,26 +365,33 @@ desenhalinhasestrada::Float->Picture
 desenhalinhasestrada n = Pictures [Translate (-300-(50*n)) 0 $ linha ,Translate (-150-(25*n)) 0 $ linha ,linha,Translate (150+(25*n)) 0 $ linha ,Translate (300+(50*n)) 0 $ linha ]
                             where linha = color white $ polygon [(-25,1),(-25,-1),(25,-1),(25,1)]
 
+key_up :: World -> World
+key_up (Opcoes op, jogo,jog,skin,i,n,p,r) = case op of
+   Play -> (Opcoes Sair, jogo,jog,skin,i,n,p,r)
+   Sair -> (Opcoes Simulater, jogo,jog,skin,i,n,p,r)
+   Simulater -> (Opcoes Play, jogo,jog,skin,i,n,p,r)  
+
+key_down :: World -> World 
+key_down (Opcoes op, jogo,jog,skin,i,n,p,r) = case op of
+      Play -> (Opcoes Simulater, jogo,jog,skin,i,n,p,r)  
+      Simulater -> (Opcoes Sair, jogo,jog,skin,i,n,p,r)     
+      Sair -> (Opcoes Play, jogo,jog,skin,i,n,p,r) 
 
 event :: Event -> World -> IO World
 -- Menu
-event (EventKey (SpecialKey key) Down _ _) (Opcoes op, jogo,jog,skin,i,n,p,r) 
+event (EventKey (SpecialKey key) Down _ _) ops @(Opcoes op, jogo,jog,skin,i,n,p,r) 
                                     |(key == KeyEnter && op == Play) = return $ (ModoJogo, jogo,jog,skin,i,n,0,r)  
                                     |(key == KeyEnter && op == Simulater) = return $ (Bot, jogoinit,(Move Cima),skin,i,0,0,r+1)  
-                                    |(key == KeyUp && op == Play) = return $ (Opcoes Sair, jogo,jog,skin,i,n,p,r)
-                                    |(key == KeyUp && op == Sair) = return $ (Opcoes Simulater, jogo,jog,skin,i,n,p,r)
-                                    |(key == KeyUp && op == Simulater) = return $ (Opcoes Play, jogo,jog,skin,i,n,p,r) 
-                                    |(key == KeyDown && op == Play ) = return $ (Opcoes Simulater, jogo,jog,skin,i,0,0,r) 
-                                    |(key == KeyDown && op == Simulater ) = return $ (Opcoes Sair, jogo,jog,skin,i,0,0,r)
-                                    |(key == KeyDown && op == Sair) = return $ (Opcoes Play, jogo,jog,skin,i,n,p,r)                                   
+                                    |key == KeyUp = return $ key_up ops
+                                    |key == KeyDown = return $ key_down ops                                  
                                     |(key == KeyLeft && skin == Kid) = return $ (Opcoes op, jogo,jog,Warrior,i,n,p,r)
                                     |(key == KeyRight && skin == Kid) = return $ (Opcoes op, jogo,jog,Zelda,i,n,p,r)
                                     |(key == KeyLeft && skin == Warrior) = return $ (Opcoes op, jogo,jog,Zelda,i,n,p,r)
                                     |(key == KeyRight && skin == Warrior) = return $ (Opcoes op, jogo,jog,Kid,i,n,p,r) 
                                     |(key == KeyLeft && skin == Zelda) = return $ (Opcoes op, jogo,jog,Kid,i,n,p,r)
-                                    |(key == KeyRight && skin == Zelda) = return $ (Opcoes op,jogo,jog,Warrior,i,n,p,r) 
-                                                                                                                                   --passa do menu das opçoes para o jogo --passa da opção jogar normal para a opção jogar natal--passa da opção jogar natal para a opção sair
-                     --passa da opção sair para a opção jogar normal 
+                                    |(key == KeyRight && skin == Zelda) = return $ (Opcoes op,jogo,jog,Warrior,i,n,p,r)
+                                                                       --passa do menu das opçoes para o jogo --passa da opção jogar normal para a opção jogar natal--passa da opção jogar natal para a opção sair
+                     --passa da opção sair para a opção jogar normal --fazer as outras funçoes para
 event (EventKey (SpecialKey KeyEnter) Down _ _) (Opcoes Sair,_,_,_,_,_,_,_) =                                                         --sai do jogo
     do putStrLn "EndGame"
        exitSuccess
