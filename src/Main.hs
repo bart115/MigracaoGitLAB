@@ -260,7 +260,7 @@ jogoinit = ( Jogo (Jogador (10,2)) (Mapa 19 [(e 2,[n,n,n,n,c,n,n,c,n,n,n,n,n,n,n
           e = Estrada
 
 desenhaestado :: World ->IO Picture
-desenhaestado (PerdeuJogo,_, _,_, images,_,p,_) =return $ Pictures [Scale (0.8) (0.8) $ Translate (-400) 0 $ Color red $ Text "GAME OVER" , Translate (-200) (350)$ scale (0.5) (0.5) $ Text ("Final Score:" ++ (show p))]                                                                                                                                                                          --desenha o estado perdeujogo
+desenhaestado (PerdeuJogo,_, _,_, images,_,p,_) =return $ Pictures [Scale (0.8) (0.8) $ Translate (-400) 0 $ Color red $ Text "GAME OVER" , Translate (-200) (350)$ Scale (0.5) (0.5) $ Text ("Final Score:" ++ (show p)), Translate (-150) (-200) $ Scale (0.4) (0.4) $ Color green $ Text ("Press Space")]                                                                                                                                                                          --desenha o estado perdeujogo
 desenhaestado (Pause Resume ,_,_,_, images,_,p,_)= return $ Pictures [last images ,color red $ desenhapause,desenhaquit,desenhascore p]           
 desenhaestado (Pause Quit ,_,_,_,images,_,p,_)= return $ Pictures [last images, desenhapause,color red $ desenhaquit,desenhascore p]   
 desenhaestado (Opcoes Play, jogo,_,skin, images,_,p,_) = return $ Pictures [last images,Color red $ drawplay , drawsimulater,drawquit,desenhaskinmenu skin images]                                                                                   
@@ -291,8 +291,8 @@ desenhaskinmenu _ images= Pictures [Translate 295 (-5) $ scale 6 6 $ imageindex 
 
 drawOption option = Translate (-100) 100 $ Scale (0.5) (0.5) $ Text option
 drawPoints p |p<100 = Translate 400 400 $ color red $ Scale (0.4) (0.4) $ Text (show p) 
-             |p>100 && p<1000 = Translate 400 400 $ color red $ Scale (0.4) (0.4) $ Text (show p) 
-             |otherwise = Translate 400 400 $ color red $ Scale (0.4) (0.4) $ Text (show p) 
+             |p>100 && p<1000 = Translate 370 400 $ color red $ Scale (0.4) (0.4) $ Text (show p) 
+             |otherwise = Translate 350 400 $ color red $ Scale (0.4) (0.4) $ Text (show p) 
 
 desenhaplayer::Int->Int->Float->Skin->[Picture]->Picture
 desenhaplayer x y t skin images = (Translate ((i*50)-450) (500 -(j*50)-(t)) $ desenhaskin skin t images)
@@ -369,7 +369,7 @@ desenhalinhasestrada n = Pictures [Translate (-300-(50*n)) 0 $ linha ,Translate 
 event :: Event -> World -> IO World
 -- Menu
 event (EventKey (SpecialKey key) Down _ _) (Opcoes op, jogo,jog,skin,i,n,p,r) 
-                                    |(key == KeyEnter && op == Play) = return $ (ModoJogo, jogo,jog,skin,i,n,p,r)  
+                                    |(key == KeyEnter && op == Play) = return $ (ModoJogo, jogo,jog,skin,i,n,0,r)  
                                     |(key == KeyEnter && op == Simulater) = return $ (Bot, jogoinit,(Move Cima),skin,i,0,0,r+1)  
                                     |(key == KeyUp && op == Play) = return $ (Opcoes Sair, jogo,jog,skin,i,n,p,r)
                                     |(key == KeyUp && op == Sair) = return $ (Opcoes Simulater, jogo,jog,skin,i,n,p,r)
@@ -414,6 +414,7 @@ time f (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),jog,skin,i,49,p,r)
 time f (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),jog,skin,i,t,p,r) 
                             |jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))  = return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),jog,skin,i,0,p,r) 
                             |otherwise = return $ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)) ,jog,skin,i,t+1,p+1,r)
+
 time f (Bot, (Jogo (Jogador (x, y)) (Mapa l to)),jog,skin,i,49,p,r) 
                             |jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))  = return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),jog,skin,i,0,p,r+1) 
                             |otherwise = return $ (Bot,verificamapa (deslizaJogo (p-y) (animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) (botplay r) )) (r+mod p (x+y)),Parado,skin,i, 0,p+1,r+1)  
@@ -430,7 +431,7 @@ verificamapa::Jogo->Int->Jogo
 verificamapa (Jogo x (Mapa l ((Rio v1,ob1):(Rio v2,ob2):resto))) seed = (Jogo x (Mapa l ((Rio (velocidadealeatoria v2 seed),ob1):(Rio v2,ob2):resto)))
 verificamapa (Jogo x (Mapa l ((Rio v,ob1):resto))) seed = (Jogo x (Mapa l ((Rio (velocidadealeatoria 0 seed),ob1):resto)))
 verificamapa (Jogo x (Mapa l ((Estrada v1,ob1):resto))) seed = (Jogo x (Mapa l ((Estrada (velocidadealeatoria 0 seed),ob1):resto)))
-verificamapa (Jogo x (Mapa l ((Relva,ob1):(Relva,ob2):resto))) seed = if vepassagem ob1 ob2 ==False then Jogo x (estendeMapa (Mapa l ((Relva,ob2):resto)) (seed+1)) else (Jogo x (Mapa l ((Relva,ob1):(Relva,ob2):resto)))
+verificamapa (Jogo x (Mapa l ((Relva,ob1):(Relva,ob2):resto))) seed = if not (vepassagem ob1 ob2)  then Jogo x (estendeMapa (Mapa l ((Relva,ob2):resto)) (seed+1)) else (Jogo x (Mapa l ((Relva,ob1):(Relva,ob2):resto)))
 verificamapa w _ = w 
 
 --a função vepassagem verifica se há uma passagem possivel para o jogador 
