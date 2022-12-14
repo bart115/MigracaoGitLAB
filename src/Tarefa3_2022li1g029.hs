@@ -142,6 +142,14 @@ haarvore x [] =False
 haarvore x (ob1:obs) |x==0 && ob1==Arvore=True
                      |otherwise = haarvore (x-1) obs
 
+{-|A função auxiliar haCarro assemelha-se á função háarvore e serve para verificar se existe um carro numa posição de uma linha
+
+-}
+haCarro::Int->[Obstaculo]->Bool
+haCarro x [] =False
+haCarro x (ob1:obs) |x==0 && ob1==Carro=True
+                    |otherwise = haCarro (x-1) obs 
+
 {- | Para dar movimento aos obstaculos fez-se as duas funções auxiliares 
 
 A função 'obsmove' move os obstaculo de uma "linha" do jogo e está definida por:
@@ -157,10 +165,7 @@ obsmove (Estrada v,obs) |v==0 = obs
                         |otherwise = obsmove (Estrada (v+1),tail obs ++ [head obs])
 @
 -}
-haCarro::Int->[Obstaculo]->Bool
-haCarro x [] =False
-haCarro x (ob1:obs) |x==0 && ob1==Carro=True
-                    |otherwise = haCarro (x-1) obs 
+ 
 
 obsmove::(Terreno,[Obstaculo])->[Obstaculo]
 obsmove (Relva,obs) = obs
@@ -172,13 +177,11 @@ obsmove (Estrada v,obs) |v==0 = obs
                         |otherwise = obsmove (Estrada (v+1),tail obs ++ [head obs])
 
 
+
+{-|A função obsmove2 move os carros presentes numa estrada em função da jogada do player,ou seja , se o jogador se mudar para outra linha , os carros continuarão a mover-se, no entanto se o player se mantiver nessa estrada, os carros param quando atropelam o player
+
+-}
 obsmove2:: Int-> (Terreno,[Obstaculo])->Jogada->Int->[Obstaculo]
-{-obsmove2 x (Estrada v,obs) (Move Cima) ac|v<0 = obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Cima) ac
-                                         |v>0 = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Cima) ac
-                                         |otherwise = obs 
-obsmove2 x (Estrada v,obs) (Move Baixo) ac|v<0 = obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Baixo) ac
-                                          |v>0 = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Baixo) ac
-                                          |otherwise = obs-}
 obsmove2 x (Estrada v,obs) (Move Cima) 0 |v<0 = obsmove2 x (Estrada (v+1),tail obs++[head obs]) (Move Cima) 1
                                          |v>0 = obsmove2 x (Estrada (v-1),[last obs]++init obs) (Move Cima) 1
                                          |otherwise = obs
@@ -204,9 +207,18 @@ obsmove2 x (Estrada v,obs) m ac|v<0 && haCarro x obs ==False = obsmove2 x (Estra
 {- |A função 'mapamove' usa a função obsmove para mover todos os obstaculos e está definida por: 
 
 @
-mapamove::[(Terreno,[Obstaculo])]->[(Terreno,[Obstaculo])]
-mapamove [(te,obs)] = [(te,obsmove (te,obs))]
-mapamove ((te,obs):fs) = (te,obsmove (te,obs)):mapamove fs
+mapamove::[(Terreno,[Obstaculo])]->Int->Int->Jogada->Int->[(Terreno,[Obstaculo])]
+mapamove [] x y m ac= []
+mapamove ((Estrada v,obs):fs) x 0 (Move Cima) 0 =  (Estrada v,obsmove2 x (Estrada v,obs) Parado 0):mapamove fs x (-1) (Move Cima) 1
+mapamove ((Estrada v,obs):(Estrada v1,obs2):fs) x 1 (Move Cima)  ac= (Estrada v,obsmove2 x (Estrada v,obs) (Move Cima) 0):(Estrada v1,obsmove (Estrada v1,obs2)):mapamove fs x (-1) (Move Cima) (ac+1)
+mapamove ((Relva,obs):(Estrada v1,obs2):fs) x 1 (Move Cima) ac = if haarvore x obs then  (Relva,obs):(Estrada v1,obsmove2 x (Estrada v1,obs2) Parado 0): mapamove fs x (-1) (Move Cima) (ac+1) else (Relva,obs):(Estrada v1,obsmove(Estrada v1,obs2)): mapamove fs x (-1) (Move Cima) (ac+1)
+mapamove ((Estrada v,obs):(Estrada v1,obs2):fs) x 0 (Move Baixo) ac= (Estrada v,obsmove (Estrada v,obs)):(Estrada v1,obsmove2 x (Estrada v1,obs2) (Move Baixo) 0):mapamove fs x (-2) (Move Baixo) (ac+1)
+mapamove ((Estrada v,obs):(Relva,obs2):fs) x 0 (Move Baixo) ac = if haarvore x obs2 then (Estrada v,obsmove2 x (Estrada v,obs) Parado 0):(Relva,obs2):mapamove fs x (-1) (Move Baixo) (ac+1) else (Estrada v,obsmove(Estrada v,obs)):(Relva,obs2):mapamove fs x (-1) (Move Baixo) (ac+1)
+mapamove ((Estrada v,obs):fs) x 0 (Move Cima) ac = ((Estrada v,obsmove (Estrada v,obs) ):mapamove fs x (-1) (Move Cima) (ac+1))
+mapamove ((Estrada v,obs):fs) x 0 (Move Baixo) ac = ((Estrada v,obsmove (Estrada v,obs) ):mapamove fs x (-1) (Move Baixo) (ac+1))
+mapamove ((Estrada v,obs):fs) x y m ac|y==0 =((Estrada v,obsmove2 x (Estrada v,obs) m 0):mapamove fs x (y-1) m (ac+1))
+                                      |otherwise =((Estrada v,obsmove (Estrada v,obs)):mapamove fs x (y-1) m (ac+1))
+mapamove ((te,obs):fs) x y m ac= (te,obsmove (te,obs)):(mapamove fs x (y-1) m (ac+1)) 
 @
 -}
 mapamove::[(Terreno,[Obstaculo])]->Int->Int->Jogada->Int->[(Terreno,[Obstaculo])]

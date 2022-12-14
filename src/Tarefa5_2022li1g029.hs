@@ -12,6 +12,11 @@ import LI12223
 import Tarefa2_2022li1g029 
 
 
+
+{-|A função deslizaJogo serve simplesmente para estender o mapa e ao mesmo tempo retirar a ultima linha do jogo
+
+
+-}
 deslizaJogo :: Int -> Jogo -> Jogo
 deslizaJogo seed (Jogo (Jogador (x,y)) (Mapa l t)) = Jogo (Jogador (x,y+1)) (deslizaux (estendeMapa (Mapa l t) seed )) 
                                                                             where 
