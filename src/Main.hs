@@ -41,6 +41,7 @@ type Seed= Int
 
 type World = (Menu,Jogo,Skin,Images,Time,Pontuação,Seed)
 
+
 window :: Display 
 window = InWindow "CrossyRoad: The Indie Game" (950,950) (0,0)
 
@@ -113,8 +114,8 @@ desenhaskinmenu _ images= Pictures [Translate 295 (-5) $ scale 6 6 $ imageindex 
 
 drawOption option = Translate (-100) 100 $ Scale (0.5) (0.5) $ Text option
 drawPoints p |p<100 = Translate 400 400 $ color red $ Scale (0.4) (0.4) $ Text (show p) 
-             |p>100 && p<1000 = Translate 400 400 $ color red $ Scale (0.4) (0.4) $ Text (show p) 
-             |otherwise = Translate 400 400 $ color red $ Scale (0.4) (0.4) $ Text (show p) 
+             |p>100 && p<1000 = Translate 380 400 $ color red $ Scale (0.4) (0.4) $ Text (show p) 
+             |otherwise = Translate 360 400 $ color red $ Scale (0.4) (0.4) $ Text (show p) 
 
 desenhaplayer::Int->Int->Float->Skin->[Picture]->Picture
 desenhaplayer x y t skin images = (Translate ((i*50)-450) (500 -(j*50)-(t)) $ desenhaskin skin t images)
@@ -183,24 +184,43 @@ desenhalinhasestrada::Float->Picture
 desenhalinhasestrada n = Pictures [Translate (-300-(50*n)) 0 $ linha ,Translate (-150-(25*n)) 0 $ linha ,linha,Translate (150+(25*n)) 0 $ linha ,Translate (300+(50*n)) 0 $ linha ]
                             where linha = color white $ polygon [(-25,1),(-25,-1),(25,-1),(25,1)]
 
+key_up :: World -> World
+key_up (Opcoes op, jogo,skin,i,n,p,r) = case op of
+    Play -> (Opcoes Sair, jogo,skin,i,n,p,r)
+    Sair -> (Opcoes Simulater, jogo,skin,i,n,p,r)
+    Simulater -> (Opcoes Play, jogo,skin,i,n,p,r) 
+
+key_down :: World -> World 
+key_down (Opcoes op, jogo,skin,i,n,p,r) = case op of
+      Play -> (Opcoes Simulater, jogo,skin,i,n,p,r)  
+      Simulater -> (Opcoes Sair, jogo,skin,i,n,p,r)     
+      Sair -> (Opcoes Play, jogo,skin,i,n,p,r) 
+
+key_enter :: World -> World
+key_enter (Opcoes op, jogo,skin,i,n,p,r) = case op of 
+          Play -> (ModoJogo, jogo,skin,i,n,0,r)
+          Simulater -> (Bot, jogoinit,skin,i,0,0,r+1)
+
+key_left :: World -> World
+key_left (Opcoes op, jogo,skin,i,n,p,r) = case skin of
+          Kid -> (Opcoes op, jogo,Warrior,i,n,p,r)
+          Warrior -> (Opcoes op, jogo,Zelda,i,n,p,r)
+          Zelda -> (Opcoes op, jogo,Kid,i,n,p,r)
+
+key_right :: World -> World
+key_right (Opcoes op, jogo,skin,i,n,p,r) = case skin of 
+          Kid -> (Opcoes op, jogo,Zelda,i,n,p,r)
+          Warrior -> (Opcoes op, jogo,Kid,i,n,p,r)
+          Zelda -> (Opcoes op,jogo,Warrior,i,n,p,r)
 
 event :: Event -> World -> IO World
 -- Menu
-event (EventKey (SpecialKey key) Down _ _) (Opcoes op, jogo,skin,i,n,p,r) 
-                                    |(key == KeyEnter && op == Play) = return $ (ModoJogo, jogo,skin,i,n,p,r)  
-                                    |(key == KeyEnter && op == Simulater) = return $ (Bot, jogoinit,skin,i,0,0,r+1)  
-                                    |(key == KeyUp && op == Play) = return $ (Opcoes Sair, jogo,skin,i,n,p,r)
-                                    |(key == KeyUp && op == Sair) = return $ (Opcoes Simulater, jogo,skin,i,n,p,r)
-                                    |(key == KeyUp && op == Simulater) = return $ (Opcoes Play, jogo,skin,i,n,p,r) 
-                                    |(key == KeyDown && op == Play ) = return $ (Opcoes Simulater, jogo,skin,i,0,0,r) 
-                                    |(key == KeyDown && op == Simulater ) = return $ (Opcoes Sair, jogo,skin,i,0,0,r)
-                                    |(key == KeyDown && op == Sair) = return $ (Opcoes Play, jogo,skin,i,n,p,r)                                   
-                                    |(key == KeyLeft && skin == Kid) = return $ (Opcoes op, jogo,Warrior,i,n,p,r)
-                                    |(key == KeyRight && skin == Kid) = return $ (Opcoes op, jogo,Zelda,i,n,p,r)
-                                    |(key == KeyLeft && skin == Warrior) = return $ (Opcoes op, jogo,Zelda,i,n,p,r)
-                                    |(key == KeyRight && skin == Warrior) = return $ (Opcoes op, jogo,Kid,i,n,p,r) 
-                                    |(key == KeyLeft && skin == Zelda) = return $ (Opcoes op, jogo,Kid,i,n,p,r)
-                                    |(key == KeyRight && skin == Zelda) = return $ (Opcoes op,jogo,Warrior,i,n,p,r) 
+event (EventKey (SpecialKey key) Down _ _) ops @(Opcoes op, jogo,skin,i,n,p,r) 
+                                    |key == KeyEnter = return $ key_enter ops
+                                    |key == KeyUp = return $ key_up ops
+                                    |key == KeyDown = return $ key_down ops                                  
+                                    |key == KeyLeft  = return $ key_left ops
+                                    |key == KeyRight = return $ key_right ops
                                                                                                                                    --passa do menu das opçoes para o jogo --passa da opção jogar normal para a opção jogar natal--passa da opção jogar natal para a opção sair
                      --passa da opção sair para a opção jogar normal 
 event (EventKey (SpecialKey KeyEnter) Down _ _) (Opcoes Sair,_,_,_,_,_,_) =                                                         --sai do jogo
