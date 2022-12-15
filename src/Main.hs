@@ -55,35 +55,35 @@ initialState images seed = (Opcoes Play,jogoinit,Kid,images,0,0,seed)
 
 jogoinit::Jogo
 jogoinit = ( Jogo (Jogador (10,6)) (Mapa 19 [(e 2,[n,n,n,n,c,n,n,c,n,n,n,n,n,n,n,n,n,n,n]),
-    (r,[n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]),
-    (r,[n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]),
-    (r,[n,n,n,a,a,a,n,n,n,n,n,n,n,a,a,a,n,n,n]), 
-    (r,[n,n,a,n,a,a,a,a,a,a,n,n,a,n,n,n,a,n,n]), 
-    (ri 1,[n,n,t,t,t,t,t,t,n,n,t,t,t,t,t,t,t,n,n]),
-    (r,[n,n,a,n,a,n,a,n,n,n,n,n,a,n,n,n,a,n,n]),
-    (r,[n,n,a,n,n,n,a,n,n,n,n,n,a,n,n,n,a,n,n]),
-    (r,[n,n,n,a,a,a,n,n,n,n,n,n,n,a,a,a,n,n,n]), 
-    (r,[n,n,a,n,n,n,n,n,n,n,n,n,n,n,n,n,a,n,n]), 
-    (r,[n,a,a,a,n,n,n,n,n,n,n,n,n,n,n,a,a,a,n]),
-    (r,[a,a,a,a,a,n,n,n,n,n,n,n,n,n,a,a,a,a,a]),
-    (r,[n,n,a,n,n,n,n,n,n,n,n,n,n,n,n,n,a,n,n]), 
-    (r,[n,n,a,n,n,n,n,n,n,n,n,n,n,n,n,n,a,n,n]),
-    (r,[n,n,a,n,n,a,n,n,n,n,n,n,n,n,n,n,a,n,n]),
-    (e (-1),[c,n,n,n,n,c,n,n,n,n,n,n,n,n,n,n,n,n,n]),
-    (e 1,[c,n,n,n,n,c,n,n,n,c,n,n,n,n,c,c,n,n,n]),
-    (ri 1,[t,n,t,t,t,n,t,n,n,n,n,n,t,n,n,n,n,n,n]), 
-    (ri (-1),[t,t,n,n,n,n,n,n,n,n,n,n,n,t,n,n,n,n,n]), 
-    (r,[a,a,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n])]))
-    where a = Arvore
-          n = Nenhum
-          c = Carro 
-          t = Tronco 
-          r = Relva
-          ri = Rio
-          e = Estrada
+                                            (r,[n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]),
+                                            (r,[n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]),
+                                            (r,[n,n,n,a,a,a,n,n,n,n,n,n,n,a,a,a,n,n,n]), 
+                                            (r,[n,n,a,n,a,a,a,a,a,a,n,n,a,n,n,n,a,n,n]), 
+                                            (ri 1,[n,n,t,t,t,t,t,t,n,n,t,t,t,t,t,t,t,n,n]),
+                                            (r,[n,n,a,n,a,n,a,n,n,n,n,n,a,n,n,n,a,n,n]),
+                                            (r,[n,n,a,n,n,n,a,n,n,n,n,n,a,n,n,n,a,n,n]),
+                                            (r,[n,n,n,a,a,a,n,n,n,n,n,n,n,a,a,a,n,n,n]), 
+                                            (r,[n,n,a,n,n,n,n,n,n,n,n,n,n,n,n,n,a,n,n]), 
+                                            (r,[n,a,a,a,n,n,n,n,n,n,n,n,n,n,n,a,a,a,n]),
+                                            (r,[a,a,a,a,a,n,n,n,n,n,n,n,n,n,a,a,a,a,a]),
+                                            (r,[n,n,a,n,n,n,n,n,n,n,n,n,n,n,n,n,a,n,n]), 
+                                            (r,[n,n,a,n,n,n,n,n,n,n,n,n,n,n,n,n,a,n,n]),
+                                            (r,[n,n,a,n,n,a,n,n,n,n,n,n,n,n,n,n,a,n,n]),
+                                            (e (-1),[c,n,n,n,n,c,n,n,n,n,n,n,n,n,n,n,n,n,n]),
+                                            (e 1,[c,n,n,n,n,c,n,n,n,c,n,n,n,n,c,c,n,n,n]),
+                                            (ri 1,[t,n,t,t,t,n,t,n,n,n,n,n,t,n,n,n,n,n,n]), 
+                                            (ri (-1),[t,t,n,n,n,n,n,n,n,n,n,n,n,t,n,n,n,n,n]), 
+                                            (r,[a,a,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n])]))
+                                             where a = Arvore
+                                                   n = Nenhum
+                                                   c = Carro 
+                                                   t = Tronco 
+                                                   r = Relva
+                                                   ri = Rio
+                                                   e = Estrada
 
 desenhaestado :: World ->IO Picture
-desenhaestado (PerdeuJogo,_, _, images,_,p,_) =return $ Pictures [Scale (0.8) (0.8) $ Translate (-400) 0 $ Color red $ Text "GAME OVER" , Translate (-200) (350)$ scale (0.5) (0.5) $ Text ("Final Score:" ++ (show p))]                                                                                                                                                                          --desenha o estado perdeujogo
+desenhaestado (PerdeuJogo,_, _, images,_,p,_) =return $ Pictures [last images, Scale (1) (1) $ Translate 0 50 $ last (take 2( reverse images))   , Translate (-200) (350)$ scale (0.5) (0.5) $ Text ("Final Score:" ++ (show p)), Translate 150 (-220) $  Scale (1.5) (1.5) $ last (take 3( reverse images))]                                                                                                                                                                          --desenha o estado perdeujogo
 desenhaestado (Pause Resume ,_,_, images,_,p,_)= return $ Pictures [last images ,color red $ desenhapause,desenhaquit,desenhascore p]           
 desenhaestado (Pause Quit ,_,_,images,_,p,_)= return $ Pictures [last images, desenhapause,color red $ desenhaquit,desenhascore p]   
 desenhaestado (Opcoes Play, jogo,skin, images,_,p,_) = return $ Pictures [last images,Color red $ drawplay , drawsimulater,drawquit,desenhaskinmenu skin images]                                                                                   
@@ -97,7 +97,7 @@ desenhaestado (Bot,(Jogo (Jogador (x,y)) (Mapa lar l)),skin,images,t,p,_)= retur
 drawplay = Translate (-200) (-200) $ drawOption "PLAY"
 drawsimulater = Translate (-200) (-270) $ drawOption "Simulater"
 drawquit = Translate (-200) (-340) $ drawOption "QUIT"
-desenhascore p = Translate (-420) 420 $ scale (0.3) (0.3) $ Text ("Your score:" ++ (show p))
+desenhascore p = Translate (-420) 420 $ scale (0.3) (0.3) $ Text ("Your score: " ++ (show p))
 desenhapause = scale (1.3) (1.3) $ Pictures [Translate (-10) 0 $ polygon [(0,(-40)),((-16),(-40)),((-16),0),(0,0)], Translate 20 0 $ polygon [(0,(-40)),((-16),(-40)),((-16),0),(0,0)]]
 desenhaquit = Translate 420 360 $ scale (0.6) (0.6) $ drawOption "QUIT"
 
@@ -115,6 +115,7 @@ desenhaskinmenu _ images= Pictures [Translate 295 (-5) $ scale 6 6 $ imageindex 
 drawOption option = Translate (-100) 100 $ Scale (0.5) (0.5) $ Text option
 drawPoints p |p<100 = Translate 400 400 $ color red $ Scale (0.4) (0.4) $ Text (show p) 
              |p>100 && p<1000 = Translate 380 400 $ color red $ Scale (0.4) (0.4) $ Text (show p) 
+             |p>1000 && p <10000 = Translate 350 400 $ color red $ Scale (0.4) (0.4) $ Text (show p)
              |otherwise = Translate 360 400 $ color red $ Scale (0.4) (0.4) $ Text (show p) 
 
 desenhaplayer::Int->Int->Float->Skin->[Picture]->Picture
@@ -312,7 +313,9 @@ main = do
  zeldamenu<- loadBMP "zeldamenu.bmp"
  fundomenu<- loadBMP "fundo.bmp"
  seed<- randomRIO (0,10)
- let images = [scale (0.5) (0.5) kid1, scale (0.5) (0.5) kid2,scale (0.3) (0.3) log, tree,scale (0.4) (0.6)  car1,scale (0.2) (0.4)  car2,warrior1,warrior2,zelda1,zelda2,scale (0.7) (0.7) $ Translate 2 0 kidmenu,warriormenu, scale (1.2) (1.2) zeldamenu,fundomenu]
+ game_over <- loadBMP "game_over.bmp" 
+ space <- loadBMP "press_space.bmp"
+ let images = [scale (0.5) (0.5) kid1, scale (0.5) (0.5) kid2,scale (0.3) (0.3) log, tree,scale (0.4) (0.6)  car1,scale (0.2) (0.4)  car2,warrior1,warrior2,zelda1,zelda2,scale (0.7) (0.7) $ Translate 2 0 kidmenu,warriormenu, scale (1.2) (1.2) zeldamenu,space,game_over,fundomenu]
  playIO window white  fr (initialState images seed) desenhaestado event time
 
 {-
