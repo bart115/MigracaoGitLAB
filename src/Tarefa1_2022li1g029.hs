@@ -22,7 +22,7 @@ cada uma desta têm funções especificas que serão explicadas mais tarde.
  >>> mapaValido (Mapa 3 [(Rio 3,[Nenhum,Nenhum,Tronco]),(Rio 1,[Nenhum,Nenhum,Tronco]),(Relva,[Nenhum,Nenhum,Arvore]),(Estrada 1,[Carro,Carro,Carro]),(Rio 1,[Tronco,Nenhum,Tronco])])]
  >>> False-}
 mapaValido :: Mapa -> Bool
-mapaValido (Mapa lr l) = (obsvalidos (Mapa lr l) && mapaValido2 (Mapa lr l)) && (mapaValido3 (Mapa lr l) && mapaValido4 (Mapa lr l)) && (mapaValido5 (Mapa lr l) && mapaValido6 (Mapa lr l)) && mapaValido7 (Mapa lr l)
+mapaValido (Mapa lr l) = (obsvalidos (Mapa lr l) && mapaValido2 (Mapa lr l)) && (mapaValido3 (Mapa lr l) && mapaValido4 (Mapa lr l)) && (mapaValido5 (Mapa lr l) && mapaValido6 (Mapa lr l)) && mapaValido7 (Mapa lr l) && arvores_maximas_juntas (Mapa lr l)
 
 {-|Como referi anteriormentente a função principal, 'mapaValido' é composta por algumas auxiliares sendo uma delas a função 'mapaValido1',
 esta função recebe um mapa e confirma se nesse mapa consoante o terreno os obstaculos estão corretos.
@@ -114,6 +114,18 @@ Utilizando o exemplo da função 'mapaValido3'.
 aux3 :: Eq a => [a] -> [[a]]
 aux3 [] = []
 aux3 (h:t) = (h:takeWhile (== h) t) : aux3 (dropWhile (== h) t)
+
+
+arvores_maximas_juntas :: Mapa -> Bool
+arvores_maximas_juntas (Mapa lr (((Rio vr),(o1:ot)):t)) = arvores_maximas_juntas (Mapa lr t)
+arvores_maximas_juntas (Mapa lr (((Estrada ve) ,(o1:ot)):t)) = arvores_maximas_juntas (Mapa lr t)
+arvores_maximas_juntas (Mapa lr []) = True
+arvores_maximas_juntas (Mapa lr ((Relva ,(o1:ot)):t))
+                                  |(o1 == Nenhum) && (length (head (aux4 (dropWhile (== Nenhum) ot))) > 3) = False
+                                  |(o1 == Arvore) && ((length (head (aux4 (o1:ot)))) > 3) = False 
+                                  |otherwise = arvores_maximas_juntas (Mapa lr t)
+
+
 
 
 {-|A função 'mapaValido4' funciona da mesma maneira que a função 'mapaValido3' mas com @Carro@ e com a auxiliar 'aux4' .
