@@ -59,9 +59,9 @@ jogoinit = ( Jogo (Jogador (10,6)) (Mapa 19 [(e 2,[n,n,n,n,c,n,n,c,n,n,n,n,n,n,n
                                             (r,[n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]),
                                             (r,[n,n,n,a,a,a,n,n,n,n,n,n,n,a,a,a,n,n,n]), 
                                             (r,[n,n,a,n,a,a,a,a,a,a,n,n,a,n,n,n,a,n,n]), 
-                                            (ri 1,[n,n,t,t,t,t,t,t,n,n,t,t,t,t,t,t,t,n,n]),
-                                            (r,[n,n,a,n,a,n,a,n,n,n,n,n,a,n,n,n,a,n,n]),
-                                            (r,[n,n,a,n,n,n,a,n,n,n,n,n,a,n,n,n,a,n,n]),
+                                            (r,[a,a,a,a,a,a,n,n,n,n,n,n,n,a,a,a,a,a,a]),
+                                            (r,[a,a,a,a,a,a,n,n,n,n,n,n,n,a,a,a,a,a,a]),
+                                            (r,[a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a]),
                                             (r,[n,n,n,a,a,a,n,n,n,n,n,n,n,a,a,a,n,n,n]), 
                                             (r,[n,n,a,n,n,n,n,n,n,n,n,n,n,n,n,n,a,n,n]), 
                                             (r,[n,a,a,a,n,n,n,n,n,n,n,n,n,n,n,a,a,a,n]),
@@ -234,11 +234,12 @@ event (EventKey (SpecialKey key) Down _ _) (menu,(Jogo (Jogador (x,y)) mapa),ski
                                           |(key == KeyDown && (menu == ModoJogo)) = if estanotronco (Jogo (Jogador (x,y)) mapa) && haarvore2 (Jogo (Jogador (x,y+1)) mapa) then return $ (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) else (if estanotronco (Jogo (Jogador (x,y)) mapa) && haarvore2 (Jogo (Jogador (x,y+1)) mapa)==False then return $  (ModoJogo,Jogo (Jogador (x,y+1)) mapa,skin,i,n,p,r) else return $ (ModoJogo,Jogo (animaplayer (animaJogo (Jogo (Jogador (x,y)) mapa) (Move Baixo))) mapa,skin,i,n,p,r))
                                           |(key == KeyLeft && (menu == ModoJogo)) = if estanotronco (Jogo (Jogador (x,y)) mapa) then return $  (ModoJogo,Jogo (Jogador (x-1,y)) mapa,skin,i,n,p,r) else return $ (ModoJogo,Jogo (animaplayer (animaJogo (Jogo (Jogador (x,y)) mapa) (Move Esquerda))) mapa,skin,i,n,p,r)
                                           |(key == KeyRight && (menu == ModoJogo)) = if estanotronco (Jogo (Jogador (x,y)) mapa) then return $  (ModoJogo,Jogo (Jogador (x+1,y)) mapa,skin,i,n,p,r) else return $ (ModoJogo,Jogo (animaplayer (animaJogo (Jogo (Jogador (x,y)) mapa) (Move Direita))) mapa,skin,i,n,p,r)
+
 event (EventKey (SpecialKey key) Down _ _) (Pause op2,jogo,skin,i,n,p,r)
                                           |(key == KeySpace ) =return $  (ModoJogo , jogo,skin,i,n,p,r)
                                           |(key == KeyUp && op2 == Resume ) = return $  (Pause Quit, jogo ,skin,i,n,p,r)
                                           |(key == KeyDown && op2 == Quit ) = return $  (Pause Resume, jogo ,skin,i,n,p,r)
-                                          |(key == KeyEnter && op2 == Quit) = return $ (Opcoes Play,jogo,skin,i,n,p,r)
+                                          |(key == KeyEnter && op2 == Quit) = return $ (Opcoes Play,jogo,skin,i,n,p,r) --neste coiso tem um problema que quando se sai da pause guarda o jogo pode se criar uma cena em jogar guardado que vai para esse e jogar desde o inicio
 event _ w = return w
 
 animaplayer::Jogo->Jogador 
