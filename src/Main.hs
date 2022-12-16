@@ -214,14 +214,18 @@ key_right (Opcoes op, jogo,skin,i,n,p,r) = case skin of
           Warrior -> (Opcoes op, jogo,Kid,i,n,p,r)
           Zelda -> (Opcoes op,jogo,Warrior,i,n,p,r)
 
+type_key :: SpecialKey -> World -> World
+type_key key ops @(Opcoes op, jogo,skin,i,n,p,r) = case key of 
+                       KeyEnter -> key_enter ops
+                       KeyUp -> key_up ops
+                       KeyDown -> key_down ops 
+                       KeyLeft -> key_left ops 
+                       KeyRight -> key_right ops
+
 event :: Event -> World -> IO World
 -- Menu
-event (EventKey (SpecialKey key) Down _ _) ops @(Opcoes op, jogo,skin,i,n,p,r) 
-                                    |key == KeyEnter = return $ key_enter ops
-                                    |key == KeyUp = return $ key_up ops
-                                    |key == KeyDown = return $ key_down ops                                  
-                                    |key == KeyLeft  = return $ key_left ops
-                                    |key == KeyRight = return $ key_right ops
+event (EventKey (SpecialKey key) Down _ _) ops @(Opcoes op, jogo,skin,i,n,p,r) = return $ type_key key ops 
+                            
                                                                                                                                    --passa do menu das opçoes para o jogo --passa da opção jogar normal para a opção jogar natal--passa da opção jogar natal para a opção sair
                      --passa da opção sair para a opção jogar normal 
 event (EventKey (SpecialKey KeyEnter) Down _ _) (Opcoes Sair,_,_,_,_,_,_) =                                                         --sai do jogo
