@@ -1946,7 +1946,287 @@ main = do
 
 -}
 
+{-
+data Opção1 = Play
+            |Simulater
+            |Sair
+           deriving (Show,Eq)
+data Opção2 = Resume 
+            |Quit
+           deriving (Show,Eq)
+
+data Menu = Opcoes Opção1 
+          |ModoJogo
+          |Bot
+          |PerdeuJogo
+          |Pause Opção2
+         deriving (Show,Eq)
+
+data Skin = Kid | Warrior | Zelda
+         deriving (Show,Eq)
+type Pontuação = Int 
+
+type Time = Float 
+
+type Images = [Picture]
+type Seed= Int
+
+type World = (Menu,Jogo,Skin,Images,Time,Pontuação,Seed)
+
+window :: Display 
+window = InWindow "CrossyRoad: The Indie Game" (950,950) (0,0)
+
+fr :: Int
+fr = 80
 
 
 
+initialState :: Images ->Seed->World
+initialState images seed = (Opcoes Play,jogoinit,Kid,images,0,0,seed)
+
+jogoinit::Jogo
+jogoinit = ( Jogo (Jogador (10,6)) (Mapa 19 [(e 2,[n,n,n,n,c,n,n,c,n,n,n,n,n,n,n,n,n,n,n]),
+    (r,[n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]),
+    (r,[n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]),
+    (r,[n,n,n,a,a,a,n,n,n,n,n,n,n,a,a,a,n,n,n]), 
+    (r,[n,n,a,n,a,a,a,a,a,a,n,n,a,n,n,n,a,n,n]), 
+    (ri 1,[n,n,t,t,t,t,t,t,n,n,t,t,t,t,t,t,t,n,n]),
+    (r,[n,n,a,n,a,n,a,n,n,n,n,n,a,n,n,n,a,n,n]),
+    (r,[n,n,a,n,n,n,a,n,n,n,n,n,a,n,n,n,a,n,n]),
+    (r,[n,n,n,a,a,a,n,n,n,n,n,n,n,a,a,a,n,n,n]), 
+    (r,[n,n,a,n,n,n,n,n,n,n,n,n,n,n,n,n,a,n,n]), 
+    (r,[n,a,a,a,n,n,n,n,n,n,n,n,n,n,n,a,a,a,n]),
+    (r,[a,a,a,a,a,n,n,n,n,n,n,n,n,n,a,a,a,a,a]),
+    (r,[n,n,a,n,n,n,n,n,n,n,n,n,n,n,n,n,a,n,n]), 
+    (r,[n,n,a,n,n,n,n,n,n,n,n,n,n,n,n,n,a,n,n]),
+    (r,[n,n,a,n,n,a,n,n,n,n,n,n,n,n,n,n,a,n,n]),
+    (e (-1),[c,n,n,n,n,c,n,n,n,n,n,n,n,n,n,n,n,n,n]),
+    (e 1,[c,n,n,n,n,c,n,n,n,c,n,n,n,n,c,c,n,n,n]),
+    (ri 1,[t,n,t,t,t,n,t,n,n,n,n,n,t,n,n,n,n,n,n]), 
+    (ri (-1),[t,t,n,n,n,n,n,n,n,n,n,n,n,t,n,n,n,n,n]), 
+    (r,[a,a,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n])]))
+    where a = Arvore
+          n = Nenhum
+          c = Carro 
+          t = Tronco 
+          r = Relva
+          ri = Rio
+          e = Estrada
+
+desenhaestado :: World ->IO Picture
+desenhaestado (PerdeuJogo,_, _, images,_,p,_) =return $ Pictures [Scale (0.8) (0.8) $ Translate (-400) 0 $ Color red $ Text "GAME OVER" , Translate (-200) (350)$ scale (0.5) (0.5) $ Text ("Final Score:" ++ (show p))]                                                                                                                                                                          --desenha o estado perdeujogo
+desenhaestado (Pause Resume ,_,_, images,_,p,_)= return $ Pictures [last images ,color red $ desenhapause,desenhaquit,desenhascore p]           
+desenhaestado (Pause Quit ,_,_,images,_,p,_)= return $ Pictures [last images, desenhapause,color red $ desenhaquit,desenhascore p]   
+desenhaestado (Opcoes Play, jogo,skin, images,_,p,_) = return $ Pictures [last images,Color red $ drawplay , drawsimulater,drawquit,desenhaskinmenu skin images]                                                                                   
+desenhaestado (Opcoes Simulater, jogo,skin, images,_,p,_) =return $  Pictures [last images,drawplay ,Color red $ drawsimulater,drawquit,desenhaskinmenu skin images]                                                                                       
+desenhaestado (Opcoes Sair, jogo,skin, images,_,p,_) = return $ Pictures [last images,drawplay ,drawsimulater, Color red $ drawquit,desenhaskinmenu skin images]                                                                                      
+desenhaestado (ModoJogo,(Jogo (Jogador (x,y)) (Mapa lar l)),skin,images,t,p,_)= return $ Pictures [(desenhaterrenos (listaterrenos (agrupaestradas l) 500 t)),(desenhaobstaculos (listaobstaculos (Mapa lar l) (-450) 500 t images)),(desenhaplayer x y t skin images),drawPoints p ]
+desenhaestado (Bot,(Jogo (Jogador (x,y)) (Mapa lar l)),skin,images,t,p,_)= return $ Pictures [(desenhaterrenos (listaterrenos (agrupaestradas l) 500 t)),(desenhaobstaculos (listaobstaculos (Mapa lar l) (-450) 500 t images)),(desenhaplayer x y t skin images),drawPoints p ]
+
+
+
+drawplay = Translate (-200) (-200) $ drawOption "PLAY"
+drawsimulater = Translate (-200) (-270) $ drawOption "Simulater"
+drawquit = Translate (-200) (-340) $ drawOption "QUIT"
+desenhascore p = Translate (-420) 420 $ scale (0.3) (0.3) $ Text ("Your score:" ++ (show p))
+desenhapause = scale (1.3) (1.3) $ Pictures [Translate (-10) 0 $ polygon [(0,(-40)),((-16),(-40)),((-16),0),(0,0)], Translate 20 0 $ polygon [(0,(-40)),((-16),(-40)),((-16),0),(0,0)]]
+desenhaquit = Translate 420 360 $ scale (0.6) (0.6) $ drawOption "QUIT"
+
+
+
+imageindex::[Picture]->Int->Picture
+imageindex (x:_) 0 = x 
+imageindex (_:xs) n = imageindex xs (n-1)
+
+
+desenhaskinmenu Kid images= Pictures [Translate 300 20 $ scale 5 5 $ imageindex images 10, Translate 270 150 $ scale (0.4) (0.3) $ Text "Kid", Translate 300 0 $ color red $ rectangleWire 200 250 ]
+desenhaskinmenu Warrior images= Pictures [Translate 295 0 $ scale 5 5 $ imageindex images 11, Translate 225 150 $ scale (0.4) (0.3) $ Text "Warrior", Translate 300 0 $ color red $ rectangleWire 200 250 ]   
+desenhaskinmenu _ images= Pictures [Translate 295 (-5) $ scale 6 6 $ imageindex images 12, Translate 250 150 $ scale (0.4) (0.3) $ Text "Zelda",Translate 300 0 $ color red $ rectangleWire 200 250 ] 
+
+drawOption option = Translate (-100) 100 $ Scale (0.5) (0.5) $ Text option
+drawPoints p |p<100 = Translate 400 400 $ color red $ Scale (0.4) (0.4) $ Text (show p) 
+             |p>100 && p<1000 = Translate 400 400 $ color red $ Scale (0.4) (0.4) $ Text (show p) 
+             |otherwise = Translate 400 400 $ color red $ Scale (0.4) (0.4) $ Text (show p) 
+
+desenhaplayer::Int->Int->Float->Skin->[Picture]->Picture
+desenhaplayer x y t skin images = (Translate ((i*50)-450) (500 -(j*50)-(t)) $ desenhaskin skin t images)
+                            where i=fromIntegral x 
+                                  j=fromIntegral y
+
+desenhaskin::Skin->Float->[Picture]->Picture
+desenhaskin Kid t images = if t<25 then imageindex images 0 else Translate 0 0 $ imageindex images 1
+desenhaskin Warrior t images = if t<25 then Translate 0 15 $ imageindex images 6 else Translate 0 15 $ imageindex images 7 
+desenhaskin Zelda t images = if t<25 then Translate 0 10 $ imageindex images 8 else Translate 0 10 $ imageindex images 9 
+
+
+agrupaestradas::[(Terreno,[Obstaculo])]->[[Terreno]]
+agrupaestradas []= []
+agrupaestradas [(te,obs)]=[[te]]
+agrupaestradas ((Estrada v,obs):tf)|existeestrada (head (agrupaestradas tf)) = ((Estrada v):(head (agrupaestradas tf))):(tail (agrupaestradas tf))
+                                   |otherwise = [Estrada v]:agrupaestradas tf
+agrupaestradas (h:t)=[fst h]:agrupaestradas t                                            
+    
+                                             
+existeestrada::[Terreno]->Bool
+existeestrada []=False 
+existeestrada ((Estrada v):tf) = True 
+existeestrada (_:tf) =existeestrada tf 
+
+    
+
+listaterrenos::[[Terreno]]->Float->Float->[([Terreno],Float,Float)]
+listaterrenos [] _ _ = []
+listaterrenos (te:tf) a t = (te,a,t):listaterrenos tf (a-(50*l)) t
+                                   where l = fromIntegral (length te) 
+
+desenhaterrenos::[([Terreno],Float,Float)]->Picture
+desenhaterrenos l = Pictures (map f l) 
+                         where f (te,a,t) = Translate 0 (a-t) $ (lfundo te) 
+
+listaobstaculos::Mapa->Float->Float->Float->Images->[(Terreno,Obstaculo,Float,Float,Images)]
+listaobstaculos (Mapa lar []) _ _ _ _ = []
+listaobstaculos (Mapa lar ((te,[]):tf)) l a t textures = listaobstaculos (Mapa lar (tf)) (-450) (a-50) t textures
+listaobstaculos (Mapa lar ((te,(ob1:obs)):tf)) l a t textures = (te,ob1,l,a-t,textures):listaobstaculos (Mapa lar ((te,obs):tf)) (l+50) a t textures 
+                                                                  
+
+desenhaobstaculos::[(Terreno,Obstaculo,Float,Float,Images)]->Picture
+desenhaobstaculos l = Pictures (map f l) 
+              where f (te,obs,l,a,textures) = Translate l a $ (obj te obs textures) 
+
+obj::Terreno->Obstaculo->Images->Picture  
+obj (Rio v) Tronco images = Translate 0 (-50) $ imageindex images 2  
+obj (Estrada v) Carro images= if v<0 then  Translate 0 (-15) $ imageindex images 4 else Translate 10 0 $ imageindex images 5
+obj (Relva) Arvore images = Translate 5 (-10) $ imageindex images 3 
+obj _ _ images = Blank 
+
+--cinza= makeColor 0 0 0 40
+
+lfundo::[Terreno]->Picture
+lfundo [(Rio v)]= color blue $ rectangleSolid 950 50
+lfundo [(Relva)]= color green $ rectangleSolid 950 50
+lfundo [(Estrada v)]=color (greyN (0.2)) $ rectangleSolid 950 50
+lfundo [(Estrada v),(Estrada v1)]= Pictures [color (greyN (0.2)) $ Translate 0 (-25) $ rectangleSolid 950 100,Translate 0 (-25) $ (desenhalinhasestrada 0)]
+lfundo [(Estrada v),(Estrada v1),(Estrada v2)]= Pictures [color (greyN (0.2)) $ Translate 0 (-50) $ rectangleSolid 950 150 ,Translate 0 (-25)  $ (desenhalinhasestrada 1),Translate 0 (-75)  $ (desenhalinhasestrada 1) ]
+lfundo [(Estrada v),(Estrada v1),(Estrada v2),(Estrada v3)]= Pictures [color (greyN (0.2)) $  Translate 0 (-75) $ rectangleSolid 950 200,Translate 0 (-25) $ (desenhalinhasestrada 2),Translate 0 (-75) (desenhalinhasestrada 2),Translate 0 (-125)  $ (desenhalinhasestrada 2)]
+lfundo [(Estrada v),(Estrada v1),(Estrada v2),(Estrada v3),(Estrada v4)]= Pictures [color (greyN (0.2)) $  Translate 0 (-100) $ rectangleSolid 950 250,Translate 0 (-25) $ (desenhalinhasestrada 3),Translate 0 (-75) (desenhalinhasestrada 3),Translate 0 (-125)  $ (desenhalinhasestrada 3),Translate 0 (-155)  $ (desenhalinhasestrada 3)]
+
+
+desenhalinhasestrada::Float->Picture
+desenhalinhasestrada n = Pictures [Translate (-300-(50*n)) 0 $ linha ,Translate (-150-(25*n)) 0 $ linha ,linha,Translate (150+(25*n)) 0 $ linha ,Translate (300+(50*n)) 0 $ linha ]
+                            where linha = color white $ polygon [(-25,1),(-25,-1),(25,-1),(25,1)]
+
+
+event :: Event -> World -> IO World
+-- Menu
+event (EventKey (SpecialKey key) Down _ _) (Opcoes op, jogo,skin,i,n,p,r) 
+                                    |(key == KeyEnter && op == Play) = return $ (ModoJogo, jogo,skin,i,n,p,r)  
+                                    |(key == KeyEnter && op == Simulater) = return $ (Bot, jogoinit,skin,i,0,0,r+1)  
+                                    |(key == KeyUp && op == Play) = return $ (Opcoes Sair, jogo,skin,i,n,p,r)
+                                    |(key == KeyUp && op == Sair) = return $ (Opcoes Simulater, jogo,skin,i,n,p,r)
+                                    |(key == KeyUp && op == Simulater) = return $ (Opcoes Play, jogo,skin,i,n,p,r) 
+                                    |(key == KeyDown && op == Play ) = return $ (Opcoes Simulater, jogo,skin,i,0,0,r) 
+                                    |(key == KeyDown && op == Simulater ) = return $ (Opcoes Sair, jogo,skin,i,0,0,r)
+                                    |(key == KeyDown && op == Sair) = return $ (Opcoes Play, jogo,skin,i,n,p,r)                                   
+                                    |(key == KeyLeft && skin == Kid) = return $ (Opcoes op, jogo,Warrior,i,n,p,r)
+                                    |(key == KeyRight && skin == Kid) = return $ (Opcoes op, jogo,Zelda,i,n,p,r)
+                                    |(key == KeyLeft && skin == Warrior) = return $ (Opcoes op, jogo,Zelda,i,n,p,r)
+                                    |(key == KeyRight && skin == Warrior) = return $ (Opcoes op, jogo,Kid,i,n,p,r) 
+                                    |(key == KeyLeft && skin == Zelda) = return $ (Opcoes op, jogo,Kid,i,n,p,r)
+                                    |(key == KeyRight && skin == Zelda) = return $ (Opcoes op,jogo,Warrior,i,n,p,r) 
+                                                                                                                                   --passa do menu das opçoes para o jogo --passa da opção jogar normal para a opção jogar natal--passa da opção jogar natal para a opção sair
+                     --passa da opção sair para a opção jogar normal 
+event (EventKey (SpecialKey KeyEnter) Down _ _) (Opcoes Sair,_,_,_,_,_,_) =                                                         --sai do jogo
+    do putStrLn "EndGame"
+       exitSuccess
+event (EventKey (SpecialKey key) Down _ _) (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) 
+                                          |(key == KeySpace && menu == ModoJogo) = return $ (Pause Resume,(Jogo (Jogador (x,y)) mapa) ,skin,i,n,p,r)
+                                          |((key == KeyEnter || key == KeySpace) && menu == PerdeuJogo) = return $  (Opcoes Play,jogoinit,skin,i,n,p,r)
+                                          |(key == KeyUp && (menu == ModoJogo)) =  if estanotronco (Jogo (Jogador (x,y)) mapa) && (haarvore2 (Jogo (Jogador (x,y-1)) mapa)||y==0) then return $ (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) else (if estanotronco (Jogo (Jogador (x,y)) mapa) && haarvore2 (Jogo (Jogador (x,y-1)) mapa)==False then return $  (ModoJogo,Jogo (Jogador (x,y-1)) mapa,skin,i,n,p,r) else return $ (ModoJogo,Jogo (animaplayer (animaJogo (Jogo (Jogador (x,y)) mapa) (Move Cima))) mapa,skin,i,n,p,r))
+                                          |(key == KeyDown && (menu == ModoJogo)) = if estanotronco (Jogo (Jogador (x,y)) mapa) && haarvore2 (Jogo (Jogador (x,y+1)) mapa)then return $ (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) else (if estanotronco (Jogo (Jogador (x,y)) mapa) && haarvore2 (Jogo (Jogador (x,y+1)) mapa)==False then return $  (ModoJogo,Jogo (Jogador (x,y+1)) mapa,skin,i,n,p,r) else return $ (ModoJogo,Jogo (animaplayer (animaJogo (Jogo (Jogador (x,y)) mapa) (Move Baixo))) mapa,skin,i,n,p,r))
+                                          |(key == KeyLeft && (menu == ModoJogo)) = if estanotronco (Jogo (Jogador (x,y)) mapa) then return $  (ModoJogo,Jogo (Jogador (x-1,y)) mapa,skin,i,n,p,r) else return $ (ModoJogo,Jogo (animaplayer (animaJogo (Jogo (Jogador (x,y)) mapa) (Move Esquerda))) mapa,skin,i,n,p,r)
+                                          |(key == KeyRight && (menu == ModoJogo)) = if estanotronco (Jogo (Jogador (x,y)) mapa) then return $  (ModoJogo,Jogo (Jogador (x+1,y)) mapa,skin,i,n,p,r) else return $ (ModoJogo,Jogo (animaplayer (animaJogo (Jogo (Jogador (x,y)) mapa) (Move Direita))) mapa,skin,i,n,p,r)
+event (EventKey (SpecialKey key) Down _ _) (Pause op2,jogo,skin,i,n,p,r)
+                                          |(key == KeySpace ) =return $  (ModoJogo , jogo,skin,i,n,p,r)
+                                          |(key == KeyUp && op2 == Resume ) = return $  (Pause Quit, jogo ,skin,i,n,p,r)
+                                          |(key == KeyDown && op2 == Quit ) = return $  (Pause Resume, jogo ,skin,i,n,p,r)
+                                          |(key == KeyEnter && op2 == Quit) = return $ (Opcoes Play,jogo,skin,i,n,p,r)
+event _ w = return w
+
+animaplayer::Jogo->Jogador 
+animaplayer (Jogo jog mapa)=jog 
+
+estanotronco::Jogo -> Bool
+estanotronco (Jogo (Jogador (x,0)) (Mapa l ((te,obs):tf))) = if hatronco x obs ==True then True else False
+estanotronco (Jogo (Jogador (x,y)) (Mapa l ((te,obs):tf))) |y<0=False 
+                                                           |otherwise= estanotronco (Jogo (Jogador (x,y-1)) (Mapa l (tf))) 
+
+haarvore2::Jogo ->Bool
+haarvore2 (Jogo (Jogador (x,0)) (Mapa l ((te,obs):tf))) = if haarvore x obs ==True then True else False
+haarvore2 (Jogo (Jogador (x,y)) (Mapa l ((te,obs):tf))) |y<0=False 
+                                                        |otherwise= haarvore2 (Jogo (Jogador (x,y-1)) (Mapa l (tf))) 
+
+
+time :: Float -> World ->IO World
+time f (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),skin,i,49,p,r) 
+                            |jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))  = return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),skin,i,0,p,r+1) 
+                            |otherwise = return $ (ModoJogo,verificamapa (deslizaJogo (p-y) (animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) Parado)) (r+mod p (x+y)),skin,i, 0,p+1,r+1)  
+time f (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)),skin,i,t,p,r) 
+                            |jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))  = return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),skin,i,0,p,r) 
+                            |otherwise = return $ (ModoJogo, (Jogo (Jogador (x, y)) (Mapa l to)) ,skin,i,t+1,p+1,r)
+time f (Bot, (Jogo (Jogador (x, y)) (Mapa l to)),skin,i,49,p,r) 
+                            |jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))  = return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),skin,i,0,p,r+1) 
+                            |otherwise = return $ (Bot,verificamapa (deslizaJogo (p-y) (animaJogo (Jogo (Jogador (x, y)) (Mapa l to)) (botplay r) )) (r+mod p (x+y)),skin,i, 0,p+1,r+1)  
+                                                                        where botplay r = ([Parado,(Move Cima),(Move Baixo),(Move Esquerda),(Move Baixo)] !! mod r 5) 
+time f (Bot, (Jogo (Jogador (x, y)) (Mapa l to)),skin,i,t,p,r) 
+                            |jogoTerminou (Jogo (Jogador (x, y)) (Mapa l to))  = return $ (PerdeuJogo,(Jogo (Jogador (x, y)) (Mapa l to)),skin,i,0,p,r+1) 
+                            |otherwise = return $ (Bot, (Jogo (Jogador (x, y)) (Mapa l to)) ,skin,i,t+1,p+1,r)
+time f w = return $ w
+
+
+
+--a função verificamapa além de adicionar uma velocidade aleatoria aos rios/estradas , "filtra" as linhas que não permitem a passagem do jogador
+verificamapa::Jogo->Int->Jogo
+verificamapa (Jogo x (Mapa l ((Rio v1,ob1):(Rio v2,ob2):resto))) seed = (Jogo x (Mapa l ((Rio (velocidadealeatoria v2 seed),ob1):(Rio v2,ob2):resto)))
+verificamapa (Jogo x (Mapa l ((Rio v,ob1):resto))) seed = (Jogo x (Mapa l ((Rio (velocidadealeatoria 0 seed),ob1):resto)))
+verificamapa (Jogo x (Mapa l ((Estrada v1,ob1):resto))) seed = (Jogo x (Mapa l ((Estrada (velocidadealeatoria 0 seed),ob1):resto)))
+verificamapa (Jogo x (Mapa l ((Relva,ob1):(Relva,ob2):resto))) seed = if vepassagem ob1 ob2 ==False then Jogo x (estendeMapa (Mapa l ((Relva,ob2):resto)) (seed+1)) else (Jogo x (Mapa l ((Relva,ob1):(Relva,ob2):resto)))
+verificamapa w _ = w 
+
+--a função vepassagem verifica se há uma passagem possivel para o jogador 
+vepassagem::[Obstaculo]->[Obstaculo]->Bool
+vepassagem [] [] = False 
+vepassagem (Nenhum:obs1) (Nenhum:obs2) = True 
+vepassagem (ob1:obs1) (ob2:obs2) = vepassagem obs1 obs2  
+
+--a função velocidade aleatoria 
+velocidadealeatoria::Int->Int->Int  
+velocidadealeatoria v seed = ((velocidadesvalidas v) !! (mod seed (length(velocidadesvalidas v))))
+
+velocidadesvalidas::Int->[Int]
+velocidadesvalidas v |v==0= [-2,-1,1,2]
+                     |v<0 = [1,2]
+                     |otherwise =[-2,-1] 
+
+main :: IO ()
+main = do
+ kid1 <- loadBMP "kid1.bmp"
+ kid2 <- loadBMP "kid2.bmp"
+ log <- loadBMP "tronco.bmp"
+ tree <- loadBMP "arvore1.bmp"
+ car1 <- loadBMP "carro.bmp"
+ car2 <- loadBMP "carro2.bmp"
+ warrior1 <- loadBMP "warrior1.bmp"
+ warrior2 <- loadBMP "warrior2.bmp"
+ zelda1<- loadBMP "zelda1.bmp"
+ zelda2<- loadBMP "zelda2.bmp"
+ kidmenu<- loadBMP "kidmenu.bmp"
+ warriormenu<- loadBMP "warriormenu.bmp"
+ zeldamenu<- loadBMP "zeldamenu.bmp"
+ fundomenu<- loadBMP "fundo.bmp"
+ seed<- randomRIO (0,10)
+ let images = [scale (0.5) (0.5) kid1, scale (0.5) (0.5) kid2,scale (0.3) (0.3) log, tree,scale (0.4) (0.6)  car1,scale (0.2) (0.4)  car2,warrior1,warrior2,zelda1,zelda2,scale (0.7) (0.7) $ Translate 2 0 kidmenu,warriormenu, scale (1.2) (1.2) zeldamenu,fundomenu]
+ playIO window white  fr (initialState images seed) desenhaestado event time
+
+
+-}
 
