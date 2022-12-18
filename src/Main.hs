@@ -242,8 +242,9 @@ event evt @(EventKey (SpecialKey key) Down _ _) ops @(Opcoes op, jogo,skin,i,n,p
 
 event  (EventKey (SpecialKey key) Down _ _) ops2 @(menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) 
                                           |(key == KeyEsc &&  menu == ModoJogo)= return $ (Pause Resume,(Jogo (Jogador (x,y)) mapa) ,skin,i,n,p,r) 
-                                          |(key == KeySpace && menu == PerdeuJogo) = return $  (Opcoes Play,jogoinit,skin,i,n,p,r)
-                                          |(key == KeyUp && (menu == ModoJogo)) =  if estanotronco (Jogo (Jogador (x,y)) mapa) && (haarvore2 (Jogo (Jogador (x,y-1)) mapa) || y==0) then return $ (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) else (if  estanotronco (Jogo (Jogador (x,y)) mapa) && haarvore2 (Jogo (Jogador (x,y-1)) mapa) == False then return $  (ModoJogo,Jogo (Jogador (x,y-1)) mapa,skin,i,n,p,r) else return $ (ModoJogo,Jogo (animaplayer (animaJogo (Jogo (Jogador (x,y)) mapa) (Move Cima))) mapa,skin,i,n,p,r))
+                                          |(key == KeySpace && menu == PerdeuJogo) = return $  (Opcoes Play,jogoinit,skin,i,n,0,r)
+                                          |(key == KeyUp && (menu == ModoJogo)  && (haarvore2 (Jogo (Jogador (x,y-1)) mapa) || y==0)) = return $ (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) --se ta num tronco e tem uma arvore a frente nao anda 
+                                          |(key == KeyUp && (menu == ModoJogo)  && not (haarvore2 (Jogo (Jogador (x,y-1)) mapa))) = return $  (ModoJogo,Jogo (Jogador (x,y-1)) mapa,skin,i,n,p,r)
                                           |(key == KeyDown && (menu == ModoJogo)) = if estanotronco (Jogo (Jogador (x,y)) mapa) && haarvore2 (Jogo (Jogador (x,y+1)) mapa) then return $ (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) else (if estanotronco (Jogo (Jogador (x,y)) mapa) && haarvore2 (Jogo (Jogador (x,y+1)) mapa)==False then return $  (ModoJogo,Jogo (Jogador (x,y+1)) mapa,skin,i,n,p,r) else return $ (ModoJogo,Jogo (animaplayer (animaJogo (Jogo (Jogador (x,y)) mapa) (Move Baixo))) mapa,skin,i,n,p,r))
                                           |(key == KeyLeft && (menu == ModoJogo)) = if estanotronco (Jogo (Jogador (x,y)) mapa) then return $  (ModoJogo,Jogo (Jogador (x-1,y)) mapa,skin,i,n,p,r) else return $ (ModoJogo,Jogo (animaplayer (animaJogo (Jogo (Jogador (x,y)) mapa) (Move Esquerda))) mapa,skin,i,n,p,r)
                                           |(key == KeyRight && (menu == ModoJogo)) = if estanotronco (Jogo (Jogador (x,y)) mapa) then return $  (ModoJogo,Jogo (Jogador (x+1,y)) mapa,skin,i,n,p,r) else return $ (ModoJogo,Jogo (animaplayer (animaJogo (Jogo (Jogador (x,y)) mapa) (Move Direita))) mapa,skin,i,n,p,r)
@@ -276,7 +277,11 @@ key_space2 (Pause op2,jogo,skin,i,n,p,r) = case op2 of
                 Resume -> (ModoJogo , jogo,skin,i,n,p,r)
                 Quit -> (Opcoes Play,jogoinit,skin,i,n,0,r)
                 Save_and_Quit -> (Opcoes Play,jogo,skin,i,n,p,r)
-
+--
+{-type_modojogo :: SpecialKey -> World-> World
+type_modojogo key (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) = case key of 
+                                        KeyEsc -> (Pause Resume,(Jogo (Jogador (x,y)) mapa) ,skin,i,n,p,r) 
+                                        Key-}
 
 animaplayer::Jogo->Jogador 
 animaplayer (Jogo jog mapa)=jog 
