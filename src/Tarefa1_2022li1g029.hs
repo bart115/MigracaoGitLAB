@@ -45,7 +45,6 @@ obsvalidos (Mapa l (x:xs)) | mapaValido1 x = obsvalidos (Mapa l  xs)
                        | otherwise = False
 
 mapaValido1 :: (Terreno,[Obstaculo]) -> Bool
-mapaValido1 (_, []) = True
 mapaValido1 (Relva,lo) = not $ elem Carro lo || elem Tronco lo 
 mapaValido1 ((Rio vr),lo) = not $ elem Carro lo || elem Arvore lo
 mapaValido1 ((Estrada ve),lo) = not $ elem Arvore lo || elem Tronco lo

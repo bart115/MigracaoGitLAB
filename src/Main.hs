@@ -56,18 +56,18 @@ initialState :: Images ->Seed->World
 initialState images seed = (Opcoes Play,jogoinit,Kid,images,0,0,seed)
 
 jogoinit::Jogo
-jogoinit = ( Jogo (Jogador (10,9)) (Mapa 19 [(e 2,[n,n,n,n,c,n,n,c,n,n,n,n,n,n,n,n,n,n,n]),
+jogoinit = ( Jogo (Jogador (5,2)) (Mapa 19 [(e 2,[n,n,n,n,c,n,n,c,n,n,n,n,n,n,n,n,n,n,n]),   --(10,9)
                                             (r,[n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]),
                                             (r,[n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]),
                                             (r,[a,a,a,a,a,a,n,n,n,n,n,n,n,a,a,a,a,a,a]), 
                                             (r,[a,a,a,a,a,a,n,n,n,n,n,n,n,a,a,a,a,a,a]), 
                                             (r,[a,a,a,a,a,a,n,n,n,n,n,n,n,a,a,a,a,a,a]),
                                             (r,[a,a,a,a,a,a,n,n,n,n,n,n,n,a,a,a,a,a,a]),
-                                            (r,[a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a]),
-                                            (r,[n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]), 
-                                            (r,[n,n,a,n,n,n,n,n,n,n,n,n,n,n,n,n,a,n,n]), 
-                                            (r,[n,a,a,a,n,n,n,n,n,n,n,n,n,n,n,a,a,a,n]),
-                                            (r,[a,a,a,a,a,n,n,n,n,n,n,n,n,n,a,a,a,a,a]),
+                                            (r,[a,a,a,a,a,a,n,n,n,n,n,n,n,a,a,a,a,a,a]),
+                                            (r,[n,n,n,n,n,a,n,n,n,n,n,n,n,a,n,n,n,n,n]), 
+                                            (r,[n,n,n,n,n,n,a,n,n,n,n,n,a,n,n,n,n,n,n]), 
+                                            (r,[n,n,n,n,n,n,a,n,n,n,n,n,a,n,n,n,n,n,n]),
+                                            (r,[n,n,n,n,n,n,a,a,a,a,a,a,a,n,n,n,n,n,n]),
                                             (r,[n,n,a,n,n,n,n,n,n,n,n,n,n,n,n,n,a,n,n]), 
                                             (r,[n,a,a,a,n,n,n,n,n,n,n,n,n,n,n,a,a,a,n]),
                                             (r,[a,a,a,a,a,n,n,n,n,n,n,n,n,n,a,a,a,a,a]),
@@ -91,13 +91,12 @@ desenhaestado (PerdeuJogo,_, _, images,_,p,_) =return $ Pictures [last images, S
 desenhaestado (Pause Resume ,_,_, images,_,p,_)= return $ Pictures [last images ,desenhapause, Color red $ desenharesume,desenhaquit_save,desenhaquit,desenhascore p]   
 desenhaestado (Pause Save_and_Quit ,_,_, images,_,p,_) = return $ Pictures [last images ,desenharesume ,Color red $ desenhaquit_save, desenhapause,desenhaquit,desenhascore p]     
 desenhaestado (Pause Quit ,_,_,images,_,p,_)= return $ Pictures [last images, desenhapause,desenharesume, desenhaquit_save, Color red $ desenhaquit,desenhascore p]   
-desenhaestado (Opcoes Play, jogo,skin, images,_,p,_) = return $ Pictures [last images,Color red $ drawplay , desenhajogo_salvo, drawsimulater,drawquit,desenhaskinmenu skin images] 
-desenhaestado (Opcoes Jogo_Salvo, jogo,skin, images,_,p,_) = return $ Pictures [last images,drawplay ,Color red $ desenhajogo_salvo, drawsimulater,drawquit,desenhaskinmenu skin images]
-desenhaestado (Opcoes Simulater, jogo,skin, images,_,p,_) =return $  Pictures [last images,drawplay ,Color red $ drawsimulater,desenhajogo_salvo, drawquit,desenhaskinmenu skin images]                                                                                       
-desenhaestado (Opcoes Sair, jogo,skin, images,_,p,_) = return $ Pictures [last images,drawplay ,drawsimulater,desenhajogo_salvo, Color red $ drawquit,desenhaskinmenu skin images]                                                                                      
+desenhaestado (Opcoes Play, jogo,skin, images,_,p,_) = return $ Pictures [last images,Scale (0.5) (0.5) $ Translate 600 (-500) $ last (take 4( reverse images)),Color red $ drawplay , desenhajogo_salvo, drawsimulater,drawquit,desenhaskinmenu skin images] 
+desenhaestado (Opcoes Jogo_Salvo, jogo,skin, images,_,p,_) = return $ Pictures [last images,Scale (0.5) (0.5) $ Translate 600 (-500) $ last (take 4( reverse images)),drawplay ,Color red $ desenhajogo_salvo, drawsimulater,drawquit,desenhaskinmenu skin images]
+desenhaestado (Opcoes Simulater, jogo,skin, images,_,p,_) =return $  Pictures [last images,Scale (0.5) (0.5) $ Translate 600 (-500) $ last (take 4( reverse images)),drawplay ,Color red $ drawsimulater,desenhajogo_salvo, drawquit,desenhaskinmenu skin images]                                                                                       
+desenhaestado (Opcoes Sair, jogo,skin, images,_,p,_) = return $ Pictures [last images,Scale (0.5) (0.5) $ Translate 600 (-500) $ last (take 4( reverse images)),drawplay ,drawsimulater,desenhajogo_salvo, Color red $ drawquit,desenhaskinmenu skin images]                                                                                      
 desenhaestado (ModoJogo,(Jogo (Jogador (x,y)) (Mapa lar l)),skin,images,t,p,_)= return $ Pictures [(desenhaterrenos (listaterrenos (agrupaestradas l) 500 t)),(desenhaobstaculos (listaobstaculos (Mapa lar l) (-450) 500 t images)),(desenhaplayer x y t skin images),drawPoints p ]
 desenhaestado (Bot,(Jogo (Jogador (x,y)) (Mapa lar l)),skin,images,t,p,_)= return $ Pictures [(desenhaterrenos (listaterrenos (agrupaestradas l) 500 t)),(desenhaobstaculos (listaobstaculos (Mapa lar l) (-450) 500 t images)),(desenhaplayer x y t skin images),drawPoints p ]
-
 
 
 drawplay = Translate (-200) (-200) $ drawOption "PLAY"
@@ -109,7 +108,6 @@ desenharesume = Translate (-50) (-100) $ Scale (0.7) (0.7) $ drawOption "Resume"
 desenhaquit_save = Translate (-50) (-150) $ scale (0.7) (0.7) $ drawOption "Quit and Save"
 desenhaquit = Translate (-50) (-200) $ scale (0.7) (0.7) $ drawOption "QUIT"
 desenhajogo_salvo = Translate (-200) (-270) $ drawOption "Jogo Salvo"
-
 
 
 
@@ -209,14 +207,13 @@ key_down (Opcoes op, jogo,skin,i,n,p,r) = case op of
       Sair -> (Opcoes Play, jogo,skin,i,n,p,r) 
       Jogo_Salvo -> (Opcoes Simulater,jogo,skin,i,n,p,r)
 
-key_enter :: World -> World 
-key_enter (Opcoes op, jogo,skin,i,n,p,r) = case op of 
+key_space :: World -> World 
+key_space (Opcoes op, jogo,skin,i,n,p,r) = case op of 
           Play -> (ModoJogo, jogoinit,skin,i,n,0,r)
           Jogo_Salvo -> (ModoJogo, jogo, skin,i,n,p,r)
           Simulater -> (Bot, jogoinit,skin,i,0,0,r+1)
 
           
-
 key_left :: World -> World
 key_left (Opcoes op, jogo,skin,i,n,p,r) = case skin of
           Kid -> (Opcoes op, jogo,Warrior,i,n,p,r)
@@ -231,7 +228,7 @@ key_right (Opcoes op, jogo,skin,i,n,p,r) = case skin of
 
 type_key :: SpecialKey -> World -> World
 type_key key ops @(Opcoes op, jogo,skin,i,n,p,r) = case key of 
-                       KeyEnter -> key_enter ops
+                       KeySpace -> key_space ops
                        KeyUp -> key_up ops
                        KeyDown -> key_down ops 
                        KeyLeft -> key_left ops 
@@ -240,32 +237,31 @@ type_key key ops @(Opcoes op, jogo,skin,i,n,p,r) = case key of
 event :: Event -> World -> IO World
 -- Menu
 event evt @(EventKey (SpecialKey key) Down _ _) ops @(Opcoes op, jogo,skin,i,n,p,r) = return $ type_key key ops 
-event (EventKey (SpecialKey KeyEnter) Down _ _) (Opcoes Sair ,_,_,_,_,_,_) = do exitSuccess
 
-                                                                                 
-                                                                                
 
-                                                                                                                                   --passa do menu das opçoes para o jogo --passa da opção jogar normal para a opção jogar natal--passa da opção jogar natal para a opção 
-
-event (EventKey (SpecialKey key) Down _ _) (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) 
-                                          |(key == KeyEsc && menu == ModoJogo) = return $ (Pause Resume,(Jogo (Jogador (x,y)) mapa) ,skin,i,n,p,r)
-                                          |((key == KeySpace) && menu == PerdeuJogo) = return $  (Opcoes Play,jogoinit,skin,i,n,p,r)
-                                          |(key == KeyUp && (menu == ModoJogo)) =  if estanotronco (Jogo (Jogador (x,y)) mapa) && (haarvore2 (Jogo (Jogador (x,y-1)) mapa) || y==0)then return $ (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) else (if estanotronco (Jogo (Jogador (x,y)) mapa) && haarvore2 (Jogo (Jogador (x,y-1)) mapa)==False then return $  (ModoJogo,Jogo (Jogador (x,y-1)) mapa,skin,i,n,p,r) else return $ (ModoJogo,Jogo (animaplayer (animaJogo (Jogo (Jogador (x,y)) mapa) (Move Cima))) mapa,skin,i,n,p,r))
+event  (EventKey (SpecialKey key) Down _ _) ops2 @(menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) 
+                                          |(key == KeyEsc &&  menu == ModoJogo)= return $ (Pause Resume,(Jogo (Jogador (x,y)) mapa) ,skin,i,n,p,r) 
+                                          |(key == KeySpace && menu == PerdeuJogo) = return $  (Opcoes Play,jogoinit,skin,i,n,p,r)
+                                          |(key == KeyUp && (menu == ModoJogo)) =  if estanotronco (Jogo (Jogador (x,y)) mapa) && (haarvore2 (Jogo (Jogador (x,y-1)) mapa) || y==0)then return $ (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) else (if not (estanotronco (Jogo (Jogador (x,y)) mapa) && haarvore2 (Jogo (Jogador (x,y-1)) mapa))then return $  (ModoJogo,Jogo (Jogador (x,y-1)) mapa,skin,i,n,p,r) else return $ (ModoJogo,Jogo (animaplayer (animaJogo (Jogo (Jogador (x,y)) mapa) (Move Cima))) mapa,skin,i,n,p,r))
                                           |(key == KeyDown && (menu == ModoJogo)) = if estanotronco (Jogo (Jogador (x,y)) mapa) && haarvore2 (Jogo (Jogador (x,y+1)) mapa) then return $ (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) else (if estanotronco (Jogo (Jogador (x,y)) mapa) && haarvore2 (Jogo (Jogador (x,y+1)) mapa)==False then return $  (ModoJogo,Jogo (Jogador (x,y+1)) mapa,skin,i,n,p,r) else return $ (ModoJogo,Jogo (animaplayer (animaJogo (Jogo (Jogador (x,y)) mapa) (Move Baixo))) mapa,skin,i,n,p,r))
                                           |(key == KeyLeft && (menu == ModoJogo)) = if estanotronco (Jogo (Jogador (x,y)) mapa) then return $  (ModoJogo,Jogo (Jogador (x-1,y)) mapa,skin,i,n,p,r) else return $ (ModoJogo,Jogo (animaplayer (animaJogo (Jogo (Jogador (x,y)) mapa) (Move Esquerda))) mapa,skin,i,n,p,r)
                                           |(key == KeyRight && (menu == ModoJogo)) = if estanotronco (Jogo (Jogador (x,y)) mapa) then return $  (ModoJogo,Jogo (Jogador (x+1,y)) mapa,skin,i,n,p,r) else return $ (ModoJogo,Jogo (animaplayer (animaJogo (Jogo (Jogador (x,y)) mapa) (Move Direita))) mapa,skin,i,n,p,r)
 
+
+
+
 event (EventKey (SpecialKey key) Down _ _) (Pause op2,jogo,skin,i,n,p,r)
-                                          |(key == KeyEsc ) =return $  (ModoJogo , jogo,skin,i,n,p,r)
-                                          |(key == KeyEnter && op2 == Resume) =return $  (ModoJogo , jogo,skin,i,n,p,r)
+                                          |(key == KeySpace && op2 == Resume) =return $  (ModoJogo , jogo,skin,i,n,p,r)
                                           |(key == KeyUp && op2 == Resume ) = return $  (Pause Quit, jogo ,skin,i,n,p,r)
                                           |(key == KeyDown && op2 == Resume ) = return $  (Pause Save_and_Quit, jogo ,skin,i,n,p,r)
                                           |(key == KeyUp && op2 == Quit ) = return $  (Pause Save_and_Quit, jogo ,skin,i,n,p,r)
                                           |(key == KeyDown && op2 == Quit ) = return $  (Pause Resume, jogo ,skin,i,n,p,r)
                                           |(key == KeyUp && op2 == Save_and_Quit ) = return $  (Pause Resume, jogo ,skin,i,n,p,r)
                                           |(key == KeyDown && op2 == Save_and_Quit ) = return $  (Pause Quit, jogo ,skin,i,n,p,r)
-                                          |(key == KeyEnter && op2 == Quit) = return $ (Opcoes Play,jogoinit,skin,i,n,0,r) 
-                                          |(key == KeyEnter && op2 == Save_and_Quit) = return $ (Opcoes Play,jogo,skin,i,n,p,r) 
+                                          |(key == KeySpace && op2 == Quit) = return $ (Opcoes Play,jogoinit,skin,i,n,0,r) 
+                                          |(key == KeySpace && op2 == Save_and_Quit) = return $ (Opcoes Play,jogo,skin,i,n,p,r) 
+
+event (EventKey (SpecialKey key) Down _ _) (Opcoes Sair ,_,_,_,_,_,_) |key == KeyEnter = do exitSuccess
 event _ w = return w
 
 animaplayer::Jogo->Jogador 
@@ -310,10 +306,9 @@ verificamapa (Jogo x (Mapa l ((Relva,ob1):(Relva,ob2):resto))) seed | not (vepas
 verificamapa w _ = w 
 
 --a função vepassagem verifica se há uma passagem possivel para o jogador 
-vepassagem::[Obstaculo]->[Obstaculo]->Bool
-vepassagem [] [] = False 
-vepassagem (Nenhum:obs1) (Nenhum:obs2) = True 
-vepassagem (ob1:obs1) (ob2:obs2) = vepassagem obs1 obs2  
+
+vepassagem:: [Obstaculo] -> [Obstaculo] -> Bool
+vepassagem xs ys = (Nenhum, Nenhum) `elem` zip xs ys 
 
 --a função velocidade aleatoria 
 velocidadealeatoria::Int->Int->Int  
@@ -343,7 +338,8 @@ main = do
  seed<- randomRIO (0,10)
  game_over <- loadBMP "game_over.bmp" 
  space <- loadBMP "press_space.bmp"
- let images = [scale (0.5) (0.5) kid1, scale (0.5) (0.5) kid2,scale (0.3) (0.3) log, tree,scale (0.4) (0.6)  car1,scale (0.2) (0.4)  car2,warrior1,warrior2,zelda1,zelda2,scale (0.7) (0.7) $ Translate 2 0 kidmenu,warriormenu, scale (1.2) (1.2) zeldamenu,space,game_over,fundomenu]
+ setas <- loadBMP "setas.bmp"
+ let images = [scale (0.5) (0.5) kid1, scale (0.5) (0.5) kid2,scale (0.3) (0.3) log, tree,scale (0.4) (0.6)  car1,scale (0.2) (0.4)  car2,warrior1,warrior2,zelda1,zelda2,scale (0.7) (0.7) $ Translate 2 0 kidmenu,warriormenu, scale (1.2) (1.2) zeldamenu,setas,space,game_over,fundomenu]
  playIO window white  fr (initialState images seed) desenhaestado event time
 
 {-
