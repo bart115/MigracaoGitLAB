@@ -125,7 +125,13 @@ arvores_maximas_juntas (Mapa lr ((Relva ,(o1:ot)):t))
                                   |otherwise = arvores_maximas_juntas (Mapa lr t)
 
 
-
+troncos_minimos :: Mapa -> Bool
+troncos_minimos (Mapa lr ((Relva,(o1:ot)):t)) = troncos_minimos (Mapa lr t)
+troncos_minimos (Mapa lr (((Estrada ve) ,(o1:ot)):t)) = troncos_minimos (Mapa lr t)
+troncos_minimos (Mapa lr []) = True
+troncos_minimos (Mapa lr (((Rio vr) , (o1:ot)):t)) |(o1 == Nenhum) && (length (head (aux4 (dropWhile (== Nenhum) ot))) < 3) = False
+                                                   |(o1 == Tronco) && ((length (head (aux4 (o1:ot)))) < 3) = False 
+                                                   |otherwise = troncos_minimos (Mapa lr t) 
 
 {-|A função 'mapaValido4' funciona da mesma maneira que a função 'mapaValido3' mas com @Carro@ e com a auxiliar 'aux4' .
 

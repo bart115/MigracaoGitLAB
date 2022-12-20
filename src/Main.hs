@@ -95,7 +95,7 @@ desenhaestado (Opcoes Play, jogo,skin, images,_,p,_) = return $ Pictures [last i
 desenhaestado (Opcoes Jogo_Salvo, jogo,skin, images,_,p,_) = return $ Pictures [last images,desenha_keys,Scale (0.5) (0.5) $ Translate 600 (-750) $ last (take 5( reverse images)),Scale (0.5) (0.5) $ Translate 600 (-500) $ last (take 4( reverse images)),drawplay ,Color red $ desenhajogo_salvo, drawsimulater,drawquit,desenhaskinmenu skin images]
 desenhaestado (Opcoes Simulater, jogo,skin, images,_,p,_) =return $  Pictures [last images,desenha_keys,Scale (0.5) (0.5) $ Translate 600 (-750) $ last (take 5( reverse images)),Scale (0.5) (0.5) $ Translate 600 (-500) $ last (take 4( reverse images)),drawplay ,Color red $ drawsimulater,desenhajogo_salvo, drawquit,desenhaskinmenu skin images]                                                                                       
 desenhaestado (Opcoes Sair, jogo,skin, images,_,p,_) = return $ Pictures [last images,desenha_keys,Scale (0.5) (0.5) $ Translate 600 (-750) $ last (take 5( reverse images)),Scale (0.5) (0.5) $ Translate 600 (-500) $ last (take 4( reverse images)),drawplay ,drawsimulater,desenhajogo_salvo, Color red $ drawquit,desenhaskinmenu skin images]                                                                                      
-desenhaestado (ModoJogo,(Jogo (Jogador (x,y)) (Mapa lar l)),skin,images,t,p,_)= return $ Pictures [(desenhaterrenos (listaterrenos (agrupaestradas l) 500 t)),(desenhaobstaculos (listaobstaculos (Mapa lar l) (-450) 500 t images)),(desenhaplayer x y t skin images),drawPoints p ]
+desenhaestado (ModoJogo,(Jogo (Jogador (x,y)) (Mapa lar l)),skin,images,t,p,_)= return $ Pictures [(desenhaterrenos (listaterrenos (agrupaestradas l) 500 t)),(desenhaobstaculos (listaobstaculos (Mapa lar l) (-450) 500 t images)),(desenhaplayer x y t skin images),drawPoints p,Translate (-400) 300 $ desenhapause ]
 desenhaestado (Bot,(Jogo (Jogador (x,y)) (Mapa lar l)),skin,images,t,p,_)= return $ Pictures [(desenhaterrenos (listaterrenos (agrupaestradas l) 500 t)),(desenhaobstaculos (listaobstaculos (Mapa lar l) (-450) 500 t images)),(desenhaplayer x y t skin images),drawPoints p ]
 
 --Frase escritas :
@@ -236,28 +236,57 @@ type_key_menu key ops @(Opcoes op, jogo,skin,i,n,p,r) = case key of
 
 event :: Event -> World -> IO World
 -- Menu
-event evt @(EventKey (SpecialKey key) Down _ _) ops @(Opcoes op, jogo,skin,i,n,p,r) = return $ type_key_menu key ops 
+event (EventKey (SpecialKey key) Down _ _) ops @(Opcoes op, jogo,skin,i,n,p,r) = return $ type_key_menu key ops 
 
-
-
-event  (EventKey (SpecialKey key) Down _ _) ops2 @(menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) 
-                                          |(key == KeyEsc &&  menu == ModoJogo)= return $ (Pause Resume,(Jogo (Jogador (x,y)) mapa) ,skin,i,n,p,r) 
-                                          |(key == KeySpace && menu == PerdeuJogo) = return $  (Opcoes Play,jogoinit,skin,i,n,0,r)
-                                          |(key == KeyUp && (menu == ModoJogo)  && (haarvore2 (Jogo (Jogador (x,y-1)) mapa) || y==0)) = return $ (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) --se ta num tronco e tem uma arvore a frente nao anda 
-                                          |(key == KeyUp && (menu == ModoJogo)  && not (haarvore2 (Jogo (Jogador (x,y-1)) mapa))) = return $  (ModoJogo,Jogo (Jogador (x,y-1)) mapa,skin,i,n,p,r)
-                                          |(key == KeyDown && (menu == ModoJogo) && (haarvore2 (Jogo (Jogador (x,y+1)) mapa))) = return $ (ModoJogo,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r)
-                                          |(key == KeyDown && (menu == ModoJogo) && not (haarvore2 (Jogo (Jogador (x,y+1)) mapa))) = return $  (ModoJogo,Jogo (Jogador (x,y+1)) mapa,skin,i,n,p,r)
-                                          |(key == KeyLeft && (menu == ModoJogo) && (haarvore2(Jogo (Jogador (x-1,y)) mapa))) = return $  (ModoJogo,Jogo (Jogador (x,y)) mapa,skin,i,n,p,r) 
-                                          |(key == KeyLeft && (menu == ModoJogo) && not (haarvore2(Jogo (Jogador (x-1,y)) mapa))) = return $  (ModoJogo,Jogo (Jogador (x-1,y)) mapa,skin,i,n,p,r) 
-                                          |(key == KeyRight && (menu == ModoJogo) && (haarvore2 (Jogo (Jogador (x+1,y)) mapa))) = return $  (ModoJogo,Jogo (Jogador (x,y)) mapa,skin,i,n,p,r)  
-                                          |(key == KeyRight && (menu == ModoJogo) && not (haarvore2 (Jogo (Jogador (x+1,y)) mapa))) = return $ (ModoJogo,Jogo (Jogador (x+1,y)) mapa,skin,i,n,p,r)
-
-
-
+--Jogando
+event  (EventKey (SpecialKey key) Down _ _) ops2 @(menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) = return $ type_key_modojogo key ops2
+                                         
+--Pause                                        
 event (EventKey (SpecialKey key) Down _ _) ops3 @(Pause op2,jogo,skin,i,n,p,r) = return $ type_key_pausa key ops3
+
+--Pause Sair
 event (EventKey (SpecialKey KeySpace) Down _ _) (Opcoes Sair ,_,_,_,_,_,_) = do putStrLn "EndGame" 
                                                                                 exitSuccess
 event _ w = return w
+
+key_esq_jogando :: World -> World 
+key_esq_jogando (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) = case menu of 
+            ModoJogo -> (Pause Resume,(Jogo (Jogador (x,y)) mapa) ,skin,i,n,p,r)
+
+key_space_perdeu :: World -> World
+key_space_perdeu (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) = case menu of 
+            PerdeuJogo -> (Opcoes Play,jogoinit,skin,i,n,0,r)
+
+key_up_modojogo:: World -> World 
+key_up_modojogo (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) 
+                        |(haarvore2 (Jogo (Jogador (x,y-1)) mapa) || y==0) = (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r)
+                        |otherwise = (ModoJogo,Jogo (Jogador (x,y-1)) mapa,skin,i,n,p,r)
+                                                            
+
+key_down_modojogo :: World -> World
+key_down_modojogo (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) 
+                        |(haarvore2 (Jogo (Jogador (x,y+1)) mapa)) = (ModoJogo,Jogo (Jogador (x,y+1)) mapa,skin,i,n,p,r)
+                        |otherwise = (ModoJogo,Jogo (Jogador (x,y+1)) mapa,skin,i,n,p,r)
+
+key_left_modojogo :: World -> World 
+key_left_modojogo (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) 
+                        |(haarvore2(Jogo (Jogador (x-1,y)) mapa)) = (ModoJogo,Jogo (Jogador (x,y)) mapa,skin,i,n,p,r)
+                        |otherwise = (ModoJogo,Jogo (Jogador (x-1,y)) mapa,skin,i,n,p,r) 
+
+key_right_modojogo:: World -> World
+key_right_modojogo (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r)
+                        |(haarvore2 (Jogo (Jogador (x+1,y)) mapa)) = (ModoJogo,Jogo (Jogador (x,y)) mapa,skin,i,n,p,r) 
+                        |otherwise = (ModoJogo,Jogo (Jogador (x+1,y)) mapa,skin,i,n,p,r)
+
+type_key_modojogo :: SpecialKey -> World -> World
+type_key_modojogo key ops2 @(menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) = case key of 
+              KeyEsc -> key_esq_jogando ops2
+              KeySpace -> key_space_perdeu ops2
+              KeyUp -> key_up_modojogo ops2
+              KeyDown -> key_down_modojogo ops2
+              KeyLeft -> key_left_modojogo ops2
+              KeyRight -> key_right_modojogo ops2
+--- ===
 
 key_up_pausa :: World -> World
 key_up_pausa (Pause op2,jogo,skin,i,n,p,r) = case op2 of 
