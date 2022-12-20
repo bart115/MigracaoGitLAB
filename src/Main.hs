@@ -41,7 +41,7 @@ type Time = Float
 type Images = [Picture]
 type Seed= Int
 
-type World = (Menu,Jogo,Skin,Images,Time,Pontuação,Seed)
+type World =     (Menu,Jogo,Skin,Images,Time,Pontuação,Seed)
 
 
 window :: Display 
@@ -193,50 +193,50 @@ desenhalinhasestrada::Float->Picture
 desenhalinhasestrada n = Pictures [Translate (-300-(50*n)) 0 $ linha ,Translate (-150-(25*n)) 0 $ linha ,linha,Translate (150+(25*n)) 0 $ linha ,Translate (300+(50*n)) 0 $ linha ]
                             where linha = color white $ polygon [(-25,1),(-25,-1),(25,-1),(25,1)]
 
-key_up :: World -> World
-key_up (Opcoes op, jogo,skin,i,n,p,r) = case op of
+key_up_menu :: World -> World
+key_up_menu (Opcoes op, jogo,skin,i,n,p,r) = case op of
     Play -> (Opcoes Sair, jogo,skin,i,n,p,r)
     Sair -> (Opcoes Simulater, jogo,skin,i,n,p,r)
     Simulater -> (Opcoes Jogo_Salvo, jogo,skin,i,n,p,r) 
     Jogo_Salvo -> (Opcoes Play,jogo,skin,i,n,p,r)
 
-key_down :: World -> World 
-key_down (Opcoes op, jogo,skin,i,n,p,r) = case op of
+key_down_menu :: World -> World 
+key_down_menu (Opcoes op, jogo,skin,i,n,p,r) = case op of
       Play -> (Opcoes Jogo_Salvo, jogo,skin,i,n,p,r)  
       Simulater -> (Opcoes Sair, jogo,skin,i,n,p,r)     
       Sair -> (Opcoes Play, jogo,skin,i,n,p,r) 
       Jogo_Salvo -> (Opcoes Simulater,jogo,skin,i,n,p,r)
 
-key_space :: World -> World
-key_space (Opcoes op, jogo,skin,i,n,p,r) = case op of 
+key_space_menu :: World -> World
+key_space_menu (Opcoes op, jogo,skin,i,n,p,r) = case op of 
           Play -> (ModoJogo, jogoinit,skin,i,n,0,r)
           Jogo_Salvo -> (ModoJogo, jogo, skin,i,n,p,r)
           Simulater -> (Bot, jogoinit,skin,i,0,0,r+1)
           
           
-key_left :: World -> World
-key_left (Opcoes op, jogo,skin,i,n,p,r) = case skin of
+key_left_menu :: World -> World
+key_left_menu (Opcoes op, jogo,skin,i,n,p,r) = case skin of
           Kid -> (Opcoes op, jogo,Warrior,i,n,p,r)
           Warrior -> (Opcoes op, jogo,Zelda,i,n,p,r)
           Zelda -> (Opcoes op, jogo,Kid,i,n,p,r)
 
-key_right :: World -> World
-key_right (Opcoes op, jogo,skin,i,n,p,r) = case skin of 
+key_right_menu :: World -> World
+key_right_menu (Opcoes op, jogo,skin,i,n,p,r) = case skin of 
           Kid -> (Opcoes op, jogo,Zelda,i,n,p,r)
           Warrior -> (Opcoes op, jogo,Kid,i,n,p,r)
           Zelda -> (Opcoes op,jogo,Warrior,i,n,p,r)
 
-type_key :: SpecialKey -> World -> World
-type_key key ops @(Opcoes op, jogo,skin,i,n,p,r) = case key of 
-                       KeySpace -> key_space ops
-                       KeyUp -> key_up ops
-                       KeyDown -> key_down ops 
-                       KeyLeft -> key_left ops 
-                       KeyRight -> key_right ops
+type_key_menu:: SpecialKey -> World -> World
+type_key_menu key ops @(Opcoes op, jogo,skin,i,n,p,r) = case key of 
+                       KeySpace -> key_space_menu ops
+                       KeyUp -> key_up_menu ops
+                       KeyDown -> key_down_menu ops 
+                       KeyLeft -> key_left_menu ops 
+                       KeyRight -> key_right_menu ops
 
 event :: Event -> World -> IO World
 -- Menu
-event evt @(EventKey (SpecialKey key) Down _ _) ops @(Opcoes op, jogo,skin,i,n,p,r) = return $ type_key key ops 
+event evt @(EventKey (SpecialKey key) Down _ _) ops @(Opcoes op, jogo,skin,i,n,p,r) = return $ type_key_menu key ops 
 
 
 
@@ -245,43 +245,43 @@ event  (EventKey (SpecialKey key) Down _ _) ops2 @(menu,(Jogo (Jogador (x,y)) ma
                                           |(key == KeySpace && menu == PerdeuJogo) = return $  (Opcoes Play,jogoinit,skin,i,n,0,r)
                                           |(key == KeyUp && (menu == ModoJogo)  && (haarvore2 (Jogo (Jogador (x,y-1)) mapa) || y==0)) = return $ (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) --se ta num tronco e tem uma arvore a frente nao anda 
                                           |(key == KeyUp && (menu == ModoJogo)  && not (haarvore2 (Jogo (Jogador (x,y-1)) mapa))) = return $  (ModoJogo,Jogo (Jogador (x,y-1)) mapa,skin,i,n,p,r)
-                                          |(key == KeyDown && (menu == ModoJogo)) = if estanotronco (Jogo (Jogador (x,y)) mapa) && haarvore2 (Jogo (Jogador (x,y+1)) mapa) then return $ (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) else (if estanotronco (Jogo (Jogador (x,y)) mapa) && haarvore2 (Jogo (Jogador (x,y+1)) mapa)==False then return $  (ModoJogo,Jogo (Jogador (x,y+1)) mapa,skin,i,n,p,r) else return $ (ModoJogo,Jogo (animaplayer (animaJogo (Jogo (Jogador (x,y)) mapa) (Move Baixo))) mapa,skin,i,n,p,r))
-                                          |(key == KeyLeft && (menu == ModoJogo)) = if estanotronco (Jogo (Jogador (x,y)) mapa) then return $  (ModoJogo,Jogo (Jogador (x-1,y)) mapa,skin,i,n,p,r) else return $ (ModoJogo,Jogo (animaplayer (animaJogo (Jogo (Jogador (x,y)) mapa) (Move Esquerda))) mapa,skin,i,n,p,r)
-                                          |(key == KeyRight && (menu == ModoJogo)) = if estanotronco (Jogo (Jogador (x,y)) mapa) then return $  (ModoJogo,Jogo (Jogador (x+1,y)) mapa,skin,i,n,p,r) else return $ (ModoJogo,Jogo (animaplayer (animaJogo (Jogo (Jogador (x,y)) mapa) (Move Direita))) mapa,skin,i,n,p,r)
+                                          |(key == KeyDown && (menu == ModoJogo) && (haarvore2 (Jogo (Jogador (x,y+1)) mapa))) = return $ (ModoJogo,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r)
+                                          |(key == KeyDown && (menu == ModoJogo) && not (haarvore2 (Jogo (Jogador (x,y+1)) mapa))) = return $  (ModoJogo,Jogo (Jogador (x,y+1)) mapa,skin,i,n,p,r)
+                                          |(key == KeyLeft && (menu == ModoJogo) && (haarvore2(Jogo (Jogador (x-1,y)) mapa))) = return $  (ModoJogo,Jogo (Jogador (x,y)) mapa,skin,i,n,p,r) 
+                                          |(key == KeyLeft && (menu == ModoJogo) && not (haarvore2(Jogo (Jogador (x-1,y)) mapa))) = return $  (ModoJogo,Jogo (Jogador (x-1,y)) mapa,skin,i,n,p,r) 
+                                          |(key == KeyRight && (menu == ModoJogo) && (haarvore2 (Jogo (Jogador (x+1,y)) mapa))) = return $  (ModoJogo,Jogo (Jogador (x,y)) mapa,skin,i,n,p,r)  
+                                          |(key == KeyRight && (menu == ModoJogo) && not (haarvore2 (Jogo (Jogador (x+1,y)) mapa))) = return $ (ModoJogo,Jogo (Jogador (x+1,y)) mapa,skin,i,n,p,r)
 
 
 
-event (EventKey (SpecialKey key) Down _ _) ops3 @(Pause op2,jogo,skin,i,n,p,r)
-                                          |key == KeyUp = return $ key_up2 ops3
-                                          |key == KeyDown  = return $ key_down2 ops3
-                                          |key == KeySpace = return $ key_space ops3
-
+event (EventKey (SpecialKey key) Down _ _) ops3 @(Pause op2,jogo,skin,i,n,p,r) = return $ type_key_pausa key ops3
 event (EventKey (SpecialKey KeySpace) Down _ _) (Opcoes Sair ,_,_,_,_,_,_) = do putStrLn "EndGame" 
                                                                                 exitSuccess
 event _ w = return w
 
-key_up2 :: World -> World
-key_up2 (Pause op2,jogo,skin,i,n,p,r) = case op2 of 
+key_up_pausa :: World -> World
+key_up_pausa (Pause op2,jogo,skin,i,n,p,r) = case op2 of 
                      Resume -> (Pause Quit, jogo ,skin,i,n,p,r)
                      Quit -> (Pause Save_and_Quit, jogo ,skin,i,n,p,r)
                      Save_and_Quit -> (Pause Resume, jogo ,skin,i,n,p,r)
 
-key_down2 :: World -> World
-key_down2 (Pause op2,jogo,skin,i,n,p,r) = case op2 of 
+key_down_pausa :: World -> World
+key_down_pausa (Pause op2,jogo,skin,i,n,p,r) = case op2 of 
                      Resume -> (Pause Save_and_Quit, jogo ,skin,i,n,p,r)
                      Quit -> (Pause Resume, jogo ,skin,i,n,p,r)
                      Save_and_Quit -> (Pause Quit, jogo ,skin,i,n,p,r)
 
-key_space2 :: World -> World 
-key_space2 (Pause op2,jogo,skin,i,n,p,r) = case op2 of 
+key_space_pausa :: World -> World 
+key_space_pausa (Pause op2,jogo,skin,i,n,p,r) = case op2 of 
                 Resume -> (ModoJogo , jogo,skin,i,n,p,r)
                 Quit -> (Opcoes Play,jogoinit,skin,i,n,0,r)
                 Save_and_Quit -> (Opcoes Play,jogo,skin,i,n,p,r)
 --
-{-type_modojogo :: SpecialKey -> World-> World
-type_modojogo key (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) = case key of 
-                                        KeyEsc -> (Pause Resume,(Jogo (Jogador (x,y)) mapa) ,skin,i,n,p,r) 
-                                        Key-}
+type_key_pausa :: SpecialKey -> World-> World
+type_key_pausa key ops3 @(Pause op2,jogo,skin,i,n,p,r) = case key of 
+                                        KeyUp -> key_up_pausa ops3
+                                        KeyDown -> key_down_pausa ops3
+                                        KeySpace -> key_space_pausa ops3
 
 animaplayer::Jogo->Jogador 
 animaplayer (Jogo jog mapa)=jog 
