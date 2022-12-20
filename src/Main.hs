@@ -265,7 +265,7 @@ key_up_modojogo (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r)
 
 key_down_modojogo :: World -> World
 key_down_modojogo (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) 
-                        |(haarvore2 (Jogo (Jogador (x,y+1)) mapa)) = (ModoJogo,Jogo (Jogador (x,y+1)) mapa,skin,i,n,p,r)
+                        |(haarvore2 (Jogo (Jogador (x,y+1)) mapa)) = (ModoJogo,Jogo (Jogador (x,y)) mapa,skin,i,n,p,r)
                         |otherwise = (ModoJogo,Jogo (Jogador (x,y+1)) mapa,skin,i,n,p,r)
 
 key_left_modojogo :: World -> World 
