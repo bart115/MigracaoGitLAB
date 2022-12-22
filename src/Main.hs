@@ -192,7 +192,7 @@ lfundo [(Estrada v),(Estrada v1),(Estrada v2),(Estrada v3),(Estrada v4)]= Pictur
 desenhalinhasestrada::Float->Picture
 desenhalinhasestrada n = Pictures [Translate (-300-(50*n)) 0 $ linha ,Translate (-150-(25*n)) 0 $ linha ,linha,Translate (150+(25*n)) 0 $ linha ,Translate (300+(50*n)) 0 $ linha ]
                             where linha = color white $ polygon [(-25,1),(-25,-1),(25,-1),(25,1)]
-
+--continua a crashar se clicarmos nouto buttao-exeplo 7 ensina a como sair do jogo guardando o estado.
 key_up_menu :: World -> World
 key_up_menu (Opcoes op, jogo,skin,i,n,p,r) = case op of
     Play -> (Opcoes Sair, jogo,skin,i,n,p,r)
