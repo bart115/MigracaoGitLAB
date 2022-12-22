@@ -234,28 +234,14 @@ type_key_menu key ops @(Opcoes op, jogo,skin,i,n,p,r) = case key of
                        KeyLeft -> key_left_menu ops 
                        KeyRight -> key_right_menu ops
 
-event :: Event -> World -> IO World
--- Menu
-event (EventKey (SpecialKey key) Down _ _) ops @(Opcoes op, jogo,skin,i,n,p,r) = return $ type_key_menu key ops 
-
---Jogando
-event  (EventKey (SpecialKey key) Down _ _) ops2 @(menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) = return $ type_key_modojogo key ops2
-                                         
---Pause                                        
-event (EventKey (SpecialKey key) Down _ _) ops3 @(Pause op2,jogo,skin,i,n,p,r) = return $ type_key_pausa key ops3
-
---Pause Sair
-event (EventKey (SpecialKey KeySpace) Down _ _) (Opcoes Sair ,_,_,_,_,_,_) = do putStrLn "EndGame" 
-                                                                                exitSuccess
-event _ w = return w
-
+--Modo Jogo
 key_esq_jogando :: World -> World 
-key_esq_jogando (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) = case menu of 
-            ModoJogo -> (Pause Resume,(Jogo (Jogador (x,y)) mapa) ,skin,i,n,p,r)
+key_esq_jogando (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) |menu == ModoJogo = (Pause Resume,(Jogo (Jogador (x,y)) mapa) ,skin,i,n,p,r)
+          
 
 key_space_perdeu :: World -> World
-key_space_perdeu (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) = case menu of 
-            PerdeuJogo -> (Opcoes Play,jogoinit,skin,i,n,0,r)
+key_space_perdeu (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) |menu == PerdeuJogo = (Opcoes Play,jogoinit,skin,i,n,0,r)
+
 
 key_up_modojogo:: World -> World 
 key_up_modojogo (menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) 
@@ -286,13 +272,14 @@ type_key_modojogo key ops2 @(menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) = ca
               KeyDown -> key_down_modojogo ops2
               KeyLeft -> key_left_modojogo ops2
               KeyRight -> key_right_modojogo ops2
---- ===
 
+--Pause
 key_up_pausa :: World -> World
 key_up_pausa (Pause op2,jogo,skin,i,n,p,r) = case op2 of 
                      Resume -> (Pause Quit, jogo ,skin,i,n,p,r)
                      Quit -> (Pause Save_and_Quit, jogo ,skin,i,n,p,r)
                      Save_and_Quit -> (Pause Resume, jogo ,skin,i,n,p,r)
+
 
 key_down_pausa :: World -> World
 key_down_pausa (Pause op2,jogo,skin,i,n,p,r) = case op2 of 
@@ -312,6 +299,16 @@ type_key_pausa key ops3 @(Pause op2,jogo,skin,i,n,p,r) = case key of
                                         KeyDown -> key_down_pausa ops3
                                         KeySpace -> key_space_pausa ops3
 
+
+event :: Event -> World -> IO World
+-- Menu
+event (EventKey (SpecialKey key) Down _ _) ops3 @(Pause op2,jogo,skin,i,n,p,r) = return $ type_key_pausa key ops3
+event (EventKey (SpecialKey key) Down _ _) ops @(Opcoes op, jogo,skin,i,n,p,r) = return $ type_key_menu key ops 
+event (EventKey (SpecialKey key) Down _ _) ops2 @(menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) = return $ type_key_modojogo key ops2
+event (EventKey (SpecialKey KeySpace) Down _ _) (Opcoes Sair ,_,_,_,_,_,_) = do exitSuccess
+event _ w = return w
+
+--- ===
 animaplayer::Jogo->Jogador 
 animaplayer (Jogo jog mapa)=jog 
 
