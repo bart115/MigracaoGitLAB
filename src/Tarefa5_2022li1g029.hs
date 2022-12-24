@@ -15,6 +15,9 @@ import Tarefa2_2022li1g029
 
 {-|A função deslizaJogo serve simplesmente para estender o mapa e ao mesmo tempo retirar a ultima linha do jogo
 
+==Exeplos de Utilização :
+>>> deslizajogo 2 (Jogo (Jogador (2,2)) (Mapa 3 [(Relva ,[Nenhum,Arvore,Arvore]),(Relva ,[Nenhum,Nenhum,Arvore]),(Relva ,[Arvore,Nenhum,Arvore])]))
+>>> (Jogo (Jogador (2,3)) (Mapa 3 [(Rio 3, [Nenhum,Nenhum,Tronco]),(Relva ,[Nenhum,Arvore,Arvore]),(Relva ,[Nenhum,Nenhum,Arvore])]))
 
 -}
 deslizaJogo :: Int -> Jogo -> Jogo
