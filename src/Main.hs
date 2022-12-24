@@ -227,13 +227,19 @@ key_right_menu (Opcoes op, jogo,skin,i,n,p,r) = case skin of
           Zelda -> (Opcoes op,jogo,Warrior,i,n,p,r)
 
 type_key_menu:: SpecialKey -> World -> World
-type_key_menu key ops @(Opcoes op, jogo,skin,i,n,p,r) = case key of 
+type_key_menu key ops @(Opcoes op, jogo,skin,i,n,p,r) 
+                |testedakey_menu key = case key of 
                        KeySpace -> key_space_menu ops
                        KeyUp -> key_up_menu ops
                        KeyDown -> key_down_menu ops 
                        KeyLeft -> key_left_menu ops 
                        KeyRight -> key_right_menu ops
-type_key_menu _ ops = ops 
+                |otherwise = (Opcoes op, jogo,skin,i,n,p,r) 
+
+
+testedakey_menu :: SpecialKey -> Bool
+testedakey_menu key = any (==key) [KeySpace,KeyUp,KeyDown,KeyLeft,KeyRight]
+
 --Modo Jogo
 key_esq_jogando :: World -> World 
 key_esq_jogando (ModoJogo,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r)  = (Pause Resume,(Jogo (Jogador (x,y)) mapa) ,skin,i,n,p,r)
@@ -264,12 +270,17 @@ key_right_modojogo (ModoJogo,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r)
                         |otherwise = (ModoJogo,Jogo (Jogador (x+1,y)) mapa,skin,i,n,p,r)
 
 type_key_modojogo :: SpecialKey -> World -> World
-type_key_modojogo key ops2 @(ModoJogo,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) = case key of 
-              KeyEsc -> key_esq_jogando ops2
-              KeyUp -> key_up_modojogo ops2
-              KeyDown -> key_down_modojogo ops2
-              KeyLeft -> key_left_modojogo ops2
-              KeyRight -> key_right_modojogo ops2
+type_key_modojogo key ops2 @(ModoJogo,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) 
+                                    |testedakey_modojogo key = case key of   -- SERVE PARA QUE NÃO CRASH O JOGO  
+                                                          KeyEsc -> key_esq_jogando ops2
+                                                          KeyUp -> key_up_modojogo ops2
+                                                          KeyDown -> key_down_modojogo ops2
+                                                          KeyLeft -> key_left_modojogo ops2
+                                                          KeyRight -> key_right_modojogo ops2
+                                    |otherwise = (ModoJogo,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r)
+
+testedakey_modojogo:: SpecialKey -> Bool
+testedakey_modojogo key = any (==key) [KeyDown,KeyUp,KeyRight,KeyLeft,KeyEsc] --testa se a key está naquele intervalo 
 
 --Pause
 key_up_pausa :: World -> World
@@ -290,14 +301,19 @@ key_space_pausa (Pause op2,jogo,skin,i,n,p,r) = case op2 of
                 Resume -> (ModoJogo , jogo,skin,i,n,p,r)
                 Quit -> (Opcoes Play,jogoinit,skin,i,n,0,r)
                 Save_and_Quit -> (Opcoes Play,jogo,skin,i,n,p,r)
---
-type_key_pausa :: SpecialKey -> World-> World
-type_key_pausa key ops3 @(Pause op2,jogo,skin,i,n,p,r) = case key of 
-                                        KeyUp -> key_up_pausa ops3
-                                        KeyDown -> key_down_pausa ops3
-                                        KeySpace -> key_space_pausa ops3
-type_key_pausa _ op3 = op3
 
+type_key_pausa :: SpecialKey -> World-> World
+type_key_pausa key ops3 @(Pause op2,jogo,skin,i,n,p,r) 
+                            |testedakey_pausa key = case key of 
+                                    KeyUp -> key_up_pausa ops3
+                                    KeyDown -> key_down_pausa ops3
+                                    KeySpace -> key_space_pausa ops3
+                            |otherwise = (Pause op2,jogo,skin,i,n,p,r)
+
+
+testedakey_pausa :: SpecialKey -> Bool 
+testedakey_pausa key = any (==key) [KeyUp,KeyDown,KeySpace]
+--
 event :: Event -> World -> IO World
 -- Menu
 event (EventKey (SpecialKey key) Down _ _) ops3 @(Pause op2,jogo,skin,i,n,p,r) = return $ type_key_pausa key ops3

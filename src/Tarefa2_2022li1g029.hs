@@ -65,10 +65,10 @@ proximosObstaculosValidos lar (x,y) |length y== lar = []
 
 proximosObstaculosValidos :: Int-> (Terreno, [Obstaculo]) -> [Obstaculo]
 proximosObstaculosValidos lar (Rio v,y)|length y==lar =[]
-                                       |length y ==(lar-1) && elem Tronco y == False = [Tronco]
+                                       |length y ==(lar-1) && not(elem Tronco y) = [Tronco]
                                        |otherwise = proximosObstaculosValidosAux lar (Rio v,y) 
 proximosObstaculosValidos lar (x,y) |length y== lar = [] 
-                                    |length y == (lar-1) && elem Nenhum y == False = [Nenhum]
+                                    |length y == (lar-1) && not (elem Nenhum y) = [Nenhum]
                                     |otherwise = proximosObstaculosValidosAux lar (x,y)
 
 {-|A função randommap dá um terreno aleatório para a próxima "linha" do mapa
