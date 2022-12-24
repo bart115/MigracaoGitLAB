@@ -56,7 +56,7 @@ initialState :: Images ->Seed->World
 initialState images seed = (Opcoes Play,jogoinit,Kid,images,0,0,seed)
 
 jogoinit::Jogo
-jogoinit = ( Jogo (Jogador (5,2)) (Mapa 19 [(e 2,[n,n,n,n,c,n,n,c,n,n,n,n,n,n,n,n,n,n,n]),   --(10,9)
+jogoinit = ( Jogo (Jogador (10,9)) (Mapa 19 [(e 2,[n,n,n,n,c,n,n,c,n,n,n,n,n,n,n,n,n,n,n]),   --(10,9)
                                             (r,[n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]),
                                             (r,[n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]),
                                             (r,[a,a,a,a,a,a,n,n,n,n,n,n,n,a,a,a,a,a,a]), 
@@ -303,9 +303,9 @@ type_key_pausa key ops3 @(Pause op2,jogo,skin,i,n,p,r) = case key of
 event :: Event -> World -> IO World
 -- Menu
 event (EventKey (SpecialKey key) Down _ _) ops3 @(Pause op2,jogo,skin,i,n,p,r) = return $ type_key_pausa key ops3
-event (EventKey (SpecialKey key) Down _ _) ops @(Opcoes op, jogo,skin,i,n,p,r) = return $ type_key_menu key ops 
 event (EventKey (SpecialKey key) Down _ _) ops2 @(menu,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) = return $ type_key_modojogo key ops2
-event (EventKey (SpecialKey KeySpace) Down _ _) (Opcoes Sair ,_,_,_,_,_,_) = do exitSuccess
+event (EventKey (SpecialKey key) Down _ _) ops @(Opcoes op, jogo,skin,i,n,p,r) |(key == KeySpace && op == Sair) = do exitSuccess 
+                                                                               |otherwise = return $ type_key_menu key ops 
 event _ w = return w
 
 --- ===
