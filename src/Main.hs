@@ -360,8 +360,8 @@ verificamapa::Jogo->Int->Jogo
 verificamapa (Jogo x (Mapa l ((Rio v1,ob1):(Rio v2,ob2):resto))) seed = (Jogo x (Mapa l ((Rio (velocidadealeatoria v2 seed),ob1):(Rio v2,ob2):resto)))
 verificamapa (Jogo x (Mapa l ((Rio v,ob1):resto))) seed = (Jogo x (Mapa l ((Rio (velocidadealeatoria 0 seed),ob1):resto)))
 verificamapa (Jogo x (Mapa l ((Estrada v1,ob1):resto))) seed = (Jogo x (Mapa l ((Estrada (velocidadealeatoria 0 seed),ob1):resto)))
-verificamapa (Jogo x (Mapa l ((Relva,ob1):(Relva,ob2):resto))) seed | not (vepassagem ob1 ob2 ) = Jogo x (estendeMapa (Mapa l ((Relva,ob2):resto)) (seed+1))
-                                                                    |otherwise = Jogo x (Mapa l ((Relva,ob1):(Relva,ob2):resto))
+verificamapa (Jogo x (Mapa l ((Relva,ob1):(Relva,ob2):resto))) seed | (vepassagem ob1 ob2 ) && (mapaValido (Mapa l ((Relva,ob1):(Relva,ob2):resto))) = Jogo x (estendeMapa (Mapa l ((Relva,ob2):resto)) seed)
+                                                                    |otherwise = verificamapa (Jogo x (Mapa l ((Relva,ob1):(Relva,ob2):resto))) (seed+1)
 verificamapa w _ = w 
 
 --a função vepassagem verifica se há uma passagem possivel para o jogador 

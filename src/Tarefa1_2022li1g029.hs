@@ -22,7 +22,7 @@ cada uma desta têm funções especificas que serão explicadas mais tarde.
  >>> mapaValido (Mapa 3 [(Rio 3,[Nenhum,Nenhum,Tronco]),(Rio 1,[Nenhum,Nenhum,Tronco]),(Relva,[Nenhum,Nenhum,Arvore]),(Estrada 1,[Carro,Carro,Carro]),(Rio 1,[Tronco,Nenhum,Tronco])])]
  >>> False-}
 mapaValido :: Mapa -> Bool
-mapaValido (Mapa lr l) = (obsvalidos (Mapa lr l) && mapaValido2 (Mapa lr l)) && (mapaValido3 (Mapa lr l) && mapaValido4 (Mapa lr l)) && (mapaValido5 (Mapa lr l) && mapaValido6 (Mapa lr l)) && mapaValido7 (Mapa lr l) && arvores_maximas_juntas (Mapa lr l)
+mapaValido (Mapa lr l) = (obsvalidos (Mapa lr l) && mapaValido2 (Mapa lr l)) && (mapaValido3 (Mapa lr l) && mapaValido4 (Mapa lr l)) && (mapaValido5 (Mapa lr l) && mapaValido6 (Mapa lr l)) && mapaValido7 (Mapa lr l) && arvores_maximas_juntas (Mapa lr l) && troncos_minimos (Mapa lr l)
 
 {-|Como referi anteriormentente a função principal, 'mapaValido' é composta por algumas auxiliares sendo uma delas a função 'mapaValido1',
 esta função recebe um mapa e confirma se nesse mapa consoante o terreno os obstaculos estão corretos.
