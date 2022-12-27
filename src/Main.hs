@@ -56,7 +56,7 @@ initialState :: Images ->Seed->World
 initialState images seed = (Opcoes Play,jogoinit,Kid,images,0,0,seed)
 
 jogoinit::Jogo
-jogoinit = ( Jogo (Jogador (10,9)) (Mapa 19 [(e 2,[n,n,n,n,c,n,n,c,n,n,n,n,n,n,n,n,n,n,n]),   --(10,9)
+jogoinit = ( Jogo (Jogador (9,5)) (Mapa 19 [(e 2,[n,n,n,n,c,n,n,c,n,n,n,n,n,n,n,n,n,n,n]),   --(10,9)
                                             (r,[n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]),
                                             (r,[n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n]),
                                             (r,[a,a,a,a,a,a,n,n,n,n,n,n,n,a,a,a,a,a,a]), 
@@ -91,10 +91,10 @@ desenhaestado (PerdeuJogo,_, _, images,_,p,_) =return $ Pictures [last images, S
 desenhaestado (Pause Resume ,_,_, images,_,p,_)= return $ Pictures [last images ,desenhapause, Color red $ desenharesume,desenhaquit_save,desenhaquit,desenhascore p]   
 desenhaestado (Pause Save_and_Quit ,_,_, images,_,p,_) = return $ Pictures [last images ,desenharesume ,Color red $ desenhaquit_save, desenhapause,desenhaquit,desenhascore p]     
 desenhaestado (Pause Quit ,_,_,images,_,p,_)= return $ Pictures [last images, desenhapause,desenharesume, desenhaquit_save, Color red $ desenhaquit,desenhascore p]   
-desenhaestado (Opcoes Play, jogo,skin, images,_,p,_) = return $ Pictures [last images,desenha_keys,Scale (0.5) (0.5) $ Translate 600 (-750) $ last (take 5( reverse images)),Scale (0.5) (0.5) $ Translate 600 (-500) $ last (take 4( reverse images)),Color red $ drawplay , desenhajogo_salvo, drawsimulater,drawquit,desenhaskinmenu skin images] 
-desenhaestado (Opcoes Jogo_Salvo, jogo,skin, images,_,p,_) = return $ Pictures [last images,desenha_keys,Scale (0.5) (0.5) $ Translate 600 (-750) $ last (take 5( reverse images)),Scale (0.5) (0.5) $ Translate 600 (-500) $ last (take 4( reverse images)),drawplay ,Color red $ desenhajogo_salvo, drawsimulater,drawquit,desenhaskinmenu skin images]
-desenhaestado (Opcoes Simulater, jogo,skin, images,_,p,_) =return $  Pictures [last images,desenha_keys,Scale (0.5) (0.5) $ Translate 600 (-750) $ last (take 5( reverse images)),Scale (0.5) (0.5) $ Translate 600 (-500) $ last (take 4( reverse images)),drawplay ,Color red $ drawsimulater,desenhajogo_salvo, drawquit,desenhaskinmenu skin images]                                                                                       
-desenhaestado (Opcoes Sair, jogo,skin, images,_,p,_) = return $ Pictures [last images,desenha_keys,Scale (0.5) (0.5) $ Translate 600 (-750) $ last (take 5( reverse images)),Scale (0.5) (0.5) $ Translate 600 (-500) $ last (take 4( reverse images)),drawplay ,drawsimulater,desenhajogo_salvo, Color red $ drawquit,desenhaskinmenu skin images]                                                                                      
+desenhaestado (Opcoes Play, jogo,skin, images,_,p,_) = return $ Pictures [last images,desenha_keys,desenha_texto_skin,Scale (0.5) (0.5) $ Translate 600 (-750) $ imageindex images 13,Scale (0.5) (0.5) $ Translate 600 (-500) $ imageindex images 14,Color red $ drawplay , desenhajogo_salvo, drawsimulater,drawquit,desenhaskinmenu skin images] 
+desenhaestado (Opcoes Jogo_Salvo, jogo,skin, images,_,p,_) = return $ Pictures [last images,desenha_keys,desenha_texto_skin,Scale (0.5) (0.5) $ Translate 600 (-750) $ imageindex images 13,Scale (0.5) (0.5) $ Translate 600 (-500) $ imageindex images 14,drawplay ,Color red $ desenhajogo_salvo, drawsimulater,drawquit,desenhaskinmenu skin images]
+desenhaestado (Opcoes Simulater, jogo,skin, images,_,p,_) =return $  Pictures [last images,desenha_keys,desenha_texto_skin,Scale (0.5) (0.5) $ Translate 600 (-750) $ imageindex images 13,Scale (0.5) (0.5) $ Translate 600 (-500) $ imageindex images 14,drawplay ,Color red $ drawsimulater,desenhajogo_salvo, drawquit,desenhaskinmenu skin images]                                                                                       
+desenhaestado (Opcoes Sair, jogo,skin, images,_,p,_) = return $ Pictures [last images,desenha_keys,desenha_texto_skin,Scale (0.5) (0.5) $ Translate 600 (-750) $ imageindex images 13,Scale (0.5) (0.5) $ Translate 600 (-500) $ imageindex images 14,drawplay ,drawsimulater,desenhajogo_salvo, Color red $ drawquit,desenhaskinmenu skin images]                                                                                      
 desenhaestado (ModoJogo,(Jogo (Jogador (x,y)) (Mapa lar l)),skin,images,t,p,_)= return $ Pictures [(desenhaterrenos (listaterrenos (agrupaestradas l) 500 t)),(desenhaobstaculos (listaobstaculos (Mapa lar l) (-450) 500 t images)),(desenhaplayer x y t skin images),drawPoints p,Translate (-400) 300 $ desenhapause ]
 desenhaestado (Bot,(Jogo (Jogador (x,y)) (Mapa lar l)),skin,images,t,p,_)= return $ Pictures [(desenhaterrenos (listaterrenos (agrupaestradas l) 500 t)),(desenhaobstaculos (listaobstaculos (Mapa lar l) (-450) 500 t images)),(desenhaplayer x y t skin images),drawPoints p ]
 
@@ -109,14 +109,14 @@ desenhaquit_save = Translate (-50) (-150) $ scale (0.7) (0.7) $ drawOption "Quit
 desenhaquit = Translate (-50) (-200) $ scale (0.7) (0.7) $ drawOption "Quit"
 desenhajogo_salvo = Translate (-200) (-270) $ drawOption "Jogo Salvo"
 desenha_keys = Scale (0.5) (0.5) $ Translate 450 (-450) $ drawOption "KEYS :"
-
+desenha_texto_skin = Color red $ Scale (0.6) (0.6) $ Translate 270 200 $ drawOption "SKINS :"
 
 imageindex::[Picture]->Int->Picture
 imageindex (x:_) 0 = x 
 imageindex (_:xs) n = imageindex xs (n-1)
 
 
-desenhaskinmenu Kid images= Pictures [Translate 300 20 $ scale 5 5 $ imageindex images 10, Translate 270 150 $ scale (0.4) (0.3) $ Text "Kid", Translate 300 0 $ color red $ rectangleWire 200 250 ]
+desenhaskinmenu Kid images= Pictures [Translate 300 20 $ scale 5 5 $ imageindex images 10,  Translate 270 150 $ scale (0.4) (0.3) $ Text "Kid", Translate 300 0 $ color red $ rectangleWire 200 250 ]
 desenhaskinmenu Warrior images= Pictures [Translate 295 0 $ scale 5 5 $ imageindex images 11, Translate 225 150 $ scale (0.4) (0.3) $ Text "Warrior", Translate 300 0 $ color red $ rectangleWire 200 250 ]   
 desenhaskinmenu _ images= Pictures [Translate 295 (-5) $ scale 6 6 $ imageindex images 12, Translate 250 150 $ scale (0.4) (0.3) $ Text "Zelda",Translate 300 0 $ color red $ rectangleWire 200 250 ] 
 
@@ -394,12 +394,12 @@ main = do
  warriormenu<- loadBMP "warriormenu.bmp"
  zeldamenu<- loadBMP "zeldamenu.bmp"
  fundomenu<- loadBMP "fundo.bmp"
- seed<- randomRIO (0,10)
+ seed<- randomRIO (0,100)
  game_over <- loadBMP "game_over.bmp" 
  space <- loadBMP "press_space.bmp"
  setas <- loadBMP "setas.bmp"
  espaço <- loadBMP "space.bmp"
- let images = [scale (0.5) (0.5) kid1, scale (0.5) (0.5) kid2,scale (0.3) (0.3) log, tree,scale (0.4) (0.6)  car1,scale (0.2) (0.4)  car2,warrior1,warrior2,zelda1,zelda2,scale (0.7) (0.7) $ Translate 2 0 kidmenu,warriormenu, scale (1.2) (1.2) zeldamenu,espaço,setas,space,game_over,fundomenu]
+ let images = [scale (0.5) (0.5) kid1, scale (0.5) (0.5) kid2,scale (0.3) (0.3) log, tree,scale (0.4) (0.6)  car1,scale (0.2) (0.4)  car2,warrior1,warrior2,zelda1,zelda2,Scale (0.7) (0.7) $ Translate 2 0 kidmenu,warriormenu, scale (1.2) (1.2) zeldamenu, espaço,setas,space,game_over,fundomenu]
  playIO window white  fr (initialState images seed) desenhaestado event time
 
 {-
