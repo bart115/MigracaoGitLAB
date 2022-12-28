@@ -109,7 +109,7 @@ desenhaquit_save = Translate (-50) (-150) $ scale (0.7) (0.7) $ drawOption "Quit
 desenhaquit = Translate (-50) (-200) $ scale (0.7) (0.7) $ drawOption "Quit"
 desenhajogo_salvo = Translate (-200) (-270) $ drawOption "Jogo Salvo"
 desenha_keys = Scale (0.5) (0.5) $ Translate 450 (-450) $ drawOption "KEYS :"
-desenha_texto_skin = Color red $ Scale (0.6) (0.6) $ Translate 270 200 $ drawOption "SKINS :"
+desenha_texto_skin = Color red $ Scale (0.6) (0.6) $ Translate 270 220 $ drawOption "SKINS :"
 
 imageindex::[Picture]->Int->Picture
 imageindex (x:_) 0 = x 
@@ -319,8 +319,9 @@ event :: Event -> World -> IO World
 event (EventKey (SpecialKey key) Down _ _) ops3 @(Pause op2,jogo,skin,i,n,p,r) = return $ type_key_pausa key ops3
 event (EventKey (SpecialKey key) Down _ _) ops2 @(ModoJogo,(Jogo (Jogador (x,y)) mapa),skin,i,n,p,r) = return $ type_key_modojogo key ops2
 event (EventKey (SpecialKey key) Down _ _) ops @(Opcoes op, jogo,skin,i,n,p,r) = return $ type_key_menu key ops
-event (EventKey (SpecialKey KeySpace) Down _ _) (PerdeuJogo, jogo,skin,i,n,p,r) = return $ (Opcoes Play,jogoinit,skin,i,n,0,r)
-event (EventKey (SpecialKey KeySpace) Down _ _) (Opcoes Sair, jogo,skin,i,n,p,r) = do exitSuccess
+event (EventKey (SpecialKey key) Down _ _) (menu, jogo,skin,i,n,p,r) |key ==KeySpace && menu == PerdeuJogo = return $ (Opcoes Play,jogoinit,skin,i,n,0,r)
+                                                                     |key == KeySpace && menu == Opcoes Sair = do exitSuccess
+
 event _ w = return $ w
 --- ===
 animaplayer::Jogo->Jogador 
