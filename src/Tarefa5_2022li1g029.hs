@@ -21,10 +21,8 @@ import Tarefa2_2022li1g029
 
 -}
 deslizaJogo :: Int -> Jogo -> Jogo
-deslizaJogo seed (Jogo (Jogador (x,y)) (Mapa l t)) = Jogo (Jogador (x,y+1)) (deslizaux (estendeMapa (Mapa l t) seed )) 
-                                                                            where 
-                                                                                deslizaux (Mapa l t) = Mapa l (init t)
-
+deslizaJogo seed (Jogo (Jogador (x,y)) (Mapa l t)) = Jogo (Jogador (x,y+1))  (estendeMapa (Mapa l (init t)) seed )
+                                                                            
 
 
 
