@@ -188,7 +188,7 @@ listaobstaculos (Mapa lar ((te,(ob1:obs)):tf)) l a t textures = (te,ob1,l,a-t,te
 desenhaobstaculos::[(Terreno,Obstaculo,Float,Float,Images)]->Picture
 desenhaobstaculos l = Pictures (map f l) 
               where f (te,obs,l,a,textures) = Translate l a $ (obj te obs textures) 
-{-|A função obj -}
+{-|A função obj associa as imagens dos ob -}
 obj::Terreno->Obstaculo->Images->Picture  
 obj (Rio v) Tronco images = Translate 0 (-50) $ imageindex images 2  
 obj (Estrada v) Carro images= if v<0 then  Translate 0 (-15) $ imageindex images 4 else Translate 10 0 $ imageindex images 5
