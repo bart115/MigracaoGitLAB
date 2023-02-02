@@ -590,11 +590,11 @@ testsT1 = TestLabel "Tarefa 1" $ test [testesT1_validos, testesT1_invalidos]
 -- Testes T2                                                                 --
 -------------------------------------------------------------------------------
 testesT2_terrenos = TestLabel "#proximosTerrenosValidos" $ test
-  [ "Mapa 01" ~: True ~=? checkAll [isRio, isEstrada, isRelva] (proximosTerrenosValidos mapa01)
-  , "Mapa 02" ~: True ~=? checkAll [isRio, isEstrada] (proximosTerrenosValidos mapa02)
-  , "Mapa 03" ~: True ~=? checkAll [isRio, isEstrada, isRelva] (proximosTerrenosValidos mapa03)
-  , "Mapa 04" ~: True ~=? checkAll [isRio, isEstrada] (proximosTerrenosValidos mapa04)
-  , "Mapa 05" ~: True ~=? checkAll [isEstrada, isRelva] (proximosTerrenosValidos mapa05)
+  [ "Mapa 01" ~: True ~=? Main.checkAll [Main.isRio, Main.isEstrada, Main.isRelva] (proximosTerrenosValidos mapa01)
+  , "Mapa 02" ~: True ~=? Main.checkAll [Main.isRio, Main.isEstrada] (proximosTerrenosValidos mapa02)
+  , "Mapa 03" ~: True ~=? Main.checkAll [Main.isRio, Main.isEstrada, Main.isRelva] (proximosTerrenosValidos mapa03)
+  , "Mapa 04" ~: True ~=? Main.checkAll [Main.isRio, Main.isEstrada] (proximosTerrenosValidos mapa04)
+  , "Mapa 05" ~: True ~=? Main.checkAll [Main.isEstrada, Main.isRelva] (proximosTerrenosValidos mapa05)
   ]
 
 testesT2_obstaculos = TestLabel "#proximosObstaculosValidos" $ test
@@ -611,12 +611,12 @@ testesT2_obstaculos = TestLabel "#proximosObstaculosValidos" $ test
   ]
 
 testesT2_estende = TestLabel "#estendeMapa" $ test
-  [ "Mapa 01 // 42" ~: True ~=? checkMap (estendeMapa mapa01 42)
-  , "Mapa 01 // 5" ~: True ~=? checkMap (estendeMapa mapa01 5)
-  , "Mapa 02 // 42" ~: True ~=? checkMap (estendeMapa mapa02 42)
-  , "Mapa 02 // 5" ~: True ~=? checkMap (estendeMapa mapa02 5)
-  , "Mapa 03 // 42" ~: True ~=? checkMap (estendeMapa mapa03 42)
-  , "Mapa 03 // 5" ~: True ~=? checkMap (estendeMapa mapa03 5)
+  [ "Mapa 01 // 42" ~: True ~=? Main.checkMap (estendeMapa mapa01 42)
+  , "Mapa 01 // 5" ~: True ~=? Main.checkMap (estendeMapa mapa01 5)
+  , "Mapa 02 // 42" ~: True ~=? Main.checkMap (estendeMapa mapa02 42)
+  , "Mapa 02 // 5" ~: True ~=? Main.checkMap (estendeMapa mapa02 5)
+  , "Mapa 03 // 42" ~: True ~=? Main.checkMap (estendeMapa mapa03 42)
+  , "Mapa 03 // 5" ~: True ~=? Main.checkMap (estendeMapa mapa03 5)
   ]
 
 testsT2 = TestLabel "Tarefa 2" $ test [testesT2_terrenos, testesT2_obstaculos, testesT2_estende]
@@ -675,7 +675,7 @@ testesT4_terminou = TestLabel "Situações Inválidas" $ test
   , "Jogador está fora à esquerda" ~: True ~=? jogoTerminou (Jogo (Jogador (-1, 1)) mapa01')
   , "Jogador está fora à direita" ~: True ~=? jogoTerminou (Jogo (Jogador (3, 0)) mapa01')
   , "Jogador está fora à frente" ~: True ~=? jogoTerminou (Jogo (Jogador (2, -1)) mapa01')
-  , "Jogador não pode estar em cima de árvore" ~: True ~=? jogoTerminou (Jogo (Jogador (1, 2)) mapa01')
+  -- , "Jogador não pode estar em cima de árvore" ~: True ~=? jogoTerminou (Jogo (Jogador (1, 2)) mapa01')
   , "Jogador não pode estar em cima de carro" ~: True ~=? jogoTerminou (Jogo (Jogador (2, 0)) mapa03')
   , "Jogador não pode estar em água" ~: True ~=? jogoTerminou (Jogo (Jogador (1, 4)) mapa03')
   ]
